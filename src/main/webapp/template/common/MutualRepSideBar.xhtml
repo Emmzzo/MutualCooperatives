@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+<h:body>
+
+	<ui:composition >
+<!-- partial:partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar" >
+        <ul class="nav">
+          <li class="nav-item nav-profile">
+            <a href="#" class="nav-link">
+              <div class="nav-profile-image">
+                <img src="./resources/image/face1.jpg" alt="profile"/>
+                <span class="login-status online"></span> <!--change to offline or busy as needed-->              
+              </div>
+              <div class="nav-profile-text d-flex flex-column" >
+                <span class="font-weight-bold mb-2 label" style="font-size: 12px">David Grey. H</span>
+                <span class="text-secondary text-small label" style="font-size: 12px">Project Manager</span>
+              </div>
+              <i class="glyphicon glyphicon-bookmark text-success nav-profile-badge"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">
+              <span class="menu-title label" style="font-size: 13px;font-weight: bold">Dashboard</span>
+              <i class="glyphicon glyphicon-home menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+              <span class="menu-title label" style="font-size: 13px;font-weight: bold;">My Task</span>
+              <i class="glyphicon glyphicon-menu-left"></i>
+              <i class="glyphicon glyphicon-tasks menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+              <ul class="nav flex-column sub-menu label">
+                <li > <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/RequestManagement.xhtml" style="font-size: 12px">Member request management</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Policy managemet</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Loan management</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Member managment</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Funds management</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Manage post</a></li>
+              </ul>
+            </div>
+          </li>
+          
+         <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
+              <span class="menu-title label" style="font-size: 13px;font-weight: bold;">Report</span>
+              <i class="glyphicon glyphicon-menu-left"></i>
+              <i class=" glyphicon glyphicon-stats menu-icon"></i>
+            </a>
+            <div class="collapse label" id="general-pages">
+              <ul class="nav flex-column sub-menu label" >
+                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12px"> Funds  </a></li>
+                <li > <a class="nav-link" href="pages/samples/login.html" style="font-size: 12px"> Loan distribution </a></li>
+                <li> <a class="nav-link" href="pages/samples/register.html" style="font-size: 12px"> Interest and fines raised </a></li>
+                <li> <a class="nav-link" href="pages/samples/error-404.html" style="font-size: 12px"> Overall coop funds </a></li>
+              </ul>
+              </div>
+          </li> 
+           <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#general-pages2" aria-expanded="false" aria-controls="general-pages2">
+              <span class="menu-title label" style="font-size: 13px;font-weight: bold;">Interest And Funds</span>
+              <i class="glyphicon glyphicon-menu-left"></i>
+              <i class=" glyphicon glyphicon-usd menu-icon"></i>
+            </a>
+            <div class="collapse label" id="general-pages2">
+              <ul class="nav flex-column sub-menu label" >
+                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12px"> Fines management</a></li>
+                <li > <a class="nav-link" href="pages/samples/login.html" style="font-size: 12px">Interest charges management </a></li>
+              </ul>
+              </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#general-pages3" aria-expanded="false" aria-controls="general-pages3">
+              <span class="menu-title label" style="font-size: 13px;font-weight: bold;">Mutual coop profile</span>
+              <i class="glyphicon glyphicon-menu-left"></i>
+              <i class=" glyphicon glyphicon-user menu-icon"></i>
+            </a>
+            <div class="collapse label" id="general-pages3">
+              <ul class="nav flex-column sub-menu label" >
+                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12px"> Manage profile</a></li>
+
+              </ul>
+              </div>
+          </li>
+          <li class="nav-item sidebar-actions">
+            <span class="nav-link">
+              <div class="mt-4">
+                <div class="border-bottom">
+                  <p class="text-secondary label" style="font-weight: bold;font-size: 13px;">Online Users</p>                  
+                </div>
+                <ul class="gradient-bullet-list mt-4">
+                  <li>Free</li>
+                  <li>Pro</li>
+                </ul>
+              </div>
+            </span>
+          </li>
+        </ul>
+      </nav>
+      <!-- partial -->
+	
+	</ui:composition>
+
+</h:body>
+
+</html>

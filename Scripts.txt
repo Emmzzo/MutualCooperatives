@@ -1,0 +1,77 @@
+use mutual_db;
+
+insert into usercategory (userCatid,usercategoryName,genericStatus) values(1,'Admin','active');
+
+insert into usercategory (userCatid,usercategoryName,genericStatus) values(2,'Mutual Representative','active');
+
+insert into usercategory (userCatid,usercategoryName,genericStatus) values(3,'Member','active');
+
+insert into usercategory (userCatid,usercategoryName,genericStatus) values(4,'Guest','active');
+
+insert into users(viewId,viewName,userCategory,fname,lname,image,loginStatus,genericStatus,crtdDtTime,status) values('admin',md5('admin'),1,'Emma','Nshimiye','us.png','offline','active',now(),'active');
+
+insert into users(viewId,viewName,userCategory,fname,lname,image,loginStatus,genericStatus,crtdDtTime,status) values('rep',md5('admin'),2,'Patric','Hirwa','us.png','offline','active',now(),'active');
+
+insert into users(viewId,viewName,userCategory,fname,lname,image,loginStatus,genericStatus,crtdDtTime,status) values('member',md5('admin'),3,'Kalisa','Edimon','us.png','offline','active',now(),'active');
+
+insert into users(viewId,viewName,userCategory,fname,lname,image,loginStatus,genericStatus,crtdDtTime,status) values('guest',md5('admin'),4,'Emma','Sibo','us.png','offline','active',now(),'active');
+
+STATIC MENU MANAGEMENT
+==================
+
+Admin(Be able to edit his/her account profile but to be implemented after)
+=====
+1.My Task
+-->>1.1.User management
+-->>1.2.Mutual cooperative management
+
+Mutual Representative(Be able to edit his/her account profile but to be implemented after)
+====================
+
+1.My task
+-->1.Member request management
+-->>2.Policy managemet
+--->>3.Loan management
+--->>4.Member managment
+--->>5.Funds management
+--->>6.Manage post
+2.Mutual coop profile
+-->>2.1.Manage profile
+
+3.Report
+--->3.1.Funds 
+--->3.2 Loan distribution
+--->3.3.Interest and Fines raised
+--->>3.4 Overall coop Funds
+4.Interest &Fines
+-->>Fines management
+--->>Interest charges management
+
+
+Member(Be able to edit his/her account profile but to be implemented after)
+=======
+1.My task
+ -->>1.1.Loan request
+--->>1.2.Mutual coop profile(Members  and policy of the coop)
+--->>1.3.Other Mutual cooperatives availables(This should be implemented after)
+2.Funds &Loan
+--2.1 Funds available
+--2.2.Loan request
+
+3.Reports
+-->3.1 Overall coop Funds
+-->>3.2 Overall coop Loan request
+-->>3.3.Overall coop Fines and interest raised
+
+4.Advertisment
+4.1-->>Posts available
+
+Guest(Be able to edit his/her account profile but to be implemented after)
+===========
+1.My task
+-->>Membership request(Able to view Mutual coop profile(profile include policy ,Number of members) and click to join  the coop Note ::If guest join the coop  the coop should be removed in his account )
+
+
+
+
+

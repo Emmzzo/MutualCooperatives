@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="shortcut icon" href="img/fav.png" />
+	<link rel="shortcut icon" href="image/favicon.png" />
+	<!-- Author Meta -->
+	<meta name="author" content="codepixer" />
+	<!-- Meta Description -->
+	<meta name="description" content="" />
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="" />
+	<h:outputStylesheet name="materialdesignicons.min.css" library="css" />
+	<!-- <h:outputStylesheet name="style.css" library="css" /> -->
+	<h:outputStylesheet name="styles.css" library="css" />
+	<h:outputStylesheet name="bootstrap.min.css" library="css" />
+	<h:outputStylesheet name="vendor.bundle.base.css" library="css" />
+	<h:outputStylesheet name="vendor.bundle.addons.css" library="css" />
+	<h:outputStylesheet name="material-dashboard.css" library="css" />
+	<!-- <h:outputStylesheet name="w3.css" library="css" />
+	<h:outputStylesheet name="cssTheme.css" library="css" />  -->
+	<h:outputScript library="js" name="vendor.bundle.base.js" />
+	<h:outputScript library="js" name="vendor.bundle.addons.js" />
+	<h:outputScript library="js" name="off-canvas.js" />
+	<h:outputScript library="js" name="misc.js" />
+	<h:outputScript library="js" name="dashboard.js" />
+
+	<!-- For date Picker -->
+	<script type="text/javascript"
+		src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" />
+	<h:outputStylesheet name="jquery-ui.css" library="css" />
+	<link rel="stylesheet"
+		href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+	<h:outputScript library="js" name="formatDatePicker.js" />
+
+	<!--End  For date Picker -->
+	<link
+		href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700"
+		rel="stylesheet" />
+	<link
+		href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"
+		rel="stylesheet" />
+
+	<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" />
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous" />
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous" />
+	<link rel="stylesheet" type="text/css"
+		href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+	<h:outputStylesheet name="bootstrap-fileupload.min.css" library="css" />
+	<h:outputStylesheet name="loading.css" library="css" />
+	<h:outputScript library="js" name="loading.js" />
+
+	<style>
+html, body, h1, h2, h3, h4, h5 {
+	font-family: "Open Sans", sans-serif
+}
+
+.errorMsg1 {
+	color: red
+}
+
+.help-block {
+	color: red
+}
+
+/*#home {
+	background: url(./resources/image/nationteam.jpg) center;
+	background-size: cover;
+}*/
+#sendNewsLetter {
+	background-color: #fab700;
+	color: #fff;
+	border-radius: 0;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	padding: 10px 12px;
+	border: 0;
+}
+
+.modal-header, h3, .close {
+	background-color: #5cb85c;
+	color: white !important;
+	text-align: center;
+	font-family: Open Sans sans-serif !important;
+	font-size: 20px !important;
+}
+
+.modal-footer {
+	background-color: #f9f9f9;
+	font-family: Open Sans sans-serif !important;
+	font-size: 14px !important;
+}
+
+.modal-body {
+	font-family: Open Sans sans-serif !important;
+	font-size: 14px !important;
+}
+
+h3 {
+	margin-left: 35%;
+}
+
+.auth.auth-bg-1 {
+	background: url("./resources/image/auth/login_1.jpg");
+	background-size: cover;
+}
+
+.auth.register-bg-1 {
+	background: url("./resources/image/auth/register.jpg") center center
+		no-repeat;
+	background-size: cover;
+}
+
+.label {
+	/* font-family: "Poppins", sans-serif; */
+	font-family: "Calibri";
+	font-style: italic;
+}
+
+.font-weight-light {
+	font-family: "ubuntu-light", sans-serif;
+}
+</style>
+</h:head>
+
+<h:body>
+	<div class="wrapper ">
+		<div class="sidebar" data-color="purple" data-background-color="white">
+			<!--
+      Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+      Tip 2: you can also add an image using data-image tag
+  -->
+			<div class="logo">
+				<a href="http://www.creative-tim.com" class="simple-text logo-mini label">
+					MUTUAL </a> <a href="http://www.creative-tim.com"
+					class="simple-text logo-normal label"> COOPERATIVES MS </a>
+			</div>
+			<div class="sidebar-wrapper">
+				<ul class="nav">
+					<li class="nav-item active "><a class="nav-link" href="#0">
+							<i class="material-icons">dashboard</i>
+							<p class="label" style="color:white;font-size: 14px;">Your Mutual Cooperatives </p>
+					</a></li>
+					<!-- your sidebar here -->
+				</ul>
+			</div>
+		</div>
+		<div class="main-panel">
+			<!-- Navbar -->
+			<nav
+				class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+			<div class="container-fluid">
+				<div class="navbar-wrapper">
+					<a class="navbar-brand" href="#pablo">Dashboard</a>
+				</div>
+				<button class="navbar-toggler" type="button" data-toggle="collapse"
+					aria-controls="navigation-index" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="navbar-toggler-icon icon-bar"></span> <span
+						class="navbar-toggler-icon icon-bar"></span> <span
+						class="navbar-toggler-icon icon-bar"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-end">
+					<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link" href="#pablo"> <i
+								class="material-icons">notifications</i> <span class="label">Notifications</span>
+						</a></li>
+						<!-- your navbar here -->
+						<li class="nav-item">
+						<h:form><h:commandLink class="nav-link" action="#{login.logout}">
+						<!-- <a class="nav-link" href="#pablo"> --> <i
+								class="material-icons text-danger">logout</i> <span class="text-danger label">Logout</span>
+						<!-- </a> -->
+						</h:commandLink></h:form>
+						</li>
+					</ul>
+				</div>
+			</div>
+			</nav>
+			<!-- End Navbar -->
+			<div class="content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-lg-4 col-md-7 col-sm-7">
+							<div class="card card-stats">
+								<div class="card-header card-header-success card-header-icon">
+									<div class="card-icon">
+										<i class="material-icons">account_box</i>
+									</div>
+									<p class="card-category label">Mutual Coop Members</p>
+									<h3 class="card-title">
+										75 <small class="label">Members</small>
+									</h3>
+								</div>
+								<div class="card-footer">
+									<div class="stats">
+										<i class="material-icons text-danger">account_box</i> <a class="label"
+											href="#pablo">Get More Details..</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-7 col-sm-7">
+							<div class="card card-stats">
+								<div class="card-header card-header-success card-header-icon">
+									<div class="card-icon">
+										<i class="material-icons">account_box</i>
+									</div>
+									<p class="card-category label">Mutual Coop Members</p>
+									<h3 class="card-title">75<small class="label">Members</small></h3>
+								</div>
+								<div class="card-footer">
+									<div class="stats">
+										<i class="material-icons text-danger">account_box</i> <a class="label"
+											href="#pablo">Get More Details..</a>
+									</div>
+								</div>
+							</div>
+						</div>	
+					</div>
+				</div>
+			</div>
+			<footer class="footer">
+			<div class="container-fluid">
+				<nav class="float-left">
+				<ul>
+					<li><a href="https://www.creative-tim.com" class="label"> Mutual Cooperative </a>
+					</li>
+				</ul>
+				</nav>
+				<div class="copyright float-right">
+					&copy;
+					<script>
+						document.write(new Date().getFullYear())
+					</script>
+					, made with <i class="material-icons">favorite</i> by <a
+						href="https://www.creative-tim.com" target="_blank">Nshimiyimana
+						Emmanuel</a> for a better service.
+				</div>
+				<!-- your footer here -->
+			</div>
+			</footer>
+		</div>
+	</div>
+	<script>
+		(function($) {
+			"use strict";
+
+			jQuery('#vmap').vectorMap({
+				map : 'world_en',
+				backgroundColor : null,
+				color : '#ffffff',
+				hoverOpacity : 0.7,
+				selectedColor : '#1de9b6',
+				enableZoom : true,
+				showTooltip : true,
+				values : sample_data,
+				scaleColors : [ '#1de9b6', '#03a9f5' ],
+				normalizeFunction : 'polynomial'
+			});
+		})(jQuery);
+	</script>
+	<script>
+		function myFunction(id) {
+
+			var x = document.getElementById(id);
+			if (x.className.indexOf("w3-show") == -1) {
+				x.className += " w3-show";
+				x.previousElementSibling.className += " w3-theme-d1";
+			} else {
+				x.className = x.className.replace("w3-show", "");
+				x.previousElementSibling.className = x.previousElementSibling.className
+						.replace(" w3-theme-d1", "");
+			}
+		}
+
+		// Used to toggle the menu on smaller screens when clicking on the menu button
+		function openNav() {
+			var x = document.getElementById("navDemo");
+			if (x.className.indexOf("w3-show") == -1) {
+				x.className += " w3-show";
+			} else {
+				x.className = x.className.replace(" w3-show", "");
+			}
+		}
+	</script>
+</h:body>
+
+</html>

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="shortcut icon" href="img/fav.png" />
+	<link rel="shortcut icon" href="image/favicon.png" />
+	<!-- Author Meta -->
+	<meta name="author" content="codepixer" />
+	<!-- Meta Description -->
+	<meta name="description" content="" />
+	<!-- Meta Keyword -->
+	<meta name="keywords" content="" />
+	<h:outputStylesheet name="materialdesignicons.min.css" library="css" />
+	<!-- <h:outputStylesheet name="style.css" library="css" /> -->
+	<h:outputStylesheet name="styles.css" library="css" />
+	<h:outputStylesheet name="bootstrap.min.css" library="css" />
+	<h:outputStylesheet name="vendor.bundle.base.css" library="css" />
+	<h:outputStylesheet name="vendor.bundle.addons.css" library="css" />
+
+	<h:outputScript library="js" name="vendor.bundle.base.js" />
+	<h:outputScript library="js" name="vendor.bundle.addons.js" />
+	<h:outputScript library="js" name="off-canvas.js" />
+	<h:outputScript library="js" name="misc.js" />
+	<link
+		href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700"
+		rel="stylesheet" />
+	<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" />
+	<style>
+html, body, h1, h2, h3, h4, h5 {
+	font-family: "Open Sans", sans-serif
+}
+
+.errorMsg1 {
+	color: red
+}
+
+.help-block {
+	color: red
+}
+
+/*#home {
+	background: url(./resources/image/nationteam.jpg) center;
+	background-size: cover;
+}*/
+#sendNewsLetter {
+	background-color: #fab700;
+	color: #fff;
+	border-radius: 0;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	padding: 10px 12px;
+	border: 0;
+}
+
+.modal-header, h3, .close {
+	background-color: #5cb85c;
+	color: white !important;
+	text-align: center;
+	font-family: Open Sans sans-serif !important;
+	font-size: 20px !important;
+}
+
+.modal-footer {
+	background-color: #f9f9f9;
+	font-family: Open Sans sans-serif !important;
+	font-size: 14px !important;
+}
+
+.modal-body {
+	font-family: Open Sans sans-serif !important;
+	font-size: 14px !important;
+}
+
+h3 {
+	margin-left: 35%;
+}
+
+.auth.auth-bg-1 {
+	background: url("./resources/image/auth/login_1.jpg");
+	background-size: cover;
+}
+
+.auth.register-bg-1 {
+	background: url("./resources/image/auth/register.jpg") center center
+		no-repeat;
+	background-size: cover;
+}
+
+.font-weight-light {
+	font-family: "ubuntu-light", sans-serif;
+}
+
+.label {
+	/* font-family: "Poppins", sans-serif; */
+	font-family: "Calibri";
+	font-style: italic;
+}
+</style>
+</h:head>
+<h:body>
+	<div class="container-scroller">
+		<div class="container-fluid page-body-wrapper full-page-wrapper">
+			<div class="content-wrapper d-flex align-items-center auth">
+				<div class="row w-100">
+					<div class="col-lg-4 mx-auto">
+						<div class="auth-form-light text-left p-5">
+							<!-- <div class="brand-logo">
+                <img src="./resources/image/MCMSLOG.jpg"  style="width:25%;margin-left: 25%;padding:10px;"  />
+              </div> -->
+							<h4 class="label"
+								style="font-size: 13px !important; font-weight: bold">Mutual
+								Coop Representative Create Account Here?</h4>
+							<h6 class="font-weight-light label"
+								style="font-size: 15px !important;">Signing up is easy. It
+								only takes a few steps</h6>
+							<h:form class="pt-3">
+								<h:panelGroup layout="block"
+									rendered="#{not membersController.valid and not facesContext.validationFailed}">
+									<ul>
+										<ui:repeat value="#{facesContext.messageList}"
+											var="facesMessage">
+											<li class="alert alert-danger label"
+												style="list-style: none; background-color: #FF2400; color: white">
+												<center>
+													<h:outputText value="#{facesMessage.summary}"
+														escape="false" styleClass="label" />
+												</center>
+											</li>
+										</ui:repeat>
+									</ul>
+								</h:panelGroup>
+
+								<h:panelGroup layout="block"
+									rendered="#{membersController.valid and  not facesContext.validationFailed}">
+									<ul>
+										<ui:repeat value="#{facesContext.messageList}"
+											var="facesMessage">
+											<li
+												style="list-style: none; background-color: #32CD32; color: white;"
+												class="alert alert-success label"><h:outputText
+													styleClass="label" value="#{facesMessage.summary}"
+													escape="false" /></li>
+										</ui:repeat>
+									</ul>
+								</h:panelGroup>
+								<div class="form-group">
+									<h:inputText a:type="text"
+										value="#{membersController.users.fullname}"
+										class="form-control form-control-lg label"
+										id="exampleInputfullname1" a:placeholder=" Your fullname"
+										style=" font-size: 14px !important;" required="true"
+										requiredMessage="#{msg['requiered.fullname.message']}"
+										converterMessage="#{msg['error.enter.invalid.fullname']}"
+										validatorMessage="#{msg['error.enter.invalid.fullname']}">
+										<f:validateRegex
+											pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+										<f:validateLength maximum="35" />
+									</h:inputText>
+									<h:message for="exampleInputfullname1"
+										styleClass="help-block label"></h:message>
+								</div>
+
+								<div class="form-group">
+									<h:inputText a:type="email"
+										class="form-control form-control-lg label"
+										id="exampleInputEmail1" a:placeholder="Your email"
+										value="#{membersController.users.email}"
+										style=" font-size: 14px !important;" required="true"
+										validatorMessage="#{msg['error.enter.invalid.email']}"
+										converterMessage="#{msg['error.enter.invalid.email']}"
+										requiredMessage="#{msg['error.enter.required.email']}">
+										<f:validateRegex pattern="#{regex['regex.validation.email']}" />
+										<f:validateLength maximum="100" />
+									</h:inputText>
+									<h:message for="exampleInputEmail1"
+										styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+									<h:inputText a:type="text"
+										class="form-control form-control-lg label"
+										id="exampleInputPhone1" a:placeholder=" Your phone number"
+										value="#{membersController.users.phone}"
+										style=" font-size: 14px !important;" required="true"
+										converterMessage="#{msg['error.enter.invalid.phone']}"
+										requiredMessage="#{msg['requiered.phone.message']}"
+										validatorMessage="#{msg['error.enter.invalid.phone']}">
+										<f:validateRegex pattern="#{regex['regex.validation.phone']}" />
+									</h:inputText>
+									<label class="label" style="font-size: 12px; font-weight: bold">#{msg['help.coantDetails.message']}
+									</label>
+
+									<h:message for="exampleInputPhone1"
+										styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+
+									<h:inputText a:type="text"
+										value="#{membersController.mutual.mutualCoopName}"
+										class="form-control form-control-lg label"
+										id="exampleInputmutual1"
+										a:placeholder=" Mutual cooperative name"
+										style=" font-size: 14px !important;" required="true"
+										requiredMessage="#{msg['requiered.mutualname.message']}"
+										converterMessage="#{msg['error.enter.invalid.mutualname']}"
+										validatorMessage="#{msg['error.enter.invalid.mutualname']}">
+										<f:validateRegex
+											pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+										<f:validateLength maximum="35" />
+									</h:inputText>
+									<h:message for="exampleInputmutual1"
+										styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+									<h:inputText a:type="text"
+										value="#{membersController.mutual.mutualCoopType}"
+										class="form-control form-control-lg label"
+										id="exampleInputmutual2"
+										a:placeholder=" Mutual cooperative type"
+										style=" font-size: 14px !important;" required="true"
+										requiredMessage="#{msg['requiered.mutualtype.message']}"
+										converterMessage="#{msg['error.enter.invalid.mutualtype']}"
+										validatorMessage="#{msg['error.enter.invalid.mutualtype']}">
+										<f:validateRegex
+											pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+										<f:validateLength maximum="35" />
+									</h:inputText>
+									<label class="label"
+										style="font-size: 13px !important; font-weight: bold">(ex:friendly
+										societies,savings and loans associations)</label>
+									<h:message for="exampleInputmutual2"
+										styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+									<h:inputText a:type="text"
+										value="#{membersController.mutual.address}"
+										class="form-control form-control-lg label"
+										id="exampleInputmutual3"
+										a:placeholder=" Mutual cooperative address"
+										style=" font-size: 14px !important;" required="true"
+										requiredMessage="#{msg['requiered.mutualaddress.message']}">
+									</h:inputText>
+									<h:message for="exampleInputmutual3"
+										styleClass="help-block label"></h:message>
+								</div>
+
+								<div class="mb-4">
+									<div class="form-check"></div>
+								</div>
+								<div class="mt-3">
+									<!-- <a
+										class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn label"
+										href="../../index.html" style="font-size: 14px !important;">SIGN
+										UP</a> -->
+									<h:commandLink
+										class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn label"
+										action="#{membersController.saveMutualRepPendingRequest}"
+										style="font-size: 14px !important;"
+										value="#{msg['label.common.sign.up']}">
+
+									</h:commandLink>
+								</div>
+								<div class="text-center mt-4 font-weight-light label">
+									Already have an account? <a href="home.xhtml"
+										class="text-primary label" style="font-size: 14px !important;">Login</a>
+								</div>
+							</h:form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- content-wrapper ends -->
+		</div>
+		<!-- page-body-wrapper ends -->
+	</div>
+	<!-- container-scroller -->
+</h:body>
+
+</html>

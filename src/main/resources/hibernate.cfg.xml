@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/mutual_db</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">root</property>
+	<!-- 	<property name="hbm2ddl.auto">update</property>
+		<property name="hibernate.show_sql">true</property> -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<mapping class="mutual.domain.UserCategory" />
+		<mapping class="mutual.domain.Users" />
+		<mapping class="mutual.domain.LoginHistoric" />
+		<mapping class="mutual.domain.MemberRequest" />
+		<mapping class="mutual.domain.MutualCooperative" />
+		<mapping class="mutual.domain.Documents" />
+		<mapping class="mutual.domain.UploadingFiles" />
+		<mapping class="mutual.domain.Posts" />
+		<mapping class="mutual.domain.MutualCoopMembers" />
+		<mapping class="mutual.domain.MutualCoopPolicy" />
+		<mapping class="mutual.domain.Funds" />
+		<mapping class="mutual.domain.LoanRequest" />
+		<mapping class="mutual.domain.Fines" />
+		<mapping class="mutual.domain.InterestCharges" />
+	</session-factory>
+</hibernate-configuration>
+
