@@ -156,5 +156,6 @@ public interface DbConstant {
 	public static final int membercat=3;
 	public static final int MutualRepcat=2;
 	public static final String Distributed_Pswd = "anonymous";
+	public static final String Block = "blocked";
 	
 }

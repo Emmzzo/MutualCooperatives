@@ -116,10 +116,10 @@ h3 {
                 <img src="./resources/image/MCMSLOG.jpg"  style="width:25%;margin-left: 25%;padding:10px;"  />
               </div> -->
 							<h4 class="label"
-								style="font-size: 13px !important; font-weight: bold">Mutual
-								Coop Representative Create Account Here?</h4>
+								style=" font-size: 12.8pt; font-weight: bold">Mutual
+								Coop Representative Create Account Here!</h4>
 							<h6 class="font-weight-light label"
-								style="font-size: 15px !important;">Signing up is easy. It
+							style=" font-size: 12.5pt;">Signing up is easy. It
 								only takes a few steps</h6>
 							<h:form class="pt-3">
 								<h:panelGroup layout="block"
@@ -156,7 +156,7 @@ h3 {
 										value="#{membersController.users.fullname}"
 										class="form-control form-control-lg label"
 										id="exampleInputfullname1" a:placeholder=" Your fullname"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 12pt;" required="true"
 										requiredMessage="#{msg['requiered.fullname.message']}"
 										converterMessage="#{msg['error.enter.invalid.fullname']}"
 										validatorMessage="#{msg['error.enter.invalid.fullname']}">
@@ -173,7 +173,7 @@ h3 {
 										class="form-control form-control-lg label"
 										id="exampleInputEmail1" a:placeholder="Your email"
 										value="#{membersController.users.email}"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 12pt;" required="true"
 										validatorMessage="#{msg['error.enter.invalid.email']}"
 										converterMessage="#{msg['error.enter.invalid.email']}"
 										requiredMessage="#{msg['error.enter.required.email']}">
@@ -184,17 +184,43 @@ h3 {
 										styleClass="help-block label"></h:message>
 								</div>
 								<div class="form-group">
-									<h:inputText a:type="text"
+									<h:inputText a:type="text" 
+										value="#{membersController.users.address}"
+										class="form-control form-control-lg label" id="address"
+										a:placeholder=" Your address"
+										style=" font-size: 12pt;" required="true"
+										requiredMessage="#{msg['requiered.address.message']}">
+									</h:inputText>
+									<h:message for="address" styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+
+									<h:selectOneMenu id="gender"
+										style=" font-size: 12pt; font-weight:bold"
+										styleClass="form-control form-control-lg label"
+										value="#{membersController.users.gender}"
+										requiredMessage="#{msg['requiered.categoryname.message']}">
+										<f:selectItem
+											itemLabel="#{msg['common.message.select.PLACEHOLDER']}"
+											itemValue="#{null}" escapeItem="true" itemDisabled="true" />
+										<f:selectItem itemLabel="Male" itemValue="Male" />
+										<f:selectItem itemLabel="Female" itemValue="Female" />
+
+									</h:selectOneMenu>
+									<h:message for="gender" styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+									<h:inputText a:type="text" 
 										class="form-control form-control-lg label"
 										id="exampleInputPhone1" a:placeholder=" Your phone number"
 										value="#{membersController.users.phone}"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 12pt;" required="true"
 										converterMessage="#{msg['error.enter.invalid.phone']}"
 										requiredMessage="#{msg['requiered.phone.message']}"
 										validatorMessage="#{msg['error.enter.invalid.phone']}">
 										<f:validateRegex pattern="#{regex['regex.validation.phone']}" />
 									</h:inputText>
-									<label class="label" style="font-size: 12px; font-weight: bold">#{msg['help.coantDetails.message']}
+									<label class="label" style="font-size: 11.5pt; font-weight: bold">#{msg['help.coantDetails.message']}
 									</label>
 
 									<h:message for="exampleInputPhone1"
@@ -224,7 +250,7 @@ h3 {
 										class="form-control form-control-lg label"
 										id="exampleInputmutual2"
 										a:placeholder=" Mutual cooperative type"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 12pt;" required="true"
 										requiredMessage="#{msg['requiered.mutualtype.message']}"
 										converterMessage="#{msg['error.enter.invalid.mutualtype']}"
 										validatorMessage="#{msg['error.enter.invalid.mutualtype']}">
@@ -233,18 +259,18 @@ h3 {
 										<f:validateLength maximum="35" />
 									</h:inputText>
 									<label class="label"
-										style="font-size: 13px !important; font-weight: bold">(ex:friendly
+										style="font-size: 11pt !important; font-weight: bold">(ex:friendly
 										societies,savings and loans associations)</label>
 									<h:message for="exampleInputmutual2"
 										styleClass="help-block label"></h:message>
 								</div>
 								<div class="form-group">
-									<h:inputText a:type="text"
+									<h:inputText a:type="text" style=" font-size: 12pt;"
 										value="#{membersController.mutual.address}"
 										class="form-control form-control-lg label"
 										id="exampleInputmutual3"
 										a:placeholder=" Mutual cooperative address"
-										style=" font-size: 14px !important;" required="true"
+										 required="true"
 										requiredMessage="#{msg['requiered.mutualaddress.message']}">
 									</h:inputText>
 									<h:message for="exampleInputmutual3"
@@ -269,7 +295,7 @@ h3 {
 								</div>
 								<div class="text-center mt-4 font-weight-light label">
 									Already have an account? <a href="home.xhtml"
-										class="text-primary label" style="font-size: 14px !important;">Login</a>
+										class="text-primary label" style=" font-size: 13pt;">Login</a>
 								</div>
 							</h:form>
 						</div>

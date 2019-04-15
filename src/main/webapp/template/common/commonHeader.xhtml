@@ -26,13 +26,13 @@
 				</button>
 				<div class="collapse navbar-collapse justify-content-end">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="#pablo"> <i
-								class="material-icons -outline">notifications</i> <span class="label" style="font-size: 12px;">Notifications</span>
+						<li class="nav-item"><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/page1.xhtml"> <i
+								class="material-icons -outline">notifications</i> <span class="label" style="font-size: 11pt;"> #{membersController.repavail}&nbsp;Notifications</span>
 						</a></li>
 						<!-- your navbar here -->
 						<li class="nav-item">
 						<h:form><h:commandLink class="nav-link" action="#{login.logout}">
-						 <i class="material-icons text-danger">logout</i> <span class="text-danger label"  style="font-size: 12px;">Logout</span>
+						 <i class="material-icons text-danger">logout</i> <span class="text-danger label"  style="font-size: 11pt;">Logout</span>
 						</h:commandLink></h:form>
 						</li>
 					</ul>
