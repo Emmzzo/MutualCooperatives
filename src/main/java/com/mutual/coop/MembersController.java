@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -26,7 +27,6 @@ import javax.servlet.http.HttpSession;
 
 import org.hibernate.HibernateException;
 import org.primefaces.model.UploadedFile;
-
 import mutual.common.DbConstant;
 import mutual.common.JSFBoundleProvider;
 import mutual.common.JSFMessagers;
@@ -255,6 +255,125 @@ public class MembersController implements Serializable, DbConstant {
 		return "";
 	}
 
+	public String saveMutualRepAndCoopInfo() throws IOException, NoSuchAlgorithmException {
+		try {
+			try {
+				Users user = new Users();
+				
+				usercat = catImpl.getUserCategoryById(MutualRepcat, "userCatid");
+				if (null == usercat) {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("error.server.side.cat"));
+					LOGGER.info(CLASSNAME + "sivaserside validation :: category name not found in the system! ");
+					return null;
+				}
+				
+				
+				if (null != users.getEmail())
+					user = usersImpl.getModelWithMyHQL(new String[] { "email" }, new Object[] { users.getEmail() },
+							"from Users");
+				if (null != user) {
+
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("error.server.side.dupicate.email"));
+					LOGGER.info(CLASSNAME + "sivaserside validation :: email already  recorded in the system! ");
+					return null;
+				}
+				user = usersImpl.getModelWithMyHQL(new String[] { "phone" }, new Object[] { users.getPhone() },
+						"from Users");
+				if (null != user) {
+
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("error.server.side.dupicate.phone.number"));
+					LOGGER.info(CLASSNAME + "sivaserside validation :: phone number already  recorded in the system! ");
+					return null;
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+				//SAVING MUTUAL REP INFO
+			users.setImage("us.png");
+			users.setCreatedBy(usersSession.getViewId());
+			users.setCrtdDtTime(timestamp);
+			users.setGenericStatus(ACTIVE);
+			users.setCrtdDtTime(timestamp);
+			users.setStatus(ACTIVE);
+			users.setLoginStatus(OFFLINE);
+			users.setUserCategory(usercat);
+			 Random rand = new Random(); 
+			 int rand_int1 = rand.nextInt(1000); 
+			SendSupportEmail email = new SendSupportEmail();
+			String pswdgiven=Distributed_Pswd+""+rand_int1 ;
+//			String msgcontent="Hello we would like to inform that your request has been accepted\n "
+//					+ "now you can access our system with the given credentials\n "
+//					+ "which you can change at any time\n"
+//					+ " Your username:"+users.getEmail()+".\nPassword:"+Distributed_Pswd+""+rand_int1 +""
+//							+ "\nRegards,\n"
+//							+ "\nSupport Team";
+			 boolean valid=email.sendMailMutualCoopRep(ACCEPTED,users.getFullname(),pswdgiven,usersSession.getFullname(), users.getEmail());
+			String crpted_pswd=Distributed_Pswd+""+rand_int1;
+			LOGGER.info("PASSWORD TOBE INCRYPTED::"+crpted_pswd);
+			users.setViewId(users.getEmail());
+			users.setViewName(loginImpl.criptPassword(crpted_pswd));
+			usersImpl.saveUsers(users);
+			//SAVING MUTUAL COOP INFO 
+			mutual.setCreatedBy(usersSession.getViewId());
+			mutual.setLogo("us.png");
+			mutual.setCrtdDtTime(timestamp);
+			mutual.setGenericStatus(ACTIVE);
+			mutual.setCrtdDtTime(timestamp);
+			mutual.setStatus(ACCEPTED);
+			mutualImpl.saveMutualCooperative(mutual);
+			//SAVING BOTH MUTUAL REP AND MUTUAL COOP IN MUTUALCOOPMEMBERS TABLE
+			mutualMembers.setCreatedBy(usersSession.getViewId());
+			mutualMembers.setCrtdDtTime(timestamp);
+			//status to be updated when request approved
+			mutualMembers.setGenericStatus(ACTIVE);
+			mutualMembers.setCrtdDtTime(timestamp);
+			mutualMembers.setMember(users);
+			mutualMembers.setMutualcoop(mutual);
+			mutualMembers.setMemberSize(incrementCount);
+			mutualMembersImpl.saveMutualCoopMembers(mutualMembers);
+			
+			if(valid) {
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.mutualcooprep"));
+			LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is saved");
+			}else {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.sendemailfail.form.mutualcooprepinfo"));
+				LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is saved");	
+			}
+			clearUserFuileds();
+			clearMutualCoopMemberFuileds();
+			clearMutualCoopFuileds();
+			return "";
+
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return "";
+	}
+	
+	
+	
+	
 	public String saveMutualRepPendingRequest() {
 		try {
 			try {

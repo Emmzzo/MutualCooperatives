@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/adminLayout.xhtml">
+
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+						<a
+							href="#{loadUserInformationsController.getContextPath()}/page1.xhtml"
+							class="btn btn-primary glyphicon glyphicon-chevron-left"
+							style="font-size: 11px !important;"> #{msg['BackButtom']}</a>
+
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not membersController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white;font-size: 12px;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{membersController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12px"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<div class="col-md-6 grid-margin stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<p:outputPanel autoUpdate="true">
+										<span style="color: white; font-size: 20pt"> <label
+											class="label text-success" style="font-weight: bold;">#{msg['header.title.UserForm']}</label>
+										</span>
+									</p:outputPanel>
+									<span class="label text-warning"
+										style="color: black; font-weight: bold; font-size: 13px">#{msg['header.title.fieldmarked']}
+										<span style="color: red">#{msg['header.title.asteriks']}</span>
+										#{msg['header.title.mandatory']}
+									</span>
+									<h:form class="forms-sample">
+										<hr />
+										<label class="label text-success"
+											style="font-size: 16px; font-weight: bold;"> Mutual
+											Cooperative Representative Informations</label>
+										<hr />
+										<div class="form-group">
+											<label for="exampleInputUsername1" class="label"
+												style="font-weight: bold; font-size: 14px; margin-top: 15px;">Full
+												name <span style="color: red; font-size: 15px">*</span>
+											</label>
+											<h:inputText a:type="text"
+												value="#{membersController.users.fullname}"
+												class="form-control form-control-lg label"
+												id="exampleInputfullname1" a:placeholder=" Your fullname"
+												style=" font-size: 14px !important;" required="true"
+												requiredMessage="#{msg['requiered.fullname.message']}"
+												converterMessage="#{msg['error.enter.invalid.fullname']}"
+												validatorMessage="#{msg['error.enter.invalid.fullname']}">
+												<f:validateRegex
+													pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+												<f:validateLength maximum="35" />
+											</h:inputText>
+
+											<h:message for="exampleInputfullname1"
+												styleClass="help-block label"></h:message>
+										</div>
+										<div class="form-group">
+											<label for="exampleInputEmail1" class="label"
+												style="font-size: 13px; font-weight: bold">Email
+												address<span style="color: red; font-size: 15px">*</span>
+											</label>
+
+											<h:inputText a:type="email"
+												class="form-control form-control-lg label"
+												id="exampleInputEmail1" a:placeholder="Your email"
+												value="#{membersController.users.email}"
+												style=" font-size: 14px !important;" required="true"
+												validatorMessage="#{msg['error.enter.invalid.email']}"
+												converterMessage="#{msg['error.enter.invalid.email']}"
+												requiredMessage="#{msg['error.enter.required.email']}">
+												<f:validateRegex
+													pattern="#{regex['regex.validation.email']}" />
+												<f:validateLength maximum="100" />
+											</h:inputText>
+											<h:message for="exampleInputEmail1"
+												styleClass="help-block label"></h:message>
+										</div>
+
+										<div class="form-group">
+											<label for="exampleInputPhone1" class="label"
+												style="font-size: 13px; font-weight: bold">Your
+												phone number<span style="color: red; font-size: 15px">*</span>
+											</label>
+
+											<h:inputText a:type="text"
+												class="form-control form-control-lg label"
+												id="exampleInputPhone1" a:placeholder=" Your phone number"
+												value="#{membersController.users.phone}"
+												style=" font-size: 14px !important;" required="true"
+												converterMessage="#{msg['error.enter.invalid.phone']}"
+												requiredMessage="#{msg['requiered.phone.message']}"
+												validatorMessage="#{msg['error.enter.invalid.phone']}">
+												<f:validateRegex
+													pattern="#{regex['regex.validation.phone']}" />
+											</h:inputText>
+											<label class="label"
+												style="font-size: 12px; font-weight: bold">#{msg['help.coantDetails.message']}
+											</label>
+
+											<h:message for="exampleInputPhone1"
+												styleClass="help-block label"></h:message>
+										</div>
+										<div class="form-group">
+											<label for="address" class="label"
+												style="font-size: 13px; font-weight: bold">Your
+												address<span style="color: red; font-size: 15px">*</span>
+											</label>
+											<h:inputText a:type="text"
+												value="#{membersController.users.address}"
+												class="form-control form-control-lg label" id="address"
+												a:placeholder=" Your address"
+												style=" font-size: 14px !important;" required="true"
+												requiredMessage="#{msg['requiered.address.message']}">
+											</h:inputText>
+											<h:message for="address" styleClass="help-block label"></h:message>
+										</div>
+										<div class="form-group">
+											<label for="gender" class="label"
+												style="font-size: 13px; font-weight: bold">Select
+												gender<span style="color: red; font-size: 15px">*</span>
+											</label>
+
+											<h:selectOneMenu id="gender" style="font-size: 14px; font-weight: bold"
+												styleClass="form-control form-control-lg label"
+												value="#{membersController.users.gender}"
+												requiredMessage="#{msg['requiered.categoryname.message']}">
+												<f:selectItem  
+													itemLabel="#{msg['common.message.select.PLACEHOLDER']}"
+													itemValue="#{null}" escapeItem="true" itemDisabled="true" />
+												<f:selectItem itemLabel="Male" itemValue="Male" />
+												<f:selectItem itemLabel="Female" itemValue="Female" />
+
+											</h:selectOneMenu>
+											<h:message for="gender" styleClass="help-block label"></h:message>
+										</div>
+
+										<hr />
+										<label for="exampleInputPassword1" class="label text-primary"
+											style="font-size: 16px; font-weight: bold"> Mutual
+											Cooperative Informations
+										</label>
+										<hr />
+										<div class="form-group">
+											<label for="exampleInputmutual1" class="label"
+												style="font-size: 13px; font-weight: bold">Mutual
+												cooperative name<span style="color: red; font-size: 15px">*</span>
+											</label>
+
+											<h:inputText a:type="text"
+												value="#{membersController.mutual.mutualCoopName}"
+												class="form-control form-control-lg label"
+												id="exampleInputmutual1"
+												a:placeholder=" Mutual cooperative name"
+												style=" font-size: 14px !important;" required="true"
+												requiredMessage="#{msg['requiered.mutualname.message']}"
+												converterMessage="#{msg['error.enter.invalid.mutualname']}"
+												validatorMessage="#{msg['error.enter.invalid.mutualname']}">
+												<f:validateRegex
+													pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+												<f:validateLength maximum="35" />
+											</h:inputText>
+											<h:message for="exampleInputmutual1"
+												styleClass="help-block label"></h:message>
+										</div>
+										<div class="form-group">
+											<label for="exampleInputmutual2" class="label"
+												style="font-size: 13px; font-weight: bold">Mutual
+												cooperative type<span style="color: red; font-size: 15px">*</span>
+											</label>
+											<h:inputText a:type="text"
+												value="#{membersController.mutual.mutualCoopType}"
+												class="form-control form-control-lg label"
+												id="exampleInputmutual2"
+												a:placeholder=" Mutual cooperative type"
+												style=" font-size: 14px !important;" required="true"
+												requiredMessage="#{msg['requiered.mutualtype.message']}"
+												converterMessage="#{msg['error.enter.invalid.mutualtype']}"
+												validatorMessage="#{msg['error.enter.invalid.mutualtype']}">
+												<f:validateRegex
+													pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+												<f:validateLength maximum="35" />
+											</h:inputText>
+											<label class="label"
+												style="font-size: 13px !important; font-weight: bold">(ex:friendly
+												societies,savings and loans associations)</label>
+											<h:message for="exampleInputmutual2"
+												styleClass="help-block label"></h:message>
+										</div>
+										<div class="form-group">
+											<label for="exampleInputmutual3" class="label"
+												style="font-size: 13px; font-weight: bold">Mutual
+												cooperative address<span style="color: red; font-size: 15px">*</span>
+											</label>
+											<h:inputText a:type="text"
+												value="#{membersController.mutual.address}"
+												class="form-control form-control-lg label"
+												id="exampleInputmutual3"
+												a:placeholder=" Mutual cooperative address"
+												style=" font-size: 14px !important;" required="true"
+												requiredMessage="#{msg['requiered.mutualaddress.message']}">
+											</h:inputText>
+											<h:message for="exampleInputmutual3"
+												styleClass="help-block label"></h:message>
+										</div>
+
+										<h:commandButton a:type="submit" action="#{membersController.saveMutualRepAndCoopInfo}"
+											class="btn btn-gradient-info mr-2 label"
+											style="font-size: 13px;" value="Submit"></h:commandButton>
+									</h:form>
+								</div>
+							</div>
+						</div>
+
+					</h:form>
+
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

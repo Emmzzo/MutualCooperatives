@@ -59,7 +59,7 @@ public interface DbConstant {
 	public static final String MEDIUM = "Medium";
 	public static final String LONG = "Long";
 	public static final String PENDING = "pending";
-	public static final String ACCEPTED = "acepted";
+	public static final String ACCEPTED = "accepted";
 	public static final String REJECTED = "rejected";
 	public static final String SELECT_LISTOFMENU = "from ListOfMenu";
 	public static final String SELECT_MENUGROUP = "from MenuGroup";
@@ -155,5 +155,6 @@ public interface DbConstant {
 	public static final int admincat=1;
 	public static final int membercat=3;
 	public static final int MutualRepcat=2;
+	public static final String Distributed_Pswd = "anonymous";
 	
 }

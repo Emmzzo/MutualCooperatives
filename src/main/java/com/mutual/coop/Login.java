@@ -166,6 +166,7 @@ public class Login implements Serializable, DbConstant {
 				.getRequest();
 
 		String url = request.getContextPath() + "/home.xhtml";
+		LOGGER.info("APP URL"+url);
 		try {
 			
 			Users user= new Users();

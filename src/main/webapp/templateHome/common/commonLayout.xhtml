@@ -160,7 +160,7 @@ h3 {
                    <h:message for="exampleInputPassword1" styleClass="help-block label"></h:message>
                 </div>
                 <div class="mt-3">
-                  <h:commandLink action="#{login.validateUsernamePassword}" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn label" ><label style=" font-size: 16px !important;">#{msg['label.common.sign.in']}</label></h:commandLink>
+                  <h:commandButton action="#{login.validateUsernamePassword}" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn label" value="#{msg['label.common.sign.in']}" style=" font-size: 16px !important;"></h:commandButton>
                 	
                 </div>
                 <div class="my-2 d-flex justify-content-between align-items-center">

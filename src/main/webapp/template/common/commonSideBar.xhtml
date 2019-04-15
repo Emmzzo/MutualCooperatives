@@ -16,32 +16,33 @@
           <li class="nav-item nav-profile">
             <a href="#" class="nav-link">
               <div class="nav-profile-image">
-                <img src="./resources/image/face1.jpg" alt="profile"/>
+                <!-- <img src="./resources/image/face1.jpg" alt="profile"/> -->
+                <h:graphicImage  style="margin: 5px" alt="profile" value="/images/dynamic/?file=#{loadUserInformationsController.users.image}" /> 
                 <span class="login-status online"></span> <!--change to offline or busy as needed-->              
               </div>
               <div class="nav-profile-text d-flex flex-column" >
-                <span class="font-weight-bold mb-2 label" style="font-size: 12px">David Grey. H</span>
-                <span class="text-secondary text-small label" style="font-size: 12px">Project Manager</span>
+                <span class="font-weight-bold mb-2 label" style="font-size: 13px">#{loadUserInformationsController.users.fullname}</span>
+                <span class="text-secondary text-small label" style="font-size: 13px">System #{loadUserInformationsController.users.userCategory.usercategoryName}</span>
               </div>
               <i class="glyphicon glyphicon-bookmark text-success nav-profile-badge"></i>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
-              <span class="menu-title label" style="font-size: 13px;font-weight: bold">Dashboard</span>
+            <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/page1.xhtml">
+              <span class="menu-title label" style="font-size: 14px;font-weight: bold">Dashboard</span>
               <i class="glyphicon glyphicon-home menu-icon"></i>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-              <span class="menu-title label" style="font-size: 13px;font-weight: bold;">My Task</span>
+              <span class="menu-title label" style="font-size: 14px;font-weight: bold;">My Task</span>
               <i class="glyphicon glyphicon-menu-left"></i>
               <i class="glyphicon glyphicon-screenshot menu-icon"></i>
             </a>
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu label">
-                <li > <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/RequestManagement.xhtml" style="font-size: 12px">User management</a></li>
-                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12px">Mutual cooperative managment</a></li>
+                <li > <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/UsersManagement.xhtml" style="font-size: 13px">User management</a></li>
+                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 13px">Mutual cooperative managment</a></li>
               </ul>
             </div>
           </li>

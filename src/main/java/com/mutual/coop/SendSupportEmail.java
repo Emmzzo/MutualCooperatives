@@ -128,6 +128,53 @@ public class SendSupportEmail extends HttpServlet implements DbConstant {
 		return (valid);
 	}
 
+	public boolean sendMailMutualCoopRep(String type,String receivername, String givenpswd, String senderName, String email) {
+
+		boolean valid = false;
+		if (( null !=receivername && null != givenpswd) && (null != email) && (null != senderName)) {
+			String msg = null;
+			if (type.equals("accepted")) {
+				msg = "<p>" + "I hope this email finds you well." + "<br/>"
+						+ "This is to notify you that your request has been accepted, " + "<br/>"
+						+ "now you can access our system with the given credentials." + "<br/>"
+						+ "Your username." +email+ "<br/>"
+						+ "Your password." +givenpswd+ "<br/>"
+						+ "___________" +"<br/>"
+						+ "Best Regards." + "<br/>"
+						+ "Support Team." + "<br/>"
+						+ "</p>";
+				
+			}
+			/* End send content in table sample */
+			try {
+
+				gen.sendEmailNotification(email, receivername, "MC.Registration", msg);
+				valid = true;
+			} catch (AddressException e) {
+				LOGGER.info("returing false1");
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.emailerror"));
+				e.printStackTrace();
+				LOGGER.info("returing false2");
+				LOGGER.info("This content" + msg + " was not send to MY BE wrong address check email ::" + email
+						+ " on " + timestamp);
+			} catch (MessagingException e) {
+				LOGGER.info("This content" + msg + " was not send to ::" + email + " on " + timestamp);
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.notificationError"));
+				e.printStackTrace();
+			}
+			LOGGER.info("::: notidficatio sent   ");
+		} else {
+			valid = false;
+		}
+		LOGGER.info("returing values" + valid);
+		return (valid);
+	}
 	public boolean sendMailTestVersion(String fname, String lname, String email) {
 
 		boolean valid = false;
