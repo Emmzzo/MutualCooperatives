@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/adminLayout.xhtml">
+
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+						<p:outputPanel rendered="#{mutualCoopController.rendered}"
+							autoUpdate="true">
+							<a
+								href="#{loadUserInformationsController.getContextPath()}/menu/MutualCoopManagment.xhtml"
+								class="btn btn-primary glyphicon glyphicon-chevron-left"
+								style="font-size: 11pt"> #{msg['BackButtom']}</a>
+						</p:outputPanel>
+						
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not mutualCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<p:outputPanel
+							rendered="#{mutualCoopController.renderForeignCountry}"
+							autoUpdate="true">
+							<h4 class="text-info"
+							style="font-family: Poppins, sans-serif; font-weight: bold; font-size: 14pt; margin-left: 20%; font-style: italic"> LIST OF MUTUAL COOPERATIVE AVAILABLE</h4>
+									
+							<div class=" col-lg-12 grid-margin "
+										style="height: 450px; overflow-y: scroll;margin-top:3%">
+							<div class="row" >
+								<ui:repeat
+									value="#{mutualCoopController.mutualCoopPendingRequest}"
+									var="coop">
+									<div class="col-md-4 stretch-card grid-margin label">
+										<div
+											class="card bg-gradient-primary card-img-holder text-white">
+											<div class="card-body">
+												<img
+													src="#{loadUserInformationsController.getContextPath()}/resources/image/circle.svg"
+													class="card-img-absolute" alt="circle-image" />
+												<h4 class="font-weight-normal mb-3" style="font-size: 12pt">
+													#{coop.mutualCoopName} <i
+														class="material-icons mdi-24px float-right">bookmark_border</i>
+												</h4>
+												<h2 class="mb-5" style="font-size: 12pt">#{coop.countmembers}
+													&nbsp; member(s)</h2>
+												<h6 class="card-text" style="font-size: 12pt">Type:&nbsp;
+													#{coop.mutualCoopType}</h6>
+												<h6 class="card-text" style="font-size: 12pt">Address:&nbsp;
+													#{coop.address}</h6>
+
+											</div>
+											<div class="card-footer">
+												<div class="stats">
+														<h:commandLink class="label"  style="font-size: 12pt; color: white" value="Get More
+														Details.."
+														action="#{mutualCoopController.coopDetails(coop)}">
+														
+														</h:commandLink>
+												</div>
+											</div>
+										</div>
+									</div>
+								</ui:repeat>
+							</div>
+							</div>
+						</p:outputPanel>
+
+						<p:outputPanel
+							rendered="#{mutualCoopController.rendered}"
+							autoUpdate="true">
+							<h4 class="text-info"
+							style="font-family: Poppins, sans-serif; font-weight: bold; font-size: 14pt; margin-left: 15%; font-style: italic"> MUTUAL COOPERATIVE DETAILS</h4>
+									
+							<div class="col-lg-12 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+									<div class=" col-lg-12 grid-margin "
+										style="height: 330px; overflow-y: scroll;">
+											<table class="table table-striped">
+											<thead>
+												<tr class="label">
+													<th style="font-size: 13pt; font-weight: bold">Member</th>
+													<th style="font-size: 13pt; font-weight: bold">Full name</th>
+													<th style="font-size: 13pt; font-weight: bold">Category</th>
+													<th style="font-size: 13pt; font-weight: bold">Address</th>
+													<th style="font-size: 13pt; font-weight: bold">Contact</th>
+												</tr>
+											</thead>
+											<tbody  class="label">
+												<ui:repeat
+													value="#{mutualCoopController.mutualMembersListDto}"
+													var="coop">
+													<tr>
+														<td class="py-1">
+															<!--   <img src="../../images/faces-clipart/pic-1.png" alt="image"/>
+                           --> 									<h:graphicImage alt="profile"
+																value="/images/dynamic/?file=#{coop.member.image}" />
+
+														</td>
+														<td style="font-size: 12pt;">#{coop.member.fullname}</td>
+														<td style="font-size: 12pt;">#{coop.member.userCategory.usercategoryName}</td>
+														<td style="font-size: 12pt;">#{coop.member.address}</td>
+														<td style="font-size: 12pt;"> 
+														<p:outputPanel
+																rendered="#{ not coop.showcontact}" autoUpdate="true">
+																<label class="badge badge-success" style="font-size: 12pt;">#{coop.member.phone}</label>
+															</p:outputPanel>
+															<p:outputPanel
+																rendered="#{ not coop.hidecontact}" autoUpdate="true">
+																<label class="badge badge-danger" style="font-size: 12pt;">Hidden for security</label>
+															</p:outputPanel>
+														</td>
+													</tr>
+												</ui:repeat>
+											</tbody>
+										</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</p:outputPanel>
+					</h:form>
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

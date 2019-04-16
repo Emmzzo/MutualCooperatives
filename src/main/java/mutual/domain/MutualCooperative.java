@@ -48,6 +48,8 @@ public class MutualCooperative extends CommonDomain implements Serializable {
 	private String  address;
 	@Transient
 	private String action;
+	@Transient
+	private int countmembers;
 	public int getMutualCoopId() {
 		return mutualCoopId;
 	}
@@ -90,5 +92,13 @@ public class MutualCooperative extends CommonDomain implements Serializable {
 	}
 	public void setAction(String action) {
 		this.action = action;
+	}
+	public int getCountmembers() {
+		return countmembers;
+	}
+	public void setCountmembers(int countmembers) {
+		this.countmembers = countmembers;
 	}	
+	
+	
 }

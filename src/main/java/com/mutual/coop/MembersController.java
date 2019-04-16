@@ -535,7 +535,7 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			mutualMembers.setCreatedBy("Mutual representative");
 			mutualMembers.setCrtdDtTime(timestamp);
 			// status to be updated when request approved
-			mutualMembers.setGenericStatus(DESACTIVE);
+			mutualMembers.setGenericStatus(ACTIVE);
 			mutualMembers.setCrtdDtTime(timestamp);
 			mutualMembers.setMember(users);
 			mutualMembers.setMutualcoop(mutual);
