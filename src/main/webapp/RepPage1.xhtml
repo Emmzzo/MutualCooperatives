@@ -12,7 +12,113 @@
 	<ui:composition template="/template/common/MutualRepLayout.xhtml">
 
 		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
 
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not membersController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{membersController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<!--MUTUAL COOP PROFILE TABLE -->
+						<code class="text-info label" style="font-size: 14pt;font-weight: bold">MUTUAL COOPERATIVE PROFILE</code>
+									
+						<div class="col-md-6 grid-margin stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title label font-weight-bold"  style="font-size: 12pt">Logo</h4>
+									<p class="card-description">
+										
+										<h:graphicImage alt="profile" style="width:50px"
+																value="/images/dynamic/?file=#{mutualCoopController.mutualMembers.mutualcoop.logo}" />
+
+										
+									</p>
+									<div class="row">
+										<div class="col-md-6">
+											<address>
+												<p class="font-weight-bold label" style="font-size: 12pt">Address</p>
+												<p class="label" style="font-size: 12pt">#{mutualCoopController.mutualMembers.mutualcoop.address}</p>
+												<p class="font-weight-bold label" style="font-size: 12pt">Mutual Coop Name</p>
+												<p class="label" style="font-size: 12pt">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</p>
+												<p class="font-weight-bold label" style="font-size: 12pt">Mutual Coop Type</p>
+												<p class="label" style="font-size: 12pt">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopType}</p>
+											</address>
+										</div>
+										<div class="col-md-6">
+											<address class="text-primary">
+												<p class="font-weight-bold label" style="font-size: 12pt">Representative E-mail</p>
+												<p class="mb-2 label" style="font-size: 12pt">#{mutualCoopController.mutualMembers.usermember.email}</p>
+												<p class="font-weight-bold label" style="font-size: 12pt">Phone</p>
+												<p class="label" style="font-size: 12pt">#{mutualCoopController.mutualMembers.usermember.phone}</p>
+											</address>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+								<p:outputPanel rendered="#{mutualCoopController.rendered}">
+									<h4 class="card-title label font-weight-bold" style="font-size: 13pt">Our policies&nbsp;<span> <h:commandLink value="Edit policy" class="badge badge-primary label font-weight-bold" style="font-size:12pt" action="#{mutualCoopController.addPolicy}">
+									</h:commandLink></span></h4>
+									<p class="card-description">
+										<ol>
+										<li class="font-weight-bold label" style="font-size: 12pt">Interest charge</li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that a member who receive a loan will be charged an interest of<label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.interesCharges}% </label> on loan.</p>
+											<li class="font-weight-bold label"  style="font-size: 12pt">Fines </li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that any circumstance happen due to disobedience of our policies like not returning loan at time will be charged a fine of <label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.fineCharges}</label> amount.</p>
+											
+										</ol>
+										
+									
+									</p>
+									<p class="lead label font-weight-bold" style="font-size: 12pt">#{mutualCoopController.policy.policyDescription}.</p>
+									<p class="label font-weight-bold" style="font-size: 12pt">Made on #{mutualCoopController.policy.crtdDtTime}.</p>
+									</p:outputPanel>
+									<p:outputPanel rendered="#{mutualCoopController.rendersaveButton}">
+									<h:commandLink value="Add policy" class="badge badge-danger label font-weight-bold" style="font-size:12pt" action="#{mutualCoopController.addPolicy}">
+									</h:commandLink>
+									</p:outputPanel>
+								</div>
+							</div>
+						</div>
+						<!-- TABLE END -->
+
+					</h:form>
+
+
+				</div>
+			</div>
 		</ui:define>
 	</ui:composition>
 

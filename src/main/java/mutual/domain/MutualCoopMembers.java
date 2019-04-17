@@ -38,8 +38,8 @@ public class MutualCoopMembers extends CommonDomain implements Serializable {
 	@Column(name = "memberSize")
 	private int memberSize;
 	@ManyToOne
-	@JoinColumn(name = "member")
-	private Users member;
+	@JoinColumn(name = "usermember")
+	private Users usermember;
 	@ManyToOne
 	@JoinColumn(name = "mutualcoop")
 	private MutualCooperative mutualcoop;
@@ -51,11 +51,12 @@ public class MutualCoopMembers extends CommonDomain implements Serializable {
 	public void setMutualMemberId(int mutualMemberId) {
 		this.mutualMemberId = mutualMemberId;
 	}
-	public Users getMember() {
-		return member;
+	
+	public Users getUsermember() {
+		return usermember;
 	}
-	public void setMember(Users member) {
-		this.member = member;
+	public void setUsermember(Users usermember) {
+		this.usermember = usermember;
 	}
 	public MutualCooperative getMutualcoop() {
 		return mutualcoop;

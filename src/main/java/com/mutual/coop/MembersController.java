@@ -435,7 +435,7 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			// status to be updated when request approved
 			mutualMembers.setGenericStatus(ACTIVE);
 			mutualMembers.setCrtdDtTime(timestamp);
-			mutualMembers.setMember(users);
+			mutualMembers.setUsermember(users);
 			mutualMembers.setMutualcoop(mutual);
 			mutualMembers.setMemberSize(incrementCount);
 			mutualMembersImpl.saveMutualCoopMembers(mutualMembers);
@@ -537,7 +537,7 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			// status to be updated when request approved
 			mutualMembers.setGenericStatus(ACTIVE);
 			mutualMembers.setCrtdDtTime(timestamp);
-			mutualMembers.setMember(users);
+			mutualMembers.setUsermember(users);
 			mutualMembers.setMutualcoop(mutual);
 			mutualMembers.setMemberSize(incrementCount);
 			mutualMembersImpl.saveMutualCoopMembers(mutualMembers);
