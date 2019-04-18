@@ -10,6 +10,7 @@ public class MutualCoopMemberDto {
 	private String action;
 	private boolean showcontact;
 	private boolean hidecontact;
+	
 	public int getMutualMemberId() {
 		return mutualMemberId;
 	}

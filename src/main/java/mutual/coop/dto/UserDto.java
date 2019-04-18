@@ -18,7 +18,6 @@ public class UserDto implements Serializable {
 	private String fullname;
 	private String address;
 	private String gender;
-
 	private String image;
 
 	private String loginStatus;

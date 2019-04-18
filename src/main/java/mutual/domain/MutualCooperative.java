@@ -29,7 +29,6 @@ import javax.persistence.Transient;
 @Table(name = "MutualCooperative")
 @NamedQuery(name = "MutualCooperative.findAll", query = "SELECT r FROM MutualCooperative r order by mutualCoopId desc")
 public class MutualCooperative extends CommonDomain implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue

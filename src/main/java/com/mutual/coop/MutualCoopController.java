@@ -99,7 +99,7 @@ public class MutualCoopController implements Serializable, DbConstant {
 	private List<MutualCooperative> mutualCoopPendingRequest = new ArrayList<MutualCooperative>();
 
 	private MutualCoopPolicy policy = new MutualCoopPolicy();
-	private List<MutualCoopPolicy> mutualpolicy = new ArrayList<MutualCoopPolicy>();
+	private List<MutualCoopPolicy> mutualpolicy,listofAvailableCoop = new ArrayList<MutualCoopPolicy>();
 	MutualCoopPolicyImpl policyImpl = new MutualCoopPolicyImpl();
 	private MutualCoopPolicy newpolicy = new MutualCoopPolicy();
 	private List<PolicyDto> policyDtoList = new ArrayList<PolicyDto>();
@@ -136,36 +136,48 @@ public class MutualCoopController implements Serializable, DbConstant {
 
 		try {
 
-			mutualCoopPendingRequest = mutualCoopList();
-			if (mutualCoopPendingRequest.size() > 0) {
-				this.renderForeignCountry = true;
-			}
-			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
-					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
-					"from MutualCoopMembers");
-			if (null == mutualMembers) {
-				LOGGER.info("NOTHING FOUND");
-			}
-
-			policy = policyImpl.getModelWithMyHQL(new String[] { "genericStatus", "mutualcoop" },
-					new Object[] { ACTIVE, mutualMembers.getMutualcoop() }, "from MutualCoopPolicy");
-			if (null == policy) {
-				LOGGER.info("NO POLICY FOUND");
-				rendersaveButton = true;
-				renderForeignCountry = true;
-			} else {
-				this.rendered = true;
-				renderForeignCountry = false;
-				renderDataTable = true;
-			}
-
-			mutualpolicy = policyImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "mutualcoop" },
-					new Object[] { ACTIVE, mutualImpl.getMutualCooperativeById(
-							mutualMembers.getMutualcoop().getMutualCoopId(), "mutualCoopId") },
-					"MutualCoopPolicy", "policyId desc");
 			
-			policyDtoList=mutualPolicyList(mutualpolicy);
-			rendersubmit=true;
+			if(usersSession.getUserCategory().getUserCatid()==MutualRepcat) {
+				mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+						new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+						"from MutualCoopMembers");
+				if (null == mutualMembers) {
+					LOGGER.info("NOTHING FOUND");
+				}
+
+				policy = policyImpl.getModelWithMyHQL(new String[] { "genericStatus", "mutualcoop" },
+						new Object[] { ACTIVE, mutualMembers.getMutualcoop() }, "from MutualCoopPolicy");
+				if (null == policy) {
+					LOGGER.info("NO POLICY FOUND");
+					rendersaveButton = true;
+					renderForeignCountry = true;
+				} else {
+					this.rendered = true;
+					renderForeignCountry = false;
+					renderDataTable = true;
+				}
+
+				mutualpolicy = policyImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "mutualcoop" },
+						new Object[] { ACTIVE, mutualImpl.getMutualCooperativeById(
+								mutualMembers.getMutualcoop().getMutualCoopId(), "mutualCoopId") },
+						"MutualCoopPolicy", "policyId desc");
+				
+				policyDtoList=mutualPolicyList(mutualpolicy);
+				rendersubmit=true;
+			}else {
+				mutualCoopPendingRequest = mutualCoopList();
+				if (mutualCoopPendingRequest.size() > 0) {
+					this.renderForeignCountry = true;
+				}
+			}
+			
+//			
+//			listofAvailableCoop=policyImpl.getGenericListWithHQLParameter(new String[] { "genericStatus"},
+//						new Object[] { ACTIVE, mutualImpl.getMutualCooperativeById(
+//								mutualMembers.getMutualcoop().getMutualCoopId(), "mutualCoopId") },
+//						"MutualCoopPolicy", "policyId desc");
+			
+			
 		} catch (Exception e) {
 			setValid(false);
 			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
@@ -242,6 +254,7 @@ public class MutualCoopController implements Serializable, DbConstant {
 		}
 		return null;
 	}
+	
 	public void newPolicy() {
 		try {
 			try {
@@ -902,5 +915,14 @@ public class MutualCoopController implements Serializable, DbConstant {
 	public void setRendersubmit(boolean rendersubmit) {
 		this.rendersubmit = rendersubmit;
 	}
+
+	public List<MutualCoopPolicy> getListofAvailableCoop() {
+		return listofAvailableCoop;
+	}
+
+	public void setListofAvailableCoop(List<MutualCoopPolicy> listofAvailableCoop) {
+		this.listofAvailableCoop = listofAvailableCoop;
+	}
+	
 	
 }

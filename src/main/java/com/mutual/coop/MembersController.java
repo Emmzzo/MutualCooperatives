@@ -1127,7 +1127,6 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 
 		return null;
 	}
-	
 	@SuppressWarnings("unchecked")
 	public String unblockAction(UserDto user) throws Exception {
 		LOGGER.info("update  saveAction method");

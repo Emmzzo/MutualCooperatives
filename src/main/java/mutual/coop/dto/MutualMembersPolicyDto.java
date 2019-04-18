@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import mutual.domain.MutualCoopMembers;
+import mutual.domain.MutualCoopPolicy;
 import mutual.domain.MutualCooperative;
-public class PolicyDto implements Serializable {
+import mutual.domain.Users;
+public class MutualMembersPolicyDto implements Serializable {
 
 	private int policyId;
 	private String fineCharges;
@@ -13,12 +16,20 @@ public class PolicyDto implements Serializable {
 	private boolean editable;
 	private String policyDescription;
 	private MutualCooperative mutualcoop;
+	private Users members;
 	private Date recordedDate;
 	private boolean approved,rejected;
 	private String recordedBy;
 	private String action;
 	private int countinfo;
 	
+	public Users getMembers() {
+		return members;
+	}
+	public void setMembers(Users members) {
+		this.members = members;
+	}
+
 	public int getPolicyId() {
 		return policyId;
 	}
@@ -93,5 +104,6 @@ public class PolicyDto implements Serializable {
 	public void setCountinfo(int countinfo) {
 		this.countinfo = countinfo;
 	}
+	
 }
 

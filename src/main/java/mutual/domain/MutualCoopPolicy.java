@@ -35,7 +35,6 @@ public class MutualCoopPolicy extends CommonDomain implements Serializable {
 	@GeneratedValue
 	@Column(name = "policyId")
 	private int policyId;
-
 	@Column(name = "fineCharges")
 	private Double fineCharges;
 	@Column(name = "interesCharges")
