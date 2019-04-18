@@ -32,12 +32,14 @@ import mutual.common.JSFBoundleProvider;
 import mutual.common.JSFMessagers;
 import mutual.common.SessionUtils;
 import mutual.coop.dto.ContactDto;
+import mutual.coop.dto.MemberRequestDto;
 import mutual.coop.dto.MutualCoopMemberDto;
 import mutual.coop.dto.PolicyDto;
 import mutual.coop.dto.UserDto;
 import mutual.dao.impl.ContactImpl;
 import mutual.dao.impl.DistrictImpl;
 import mutual.dao.impl.LoginImpl;
+import mutual.dao.impl.MemberRequestImpl;
 import mutual.dao.impl.MutualCoopMembersImpl;
 import mutual.dao.impl.MutualCoopPolicyImpl;
 import mutual.dao.impl.MutualCooperativeImpl;
@@ -46,6 +48,7 @@ import mutual.dao.impl.UserCategoryImpl;
 import mutual.dao.impl.UserImpl;
 import mutual.domain.Contact;
 import mutual.domain.District;
+import mutual.domain.MemberRequest;
 import mutual.domain.MutualCoopMembers;
 import mutual.domain.MutualCoopPolicy;
 import mutual.domain.MutualCooperative;
@@ -97,17 +100,19 @@ public class MutualCoopController implements Serializable, DbConstant {
 	private List<MutualCoopMemberDto> mutualMembersListDto = new ArrayList<MutualCoopMemberDto>();
 
 	private List<MutualCooperative> mutualCoopPendingRequest = new ArrayList<MutualCooperative>();
-
+	private MemberRequestImpl memberReqImpl = new MemberRequestImpl();
 	private MutualCoopPolicy policy = new MutualCoopPolicy();
 	private List<MutualCoopPolicy> mutualpolicy,listofAvailableCoop = new ArrayList<MutualCoopPolicy>();
 	MutualCoopPolicyImpl policyImpl = new MutualCoopPolicyImpl();
 	private MutualCoopPolicy newpolicy = new MutualCoopPolicy();
 	private List<PolicyDto> policyDtoList = new ArrayList<PolicyDto>();
 	private PolicyDto policyDto= new PolicyDto();
+	private List<MemberRequestDto> requestDtoList = new ArrayList<MemberRequestDto>();
+	private List<MemberRequest>requestList= new ArrayList<MemberRequest>();
 	private String choice;
 	private boolean rendered;
 	private boolean renderForeignCountry;
-	private boolean rendersaveButton;
+	private boolean rendersaveButton,renderCount;
 	private boolean renderprofile;
 	private boolean renderDataTable;
 	private boolean renderBoard,rendersubmit;
@@ -164,6 +169,17 @@ public class MutualCoopController implements Serializable, DbConstant {
 				
 				policyDtoList=mutualPolicyList(mutualpolicy);
 				rendersubmit=true;
+				
+				requestList=memberReqImpl.getGenericListWithHQLParameter(new String[] { "requestStatus", "mutualcoop" },
+						new Object[] { RequestStatus,mutualMembers.getMutualcoop() },
+						"MemberRequest", "requestDate asc");
+				
+				count=requestList.size();
+				if(count>0) {
+					renderCount=true;
+				}
+				requestDtoList=mutualCoopFollowers(requestList);
+				
 			}else {
 				mutualCoopPendingRequest = mutualCoopList();
 				if (mutualCoopPendingRequest.size() > 0) {
@@ -217,6 +233,33 @@ public class MutualCoopController implements Serializable, DbConstant {
 			i++;
 		}
 		return (policyDtoList);
+	}
+	
+	
+	
+	public List<MemberRequestDto> mutualCoopFollowers(List<MemberRequest> list) {
+
+		requestDtoList = new ArrayList<MemberRequestDto>();
+		int i = 1;
+		for (MemberRequest req : list) {
+			MemberRequestDto reqDto= new MemberRequestDto();
+			reqDto.setRequestId(req.getRequestId());
+			reqDto.setMember(req.getMember());
+			reqDto.setRequestDate(req.getRequestDate());
+			reqDto.setEditable(false);
+			reqDto.setCountinfo(i);
+			reqDto.setRequestStatus(req.getRequestStatus());
+			reqDto.setMutualcoop(req.getMutualcoop());
+			if(req.getRequestStatus().equalsIgnoreCase(RequestStatus)) {
+				reqDto.setPendingstatus(false);	
+			}else {
+				reqDto.setPendingstatus(true);	
+			}
+			
+			requestDtoList.add(reqDto);
+			i++;
+		}
+		return (requestDtoList);
 	}
 	public String addPolicy() {
 		HttpSession sessionpolicy = SessionUtils.getSession();
@@ -489,6 +532,154 @@ public class MutualCoopController implements Serializable, DbConstant {
 			LOGGER.info(e.getMessage());
 			e.printStackTrace();
 		}
+
+	}
+	@SuppressWarnings({ "unchecked", "unused" })
+	public String rejectAction(MemberRequestDto req) throws Exception {
+		try {
+			
+			LOGGER.info("update  saveAction method"+req.getRequestId());
+			
+			if (req != null) {
+				MemberRequest us = new MemberRequest();
+				us = new MemberRequest();
+				us=memberReqImpl.getMemberRequestById(req.getRequestId(),"requestId");
+				
+				LOGGER.info("here update sart for " + us + " useriD " + us.getRequestId());
+				
+
+				if (null != us) {
+					req.setEditable(false);
+					us.setRequestStatus(REJECTED);
+					us.setUpdatedBy(usersSession.getFullname());
+					us.setUpDtTime(timestamp);
+					memberReqImpl.UpdateMemberRequest(us);
+					JSFMessagers.resetMessages();
+					setValid(true);
+					JSFMessagers.addErrorMessage(getProvider().getValue("reject.changed.message"));
+					//UPDATING REQUEST VIEW
+					requestDtoList = new ArrayList<MemberRequestDto>();
+					mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+							new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+							"from MutualCoopMembers");
+					requestList=memberReqImpl.getGenericListWithHQLParameter(new String[] { "requestStatus", "mutualcoop" },
+							new Object[] { RequestStatus,mutualMembers.getMutualcoop() },
+							"MemberRequest", "requestDate asc");
+					requestDtoList=mutualCoopFollowers(requestList);
+					count=requestList.size();
+					if(count>0) {
+						renderCount=true;
+					}
+					
+				}else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("erroreject.changed.message"));
+				}
+			}
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+	@SuppressWarnings("unchecked")
+	public String approveAction(MemberRequestDto req)  {
+		try {
+			boolean valid ;
+			LOGGER.info("update  saveAction method"+req.getRequestId());
+			
+			if (req != null) {
+				MemberRequest us = new MemberRequest();
+				us = new MemberRequest();
+				us=memberReqImpl.getMemberRequestById(req.getRequestId(),"requestId");
+				
+				LOGGER.info("here update sart for " + us + " useriD " + us.getRequestId());
+				
+
+				if (null != us) {
+					req.setEditable(false);
+					us.setRequestStatus(ACCEPTED);
+					us.setUpdatedBy(usersSession.getFullname());
+					us.setUpDtTime(timestamp);
+					
+					SendSupportEmail email = new SendSupportEmail();
+					if(null!=req.getMember().getEmail()) {
+						valid= email.sendMailGuestReq(ACCEPTED,req.getMember().getFullname(), 
+								usersSession.getFullname(), req.getMember().getEmail());
+						if (valid) {
+							JSFMessagers.resetMessages();
+							setValid(true);
+							JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.mutualcooprep"));
+							LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is saved");
+						} else {
+							JSFMessagers.resetMessages();
+							setValid(false);
+							JSFMessagers
+									.addErrorMessage(getProvider().getValue("com.sendemailfail.form.mutualcooprepinfo"));
+							LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is saved");
+						}
+					}
+					
+					memberReqImpl.UpdateMemberRequest(us);
+						
+					Users user= new Users();
+					user=  usersImpl.gettUserById(req.getMember().getUserId(), "userId");
+					LOGGER.info("GUEST INFO"+user.getFullname());
+					if(null!=user) {
+						UserCategory cat= new UserCategory();
+						cat=catImpl.getUserCategoryById(membercat, "userCatid");
+						user.setUserCategory(cat);
+						usersImpl.UpdateUsers(user);
+						// SAVING BOTH MUTUAL REP AND MUTUAL COOP IN MUTUALCOOPMEMBERS TABLE
+						MutualCoopMembers newMember= new MutualCoopMembers();
+						newMember.setCreatedBy(usersSession.getFullname());
+						newMember.setCrtdDtTime(timestamp);
+						// status to be updated when request approved
+						newMember.setGenericStatus(ACTIVE);
+						newMember.setCrtdDtTime(timestamp);
+						newMember.setUsermember(user);
+						newMember.setMutualcoop(req.getMutualcoop());
+						newMember.setMemberSize(incrementCount);
+						mutualMembersImpl.saveMutualCoopMembers(newMember);
+					}
+					
+					//UPDATING REQUEST VIEW
+					requestDtoList = new ArrayList<MemberRequestDto>();
+					mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+							new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+							"from MutualCoopMembers");
+					requestList=memberReqImpl.getGenericListWithHQLParameter(new String[] { "requestStatus", "mutualcoop" },
+							new Object[] { RequestStatus,mutualMembers.getMutualcoop() },
+							"MemberRequest", "requestDate asc");
+					requestDtoList=mutualCoopFollowers(requestList);
+					count=requestList.size();
+					if(count>0) {
+						renderCount=true;
+					}
+					
+				}
+			}
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 
 	}
 
@@ -923,6 +1114,37 @@ public class MutualCoopController implements Serializable, DbConstant {
 	public void setListofAvailableCoop(List<MutualCoopPolicy> listofAvailableCoop) {
 		this.listofAvailableCoop = listofAvailableCoop;
 	}
-	
-	
+
+	public List<MemberRequest> getRequestList() {
+		return requestList;
+	}
+
+	public void setRequestList(List<MemberRequest> requestList) {
+		this.requestList = requestList;
+	}
+
+	public MemberRequestImpl getMemberReqImpl() {
+		return memberReqImpl;
+	}
+
+	public void setMemberReqImpl(MemberRequestImpl memberReqImpl) {
+		this.memberReqImpl = memberReqImpl;
+	}
+
+	public boolean isRenderCount() {
+		return renderCount;
+	}
+
+	public void setRenderCount(boolean renderCount) {
+		this.renderCount = renderCount;
+	}
+
+	public List<MemberRequestDto> getRequestDtoList() {
+		return requestDtoList;
+	}
+
+	public void setRequestDtoList(List<MemberRequestDto> requestDtoList) {
+		this.requestDtoList = requestDtoList;
+	}
+		
 }

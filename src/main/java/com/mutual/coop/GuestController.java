@@ -39,6 +39,7 @@ import mutual.coop.dto.UserDto;
 import mutual.dao.impl.ContactImpl;
 import mutual.dao.impl.DistrictImpl;
 import mutual.dao.impl.LoginImpl;
+import mutual.dao.impl.MemberRequestImpl;
 import mutual.dao.impl.MutualCoopMembersImpl;
 import mutual.dao.impl.MutualCoopPolicyImpl;
 import mutual.dao.impl.MutualCooperativeImpl;
@@ -47,6 +48,7 @@ import mutual.dao.impl.UserCategoryImpl;
 import mutual.dao.impl.UserImpl;
 import mutual.domain.Contact;
 import mutual.domain.District;
+import mutual.domain.MemberRequest;
 import mutual.domain.MutualCoopMembers;
 import mutual.domain.MutualCoopPolicy;
 import mutual.domain.MutualCooperative;
@@ -98,21 +100,23 @@ public class GuestController implements Serializable, DbConstant {
 	private List<MutualCoopMemberDto> mutualMembersListDto = new ArrayList<MutualCoopMemberDto>();
 
 	private List<MutualCooperative> mutualCoopPendingRequest = new ArrayList<MutualCooperative>();
-	private List<MutualMembersPolicyDto>availablecoop=new ArrayList<MutualMembersPolicyDto>();
+	private List<MutualMembersPolicyDto> availablecoop = new ArrayList<MutualMembersPolicyDto>();
 	private MutualCoopPolicy policy = new MutualCoopPolicy();
-	private List<MutualCoopPolicy> mutualpolicy,listofAvailableCoop = new ArrayList<MutualCoopPolicy>();
+	private List<MutualCoopPolicy> mutualpolicy, listofAvailableCoop = new ArrayList<MutualCoopPolicy>();
 	MutualCoopPolicyImpl policyImpl = new MutualCoopPolicyImpl();
 	private MutualCoopPolicy newpolicy = new MutualCoopPolicy();
 	private List<PolicyDto> policyDtoList = new ArrayList<PolicyDto>();
-	private PolicyDto policyDto= new PolicyDto();
-	private MutualMembersPolicyDto mutualcoopinfo= new MutualMembersPolicyDto();
+	private PolicyDto policyDto = new PolicyDto();
+	private MutualMembersPolicyDto mutualcoopinfo = new MutualMembersPolicyDto();
+	private MemberRequest memberReq;
+	private MemberRequestImpl memberReqImpl = new MemberRequestImpl();
 	private String choice;
 	private boolean rendered;
 	private boolean renderForeignCountry;
 	private boolean rendersaveButton;
 	private boolean renderprofile;
 	private boolean renderDataTable;
-	private boolean renderBoard,rendersubmit;
+	private boolean renderBoard, rendersubmit;
 	private String option;
 	private String selection;
 	private String fines, interest;
@@ -136,14 +140,17 @@ public class GuestController implements Serializable, DbConstant {
 			userDto = new UserDto();
 		}
 
+		if (memberReq == null) {
+			memberReq = new MemberRequest();
+		}
 		try {
 
-			
-			if(usersSession.getUserCategory().getUserCatid()==guestcat) {
-				availablecoop=mutualCoopList();
-				this.rendered=true;
+			if (usersSession.getUserCategory().getUserCatid() == guestcat) {
+				availablecoop = mutualCoopList();
+				this.rendered = true;
+				count = availablecoop.size();
 			}
-				
+
 		} catch (Exception e) {
 			setValid(false);
 			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
@@ -152,34 +159,70 @@ public class GuestController implements Serializable, DbConstant {
 		}
 
 	}
-	
+
 	public void mutualDetails(MutualMembersPolicyDto coop) {
-		if(coop.getMembers().getUserCategory().getUserCatid()==MutualRepcat) {
-			mutualcoopinfo=coop;
-			this.rendered=false;
-			this.renderDataTable=true;
-			
+		if (coop.getMembers().getUserCategory().getUserCatid() == MutualRepcat) {
+			mutualcoopinfo = coop;
+			HttpSession sessiondetail = SessionUtils.getSession();
+			sessiondetail.setAttribute("details", mutualcoopinfo);
+			this.rendered = false;
+			this.renderDataTable = true;
+
 		}
 	}
+
 	public List<MutualMembersPolicyDto> mutualCoopList() {
 
 		availablecoop = new ArrayList<MutualMembersPolicyDto>();
 		for (Object[] data : mutualMembersImpl.reportList(
-				"select sum(mb.memberSize), p.mutualcoop,mb.usermember,p.policyDescription,p.interesCharges,p.fineCharges from MutualCooperative m,MutualCoopMembers mb,MutualCoopPolicy p,Users us where m.mutualCoopId=mb.mutualcoop and m.mutualCoopId=p.mutualcoop and us.userId=mb.usermember and p.genericStatus='"+ACTIVE+"' group by p.mutualcoop")) {
+				"select sum(mb.memberSize), p.mutualcoop,mb.usermember,p.policyDescription,p.interesCharges,p.fineCharges from MutualCooperative m,MutualCoopMembers mb,MutualCoopPolicy p,Users us where m.mutualCoopId=mb.mutualcoop and m.mutualCoopId=p.mutualcoop and us.userId=mb.usermember and p.genericStatus='"
+						+ ACTIVE + "' group by p.mutualcoop")) {
 			MutualMembersPolicyDto mutualcoop = new MutualMembersPolicyDto();
-			mutualcoop.setCountinfo(Integer.parseInt(data[0]+""));
-			mutualcoop.setMutualcoop((MutualCooperative)data[1]);
-			mutualcoop.setMembers((Users)data[2]);
-			mutualcoop.setPolicyDescription(data[3]+"");
-			mutualcoop.setInteresCharges(data[4]+"");
-			mutualcoop.setFineCharges(data[5]+"");
-			
+			mutualcoop.setCountinfo(Integer.parseInt(data[0] + ""));
+			mutualcoop.setMutualcoop((MutualCooperative) data[1]);
+			mutualcoop.setMembers((Users) data[2]);
+			mutualcoop.setPolicyDescription(data[3] + "");
+			mutualcoop.setInteresCharges(data[4] + "");
+			mutualcoop.setFineCharges(data[5] + "");
+
 			availablecoop.add(mutualcoop);
 		}
 		return (availablecoop);
 	}
+
+	public void guestRequest() {
+		HttpSession session = SessionUtils.getSession();
+		mutualcoopinfo = new MutualMembersPolicyDto();
+		mutualcoopinfo = (MutualMembersPolicyDto) session.getAttribute("details");
+
+		if (null != mutualcoopinfo && null != usersSession) {
+			memberReq.setGenericStatus(ACTIVE);
+			memberReq.setRequestStatus(RequestStatus);
+			memberReq.setMember(usersSession);
+			memberReq.setMutualcoop(mutualcoopinfo.getMutualcoop());
+			memberReq.setCreatedBy(usersSession.getFullname());
+			memberReq.setCrtdDtTime(timestamp);
+			memberReq.setRequestDate(timestamp);
+			memberReqImpl.saveMemberRequest(memberReq);
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.request"));
+			LOGGER.info(CLASSNAME + ":::User Details is saved");
+			clearUserFuileds();
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.fail.form.request"));
+		}
+
+	}
+
 	public boolean isValid() {
 		return isValid;
+	}
+
+	public void clearUserFuileds() {
+		memberReq = new MemberRequest();
 	}
 
 	public void setValid(boolean isValid) {
@@ -609,9 +652,11 @@ public class GuestController implements Serializable, DbConstant {
 	public void setCount(int count) {
 		this.count = count;
 	}
+
 	public List<MutualMembersPolicyDto> getAvailablecoop() {
 		return availablecoop;
 	}
+
 	public void setAvailablecoop(List<MutualMembersPolicyDto> availablecoop) {
 		this.availablecoop = availablecoop;
 	}
@@ -623,5 +668,21 @@ public class GuestController implements Serializable, DbConstant {
 	public void setMutualcoopinfo(MutualMembersPolicyDto mutualcoopinfo) {
 		this.mutualcoopinfo = mutualcoopinfo;
 	}
-	
+
+	public MemberRequest getMemberReq() {
+		return memberReq;
+	}
+
+	public void setMemberReq(MemberRequest memberReq) {
+		this.memberReq = memberReq;
+	}
+
+	public MemberRequestImpl getMemberReqImpl() {
+		return memberReqImpl;
+	}
+
+	public void setMemberReqImpl(MemberRequestImpl memberReqImpl) {
+		this.memberReqImpl = memberReqImpl;
+	}
+
 }

@@ -16,14 +16,14 @@
 				<!-- Default panel contents -->
 				<div class="panel-heading">
 					<ui:repeat var="time" value="#">
-						<!-- <p:outputPanel rendered="#{membersController.rendered}"
+						 <p:outputPanel rendered="#{guestController.renderDataTable}"
 							autoUpdate="true">
 							<a
-								href="#{loadUserInformationsController.getContextPath()}/page1.xhtml"
-								class="btn btn-primary glyphicon glyphicon-chevron-left"
-								style="font-size: 11pt"> #{msg['BackButtom']}</a>
+								href="#{loadUserInformationsController.getContextPath()}/GuestPage1.xhtml"
+								class="badge badge-success glyphicon glyphicon-chevron-left"
+								style="font-size: 14pt"> #{msg['BackButtom']}</a>
 						</p:outputPanel>
-						<p:outputPanel rendered="#{membersController.renderBoard}"
+						<!--<p:outputPanel rendered="#{membersController.renderBoard}"
 							autoUpdate="true">
 							<h:form>
 							<h:commandLink data-toggle="tooltip" data-placement="left"
@@ -43,7 +43,7 @@
 
 					<h:form>
 						<h:panelGroup layout="block"
-							rendered="#{not membersController.valid and not facesContext.validationFailed}">
+							rendered="#{not guestController.valid and not facesContext.validationFailed}">
 							<ul>
 								<ui:repeat value="#{facesContext.messageList}"
 									var="facesMessage">
@@ -58,7 +58,7 @@
 						</h:panelGroup>
 
 						<h:panelGroup layout="block"
-							rendered="#{membersController.valid and  not facesContext.validationFailed}">
+							rendered="#{guestController.valid and  not facesContext.validationFailed}">
 							<ul>
 								<ui:repeat value="#{facesContext.messageList}"
 									var="facesMessage">
@@ -129,7 +129,7 @@
 						<!--MUTUAL COOP PROFILE TABLE -->
 						<code class="text-info label" style="font-size: 14pt;font-weight: bold;margin-left:20%;">MUTUAL COOPERATIVE PROFILE</code>
 									
-						<div class="col-md-6 grid-margin stretch-card" style="margin-left:20%;">
+						<div class="col-md-8 grid-margin stretch-card" style="margin-left:10%;">
 							<div class="card">
 								<div class="card-body">
 									<h4 class="card-title label font-weight-bold"  style="font-size: 12pt">Logo</h4>
@@ -177,7 +177,7 @@
 									
 									
 									
-									<h:commandLink value="Join" class="badge badge-danger label font-weight-bold" style="font-size:12pt" action="#{mutualCoopController.addPolicy}">
+									<h:commandLink value="Join" class="badge badge-danger label font-weight-bold" style="font-size:12pt" action="#{guestController.guestRequest}">
 									</h:commandLink>
 									
 								</div>

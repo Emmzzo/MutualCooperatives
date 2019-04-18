@@ -153,7 +153,7 @@ h3 {
 										value="#{membersController.users.fullname}"
 										class="form-control form-control-lg label"
 										id="exampleInputfullname1" a:placeholder="Fullname"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 13pt !important;" required="true"
 										requiredMessage="#{msg['requiered.fullname.message']}"
 										converterMessage="#{msg['error.enter.invalid.fullname']}"
 										validatorMessage="#{msg['error.enter.invalid.fullname']}">
@@ -168,7 +168,7 @@ h3 {
 										value="#{membersController.users.viewId}"
 										class="form-control form-control-lg label"
 										id="exampleInputUsername1" a:placeholder="Username"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 13pt !important;" required="true"
 										requiredMessage="#{msg['requiered.username.message']}">
 									</h:inputText>
 									<h:message for="exampleInputUsername1" styleClass="help-block label"></h:message>
@@ -177,7 +177,7 @@ h3 {
 									<h:inputText a:type="email"
 										class="form-control form-control-lg label"
 										id="exampleInputEmail1" a:placeholder="Email" value="#{membersController.users.email}"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 13pt !important;" required="true"
 										validatorMessage="#{msg['error.enter.invalid.email']}"
 										converterMessage="#{msg['error.enter.invalid.email']}"
 										requiredMessage="#{msg['error.enter.required.email']}">
@@ -190,15 +190,31 @@ h3 {
 									<h:inputText a:type="text"
 										class="form-control form-control-lg label"
 										id="exampleInputPhone1" a:placeholder="Phone number" value="#{membersController.users.phone}"
-										style=" font-size: 14px !important;" required="true"
+										style=" font-size: 13pt !important;" required="true"
 										converterMessage="#{msg['error.enter.invalid.phone']}"
 										requiredMessage="#{msg['requiered.phone.message']}"
 										validatorMessage="#{msg['error.enter.invalid.phone']}">
 										<f:validateRegex pattern="#{regex['regex.validation.phone']}" />
 									</h:inputText>
-									<label class="label" style="font-size: 12px;font-weight: bold">#{msg['help.coantDetails.message']} </label>
+									<label class="label" style="font-size: 12pt;font-weight: bold">#{msg['help.coantDetails.message']} </label>
 									
 									<h:message  for="exampleInputPhone1" styleClass="help-block label"></h:message>
+								</div>
+								<div class="form-group">
+									<h:inputText a:type="text"
+										class="form-control form-control-lg label"
+										id="exampleInputAddress1" a:placeholder="Your address" value="#{membersController.users.address}"
+										style=" font-size: 13pt !important;" required="true"
+										requiredMessage="#{msg['requiered.fullname.message']}"
+										converterMessage="#{msg['error.enter.invalid.fullname']}"
+										validatorMessage="#{msg['error.enter.invalid.fullname']}">
+										<f:validateRegex
+											pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}" />
+										<f:validateLength maximum="35" />
+									</h:inputText>
+									<label class="label" style="font-size: 12pt;font-weight: bold">#{msg['help.addressDetails.message']} </label>
+									
+									<h:message  for="exampleInputAddress1" styleClass="help-block label"></h:message>
 								</div>
 								<div class="form-group">
 									<!-- <select class="form-control form-control-lg label"
@@ -224,7 +240,7 @@ h3 {
 								<div class="form-group">
 									<h:inputText a:type="password"
 										value="#{membersController.users.viewName}"
-										style=" font-size: 14px !important;"
+										style=" font-size: 13pt !important;"
 										class="form-control form-control-lg label"
 										id="exampleInputPassword1" a:placeholder="Password"
 										required="true"
@@ -250,18 +266,18 @@ h3 {
 										href="../../index.html" style="font-size: 14px !important;">SIGN
 										UP</a> -->
 										<h:commandButton class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn label"
-										action="#{membersController.saveUserInfo}" style="font-size: 14px !important;"
+										action="#{membersController.saveUserInfo}" style="font-size: 13pt !important;"
 										value="#{msg['label.common.sign.up']}">
 										
 									</h:commandButton>
 								</div>
 								<div class="text-center mt-4 font-weight-light label">
 									Already have an account? <a href="home.xhtml"
-										class="text-primary label" style="font-size: 14px !important;">Login</a>
+										class="text-primary label" style="font-size: 13pt !important;">Login</a>
 								</div>
 								<div class="text-center mt-4 font-weight-light label">
 									Are you mutual representative? <a href="MutualRepAccount.xhtml"
-										class="text-primary label" style="font-size: 13px !important;">Create
+										class="text-primary label" style="font-size: 13pt !important;">Create
 										account here</a>
 								</div>
 							</h:form>

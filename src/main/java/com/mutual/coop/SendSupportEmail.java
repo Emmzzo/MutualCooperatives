@@ -175,6 +175,51 @@ public class SendSupportEmail extends HttpServlet implements DbConstant {
 		LOGGER.info("returing values" + valid);
 		return (valid);
 	}
+	
+	
+	public boolean sendMailGuestReq(String type,String receivername,String senderName, String email) {
+
+		boolean valid = false;
+		if (( null !=receivername && null != email && null != senderName &&null!=type)) {
+			String msg = null;
+			if (type.equals("accepted")) {
+				msg = "<p>" + "I hope this email finds you well." + "<br/>"
+						+ "This is to notify you that your request has been accepted, " + "<br/>"
+						+ "now you can access our system with the given link." + "<br/>"
+						+ "<a href="+LINK+ "Mutual-cooperative/home.xhtml>click here to acces the service</a>"+"<br/>"
+						+ "</p>";
+				
+			}
+			/* End send content in table sample */
+			try {
+
+				gen.sendEmailNotification(email, receivername, "MC.Registration", msg);
+				valid = true;
+			} catch (AddressException e) {
+				LOGGER.info("returing false1");
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.emailerror"));
+				e.printStackTrace();
+				LOGGER.info("returing false2");
+				LOGGER.info("This content" + msg + " was not send to MY BE wrong address check email ::" + email
+						+ " on " + timestamp);
+			} catch (MessagingException e) {
+				LOGGER.info("This content" + msg + " was not send to ::" + email + " on " + timestamp);
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.notificationError"));
+				e.printStackTrace();
+			}
+			LOGGER.info("::: notidficatio sent   ");
+		} else {
+			valid = false;
+		}
+		LOGGER.info("returing values" + valid);
+		return (valid);
+	}
 	public boolean sendMailTestVersion(String fname, String lname, String email) {
 
 		boolean valid = false;

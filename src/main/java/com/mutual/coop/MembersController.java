@@ -48,6 +48,7 @@ import mutual.domain.MutualCooperative;
 import mutual.domain.Province;
 import mutual.domain.UserCategory;
 import mutual.domain.Users;
+
 @ManagedBean
 @ViewScoped
 public class MembersController implements Serializable, DbConstant {
@@ -158,25 +159,27 @@ public class MembersController implements Serializable, DbConstant {
 		}
 
 		try {
-			//List Mutual Rep  already Registered and those with registration req pending. 
+			// List Mutual Rep already Registered and those with registration req pending.
 			usersDetails = usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory" },
 					new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
 					"userId desc");
 			showMutualRepAvail(usersDetails);
-			userDtosDetails=mutualRepList(usersDetails);
-			
-			if(null!=usersSession) {
-				if(usersSession.getUserCategory().getUserCatid()==admincat) {
-					repavail=mutualRepRequestSize();
+			userDtosDetails = mutualRepList(usersDetails);
+
+			if (null != usersSession) {
+				if (usersSession.getUserCategory().getUserCatid() == admincat) {
+					repavail = mutualRepRequestSize();
+					renderBoardOption = true;
 				}
-			}else {
+			} else {
 				LOGGER.info("NO USER LOGGED IN!!");
 			}
-			
-			useravail= usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory","status" },
-					new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"),DESACTIVE }, "Users",
+
+			useravail = usersImpl.getGenericListWithHQLParameter(
+					new String[] { "genericStatus", "userCategory", "status" },
+					new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"), DESACTIVE }, "Users",
 					"userId desc");
-			repDtosDetails=mutualRepListRequest(useravail);
+			repDtosDetails = mutualRepListRequest(useravail);
 		} catch (Exception e) {
 			setValid(false);
 			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
@@ -185,36 +188,42 @@ public class MembersController implements Serializable, DbConstant {
 		}
 
 	}
+
 	@SuppressWarnings("unchecked")
 	public int mutualRepRequestSize() throws Exception {
-		usersDetails = usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory","status" },
-				new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"),DESACTIVE }, "Users",
+		usersDetails = usersImpl.getGenericListWithHQLParameter(
+				new String[] { "genericStatus", "userCategory", "status" },
+				new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"), DESACTIVE }, "Users",
 				"userId desc");
 		return (usersDetails.size());
 	}
+
 	public void showMutualRepAvail(List<Users> list) {
-			if(list.size()>0) {
-				this.rendered = true;
-				this.renderBoard = false;
-			} else {
-				this.renderBoard = true;
-				this.rendered = false;
-			}
+		if (list.size() > 0) {
+			this.rendered = true;
+			this.renderBoard = false;
+		} else {
+			this.renderBoard = true;
+			this.rendered = false;
+		}
 	}
+
 	public void showMutualRepForm() {
 		this.rendered = false;
 		this.renderBoard = true;
 	}
+
 	public void BackRepForm() {
 		this.rendered = true;
-		this.renderBoard = false;	
+		this.renderBoard = false;
 	}
-	public List<UserDto>mutualRepList(List<Users> list){
-		
-		userDtosDetails= new ArrayList<UserDto>();
-		int i=1;
-		for(Users users :list) {
-			UserDto usedto= new UserDto();
+
+	public List<UserDto> mutualRepList(List<Users> list) {
+
+		userDtosDetails = new ArrayList<UserDto>();
+		int i = 1;
+		for (Users users : list) {
+			UserDto usedto = new UserDto();
 			usedto.setEditable(false);
 			usedto.setUserId(users.getUserId());
 			usedto.setCountinfo(i);
@@ -223,38 +232,38 @@ public class MembersController implements Serializable, DbConstant {
 			usedto.setPhone(users.getPhone());
 			usedto.setAddress(users.getAddress());
 			usedto.setGender(users.getGender());
-			if(users.getStatus().equalsIgnoreCase(DESACTIVE)) {
+			if (users.getStatus().equalsIgnoreCase(DESACTIVE)) {
 				usedto.setPendingstatus(false);
-			}else {
+			} else {
 				usedto.setPendingstatus(true);
 			}
-			if(users.getStatus().equalsIgnoreCase(ACTIVE)) {
+			if (users.getStatus().equalsIgnoreCase(ACTIVE)) {
 				usedto.setApprovedreq(false);
-			}else {
+			} else {
 				usedto.setApprovedreq(true);
 			}
-			if(users.getStatus().equalsIgnoreCase(Block)) {
+			if (users.getStatus().equalsIgnoreCase(Block)) {
 				usedto.setBlockedstatus(false);
-			}else {
+			} else {
 				usedto.setBlockedstatus(true);
 			}
-			if(users.getStatus().equalsIgnoreCase(REJECTED)) {
+			if (users.getStatus().equalsIgnoreCase(REJECTED)) {
 				usedto.setRejectedstatus(false);
-			}else {
+			} else {
 				usedto.setRejectedstatus(true);
 			}
 			userDtosDetails.add(usedto);
 			i++;
 		}
-		return(userDtosDetails);
+		return (userDtosDetails);
 	}
 
-public List<UserDto>mutualRepListRequest(List<Users> list){
-		
-		repDtosDetails= new ArrayList<UserDto>();
-		int i=1;
-		for(Users users :list) {
-			UserDto usedto= new UserDto();
+	public List<UserDto> mutualRepListRequest(List<Users> list) {
+
+		repDtosDetails = new ArrayList<UserDto>();
+		int i = 1;
+		for (Users users : list) {
+			UserDto usedto = new UserDto();
 			usedto.setEditable(false);
 			usedto.setUserId(users.getUserId());
 			usedto.setCountinfo(i);
@@ -263,15 +272,15 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			usedto.setPhone(users.getPhone());
 			usedto.setAddress(users.getAddress());
 			usedto.setGender(users.getGender());
-			if(users.getStatus().equalsIgnoreCase(DESACTIVE)) {
+			if (users.getStatus().equalsIgnoreCase(DESACTIVE)) {
 				usedto.setPendingstatus(false);
-			}else {
+			} else {
 				usedto.setPendingstatus(true);
 			}
 			repDtosDetails.add(usedto);
 			i++;
 		}
-		return(repDtosDetails);
+		return (repDtosDetails);
 	}
 
 	public String saveUserInfo() throws IOException, NoSuchAlgorithmException {
@@ -355,6 +364,17 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			ex.printStackTrace();
 		}
 		return "";
+	}
+
+	public String handleNotification() {
+		if (null != usersSession) {
+			if (usersSession.getUserCategory().getUserCatid() == admincat) {
+				return "/page1.xhtml?face-redirect=true";
+			}else if(usersSession.getUserCategory().getUserCatid() == MutualRepcat) {
+			return "/menu/MemberRequestManagement.xhtml?faces-redirect=true";
+			}		
+	}
+		return null;
 	}
 
 	public String saveMutualRepAndCoopInfo() throws IOException, NoSuchAlgorithmException {
@@ -1091,7 +1111,7 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 	}
 
 	@SuppressWarnings("unchecked")
-	public String saveAction(UserDto user) throws Exception  {
+	public String saveAction(UserDto user) throws Exception {
 		LOGGER.info("update  saveAction method");
 		if (user != null) {
 			Users us = new Users();
@@ -1100,33 +1120,35 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
 			LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
 
-			if (null!=us) {
-					user.setEditable(false);
-					us.setFullname(user.getFullname());
-					us.setAddress(user.getAddress());
-					us.setPhone(user.getPhone());
-					us.setEmail(user.getEmail());
-					us.setGender(user.getGender());
-					us.setUpdatedBy(usersSession.getViewId());
-					us.setUpDtTime(timestamp);
-					usersImpl.UpdateUsers(us);
-					userDtosDetails = new ArrayList<UserDto>();
-					usersDetails = usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory" },
-							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
-							"userId desc");
-					userDtosDetails=mutualRepList(usersDetails);
-					JSFMessagers.resetMessages();
-					setValid(true);
-					JSFMessagers.addErrorMessage(getProvider().getValue("info.changed.message"));
-				} 
-		}else {
+			if (null != us) {
+				user.setEditable(false);
+				us.setFullname(user.getFullname());
+				us.setAddress(user.getAddress());
+				us.setPhone(user.getPhone());
+				us.setEmail(user.getEmail());
+				us.setGender(user.getGender());
+				us.setUpdatedBy(usersSession.getViewId());
+				us.setUpDtTime(timestamp);
+				usersImpl.UpdateUsers(us);
+				userDtosDetails = new ArrayList<UserDto>();
+				usersDetails = usersImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "userCategory" },
+						new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
+						"userId desc");
+				userDtosDetails = mutualRepList(usersDetails);
 				JSFMessagers.resetMessages();
-				setValid(false);
-				JSFMessagers.addErrorMessage(getProvider().getValue("erroinfo.changed.message"));
-			} 
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("info.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroinfo.changed.message"));
+		}
 
 		return null;
 	}
+
 	@SuppressWarnings("unchecked")
 	public String unblockAction(UserDto user) throws Exception {
 		LOGGER.info("update  saveAction method");
@@ -1137,41 +1159,43 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
 			LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
 
-			if (null!=us) {
-					user.setEditable(false);
-					us.setStatus(ACTIVE);
-					us.setUpdatedBy(usersSession.getViewId());
-					us.setUpDtTime(timestamp);
-					usersImpl.UpdateUsers(us);
-					userDtosDetails = new ArrayList<UserDto>();
-					usersDetails = usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory" },
-							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
-							"userId desc");
-					userDtosDetails=mutualRepList(usersDetails);
-					JSFMessagers.resetMessages();
-					setValid(true);
-					JSFMessagers.addErrorMessage(getProvider().getValue("activate.changed.message"));
-				} 
-		}else {
+			if (null != us) {
+				user.setEditable(false);
+				us.setStatus(ACTIVE);
+				us.setUpdatedBy(usersSession.getViewId());
+				us.setUpDtTime(timestamp);
+				usersImpl.UpdateUsers(us);
+				userDtosDetails = new ArrayList<UserDto>();
+				usersDetails = usersImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "userCategory" },
+						new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
+						"userId desc");
+				userDtosDetails = mutualRepList(usersDetails);
 				JSFMessagers.resetMessages();
-				setValid(false);
-				JSFMessagers.addErrorMessage(getProvider().getValue("activate.changed.message.error"));
-			} 
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("activate.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("activate.changed.message.error"));
+		}
 
 		return null;
 	}
-	@SuppressWarnings("unchecked")
-	public String approveAction(UserDto user) throws NoSuchAlgorithmException{
-		try {
-		LOGGER.info("update  saveAction method");
-		if (user != null) {
-			Users us = new Users();
-			us = new Users();
-			us = usersImpl.gettUserById(user.getUserId(), "userId");
-			LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
-			LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
 
-			if (null!=us) {
+	@SuppressWarnings("unchecked")
+	public String approveAction(UserDto user) throws NoSuchAlgorithmException {
+		try {
+			LOGGER.info("update  saveAction method");
+			if (user != null) {
+				Users us = new Users();
+				us = new Users();
+				us = usersImpl.gettUserById(user.getUserId(), "userId");
+				LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
+				LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
+
+				if (null != us) {
 					user.setEditable(false);
 					us.setStatus(ACTIVE);
 					us.setUpdatedBy(usersSession.getViewId());
@@ -1188,12 +1212,13 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 					us.setViewName(loginImpl.criptPassword(crpted_pswd));
 					usersImpl.UpdateUsers(us);
 					repDtosDetails = new ArrayList<UserDto>();
-					useravail= usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory","status" },
-							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"),DESACTIVE }, "Users",
-							"userId desc");
-					repDtosDetails=mutualRepListRequest(useravail);
-					if(usersSession.getUserCategory().getUserCatid()==admincat) {
-						repavail=mutualRepRequestSize();
+					useravail = usersImpl.getGenericListWithHQLParameter(
+							new String[] { "genericStatus", "userCategory", "status" },
+							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"), DESACTIVE },
+							"Users", "userId desc");
+					repDtosDetails = mutualRepListRequest(useravail);
+					if (usersSession.getUserCategory().getUserCatid() == admincat) {
+						repavail = mutualRepRequestSize();
 					}
 					if (valid) {
 						JSFMessagers.resetMessages();
@@ -1203,11 +1228,12 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 					} else {
 						JSFMessagers.resetMessages();
 						setValid(false);
-						JSFMessagers.addErrorMessage(getProvider().getValue("com.sendemailfail.form.mutualcooprepinfo"));
+						JSFMessagers
+								.addErrorMessage(getProvider().getValue("com.sendemailfail.form.mutualcooprepinfo"));
 						LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is saved");
 					}
-		}
-		}
+				}
+			}
 		} catch (HibernateException ex) {
 			LOGGER.info(CLASSNAME + ":::mutual cooperative and rep Details is fail with HibernateException  error");
 			JSFMessagers.resetMessages();
@@ -1218,13 +1244,13 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-				return null;
-		
+		}
+		return null;
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public String rejectAction(UserDto user) throws Exception  {
+	public String rejectAction(UserDto user) throws Exception {
 		LOGGER.info("update  saveAction method");
 		if (user != null) {
 			Users us = new Users();
@@ -1233,35 +1259,36 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
 			LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
 
-			if (null!=us) {
+			if (null != us) {
 				user.setEditable(false);
 				us.setStatus(REJECTED);
 				us.setUpdatedBy(usersSession.getViewId());
 				us.setUpDtTime(timestamp);
 				usersImpl.UpdateUsers(us);
-					repDtosDetails = new ArrayList<UserDto>();
-					useravail= usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory","status" },
-							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"),DESACTIVE }, "Users",
-							"userId desc");
-					repDtosDetails=mutualRepListRequest(useravail);
-					if(usersSession.getUserCategory().getUserCatid()==admincat) {
-						repavail=mutualRepRequestSize();
-					}
-					JSFMessagers.resetMessages();
-					setValid(true);
-					JSFMessagers.addErrorMessage(getProvider().getValue("reject.changed.message"));
-				} 
-		}else {
+				repDtosDetails = new ArrayList<UserDto>();
+				useravail = usersImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "userCategory", "status" },
+						new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid"), DESACTIVE },
+						"Users", "userId desc");
+				repDtosDetails = mutualRepListRequest(useravail);
+				if (usersSession.getUserCategory().getUserCatid() == admincat) {
+					repavail = mutualRepRequestSize();
+				}
 				JSFMessagers.resetMessages();
-				setValid(false);
-				JSFMessagers.addErrorMessage(getProvider().getValue("erroreject.changed.message"));
-			} 
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("reject.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroreject.changed.message"));
+		}
 
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public String blockAction(UserDto user) throws Exception  {
+	public String blockAction(UserDto user) throws Exception {
 		LOGGER.info("update  saveAction method");
 		if (user != null) {
 			Users us = new Users();
@@ -1270,29 +1297,31 @@ public List<UserDto>mutualRepListRequest(List<Users> list){
 			LOGGER.info("here update sart for " + us + " useriD " + us.getUserId());
 			LOGGER.info("++++++++++++++++++++++++++here update sart for " + us + " useriD " + us.getUserId());
 
-			if (null!=us) {
-					user.setEditable(false);
-					us.setStatus(Block);
-					us.setUpdatedBy(usersSession.getViewId());
-					us.setUpDtTime(timestamp);
-					usersImpl.UpdateUsers(us);
-					userDtosDetails = new ArrayList<UserDto>();
-					usersDetails = usersImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "userCategory" },
-							new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
-							"userId desc");
-					userDtosDetails=mutualRepList(usersDetails);
-					JSFMessagers.resetMessages();
-					setValid(true);
-					JSFMessagers.addErrorMessage(getProvider().getValue("block.changed.message"));
-				} 
-		}else {
+			if (null != us) {
+				user.setEditable(false);
+				us.setStatus(Block);
+				us.setUpdatedBy(usersSession.getViewId());
+				us.setUpDtTime(timestamp);
+				usersImpl.UpdateUsers(us);
+				userDtosDetails = new ArrayList<UserDto>();
+				usersDetails = usersImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "userCategory" },
+						new Object[] { ACTIVE, catImpl.getUserCategoryById(MutualRepcat, "userCatid") }, "Users",
+						"userId desc");
+				userDtosDetails = mutualRepList(usersDetails);
 				JSFMessagers.resetMessages();
-				setValid(false);
-				JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
-			} 
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("block.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
 
 		return null;
 	}
+
 	public void editUserContact(Users user) {
 		HttpSession sessionuser = SessionUtils.getSession();
 
