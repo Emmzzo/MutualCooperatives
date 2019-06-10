@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/MutualRepLayout.xhtml">
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+						<p:outputPanel rendered="#{mutualCoopController.fundsform}"
+							autoUpdate="true">
+							<a
+								href="#{loadUserInformationsController.getContextPath()}/menu/FundsManagement.xhtml"
+								class="btn btn-primary glyphicon glyphicon-chevron-left"
+								style="font-size: 11pt"> #{msg['BackButtom']}</a>
+						</p:outputPanel>
+
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not mutualCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<!--MUTUAL REP LIST TABLE -->
+						<h:panelGroup rendered="#{mutualCoopController.memberfunds}">
+							<div class="col-lg-12 grid-margin stretch-card">
+
+								<div class="card">
+									<div class="card-body">
+										<div class=" col-lg-12 grid-margin "
+											style="height: 330px; overflow-y: scroll;">
+											<table
+												class="table table-striped table-hover table-bordered tableUpdated"
+												style="margin: 17px 5px 0 !important; box-sizing: border-box; width: 100% !important; -webkit-box-shadow: none; box-shadow: none !important;">
+
+												<thead>
+													<tr>
+
+														<th colspan="9" style="font-size: 12pt;">
+															<h4 class="text-info"
+																style="font-family: Poppins, sans-serif; font-weight: bold; font-size: 14pt; margin-left: 15%; font-style: italic">LIST
+																OF MUTUAL COOPERATIVE MEMBERS</h4>
+														</th>
+														<!-- <th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th> -->
+													</tr>
+												</thead>
+
+												<thead>
+													<tr class="label">
+														<th style="font-size: 15px; font-weight: bold">No</th>
+														<th style="font-size: 15px; font-weight: bold">Names</th>
+														<th style="font-size: 15px; font-weight: bold">Email</th>
+														<th style="font-size: 15px; font-weight: bold">Phone</th>
+														<th style="font-size: 15px; font-weight: bold">Address</th>
+														<th style="font-size: 15px; font-weight: bold">Gender</th>
+														<th style="font-size: 15px; font-weight: bold">CATEGORY</th>
+														<th style="font-size: 15px; font-weight: bold">Status</th>
+														<th style="font-size: 15px; font-weight: bold">Action</th>
+													</tr>
+												</thead>
+												<tbody class="label">
+													<ui:repeat
+														value="#{mutualCoopController.mutualCoopMembersListDto}"
+														var="coop">
+														<tr>
+															<td style="font-size: 12pt;">#{coop.countinfo}</td>
+															<td style="font-size: 12pt;"><h:outputText
+																	value="#{coop.member.fullname}"
+																	rendered="#{not coop.editable}" /></td>
+															<td class="text-info" style="font-size: 12pt;"><h:outputText
+																	value="#{coop.member.email}"
+																	rendered="#{not coop.editable}" /></td>
+															<td class="text-info" style="font-size: 12pt;"><h:outputText
+																	value="#{coop.member.phone}"
+																	rendered="#{not coop.editable}" /></td>
+															<td class="text-info" style="font-size: 12pt;"><h:outputText
+																	value="#{coop.member.address}"
+																	rendered="#{not coop.editable}" /></td>
+															<td style="font-size: 12pt;"><h:outputText
+																	value="#{coop.member.gender}"
+																	rendered="#{not coop.editable}" /></td>
+															<td style="font-size: 12pt;"><p:outputPanel
+																	rendered="#{ not coop.hidecontact}" autoUpdate="true">
+																	<h:outputText
+																		value="#{coop.member.userCategory.usercategoryName}"
+																		rendered="#{not coop.editable}" />
+																</p:outputPanel> <p:outputPanel rendered="#{ not coop.showcontact}"
+																	autoUpdate="true">
+																	<h:outputText class="badge badge-info"
+																		style="font-size:12pt"
+																		value="#{coop.member.userCategory.usercategoryName}"
+																		rendered="#{not coop.editable}" />
+																</p:outputPanel></td>
+															<td><p:outputPanel
+																	rendered="#{ not coop.blockedstatus}" autoUpdate="true">
+																	<label class="badge badge-danger"
+																		style="font-size: 12pt;">Blocked</label>
+																</p:outputPanel> <p:outputPanel rendered="#{ not coop.approvedreq}"
+																	autoUpdate="true">
+																	<label class="badge badge-success"
+																		style="font-size: 12pt">Active</label>
+																</p:outputPanel></td>
+
+															<td><h:commandButton a:type="submit"
+																	action="#{mutualCoopController.addFundAction(coop)}"
+																	rendered="#{not coop.approvedreq}"
+																	class="btn btn-gradient-danger mr-2 label"
+																	style="font-size: 12pt;" value="Add fund"></h:commandButton>
+
+																<h:commandButton data-toggle="tooltip"
+																	data-placement="left" style="font-size:12pt"
+																	value="View funds "
+																	class="btn btn-gradient-primary mr-2  label"
+																	action="#{mutualCoopController.showMemberFunds(coop)}">
+																	<!-- <f:ajax render="@form" execute="@form" onevent="showProgress" /> -->
+																</h:commandButton></td>
+														</tr>
+													</ui:repeat>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+						<!-- TABLE END -->
+
+
+						<p:outputPanel rendered="#{mutualCoopController.fundsform}"
+							autoUpdate="true">
+							<div class="col-md-6 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<p:outputPanel autoUpdate="true">
+											<span style="color: white; font-size: 20pt"> <label
+												class="label text-success" style="font-weight: bold;">Funds
+													Registration Form</label>
+											</span>
+										</p:outputPanel>
+										<span class="label text-warning"
+											style="color: black; font-weight: bold; font-size: 13px">#{msg['header.title.fieldmarked']}
+											<span style="color: red">#{msg['header.title.asteriks']}</span>
+											#{msg['header.title.mandatory']}
+										</span>
+										<h:form class="forms-sample">
+											<div class="form-group">
+												<label for="exampleInputPhone1" class="label"
+													style="font-size: 13pt; font-weight: bold">Member
+													names<span style="color: red; font-size: 15px">*</span>
+												</label>
+
+												<h:inputTextarea a:type="text" disabled="true"
+													value="#{mutualCoopController.coopMemberDto.member.fullname}"
+													class="form-control form-control-lg label"
+													id="exampleInputPhone1" a:placeholder=" Member names"
+													style=" font-size: 14px !important;" required="true"
+													requiredMessage="#{msg['required.policydesc.message']}"
+													converterMessage="#{msg['error.enter.invalid.policydesc']}"
+													validatorMessage="#{msg['error.enter.invalid.policydesc']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputTextarea>
+
+												<h:message for="exampleInputPhone1"
+													styleClass="help-block label"></h:message>
+											</div>
+											<div class="form-group">
+												<label for="exampleInputUsername1" class="label"
+													style="font-weight: bold; font-size: 13pt; margin-top: 15px;">Amount
+													contributed <span style="color: red; font-size: 15px">*</span>
+												</label>
+												<h:inputText a:type="number"
+													class="form-control form-control-lg label"
+													value="#{mutualCoopController.amount}"
+													id="exampleInputfullname1"
+													a:placeholder=" add amount given" style=" font-size: 12pt;"
+													required="true"
+													requiredMessage="#{msg['requiered.interest.message']}"
+													converterMessage="#{msg['error.enter.invalid.interest']}"
+													validatorMessage="#{msg['error.enter.invalid.interest']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputText>
+
+												<h:message for="exampleInputfullname1"
+													styleClass="help-block label"></h:message>
+											</div>
+
+
+											<h:commandButton a:type="submit"
+												action="#{mutualCoopController.saveFunds}"
+												class="btn btn-gradient-success mr-2 label"
+												style="font-size: 12pt;" value="Submit"></h:commandButton>
+
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</p:outputPanel>
+						<h:panelGroup rendered="#{mutualCoopController.fundsDetails}">
+
+							<h:commandLink value="#{msg['BackButtom']}"
+								action="#{mutualCoopController.backMember}"
+								style="font-size: 14px !important;"
+								class="btn btn-primary glyphicon glyphicon-chevron-left">
+								
+							</h:commandLink>
+
+
+							<div class=" col-md-12"
+								style="height: 330px; overflow-y: scroll;">
+								<h:dataTable id="activityTable" binding="#{tabl}"
+									style="font: italic 14pt/18pt Georgia, serif;box-sizing: border-box; width:100% !important;
+       							 -webkit-box-shadow: none;
+       							 box-shadow: none !important;
+       								 margin: 17pt 2pt 0 !important;"
+									value="#{mutualCoopController.fundDtoList}" var="funds"
+									class="table table-striped table-hover table-bordered tableUpdated">
+									<f:facet name="header">
+
+										<label
+											style="margin-left: 25%; font: italic bold 13pt/16pt Georgia, serif;">List
+											of transactions performed</label>
+									</f:facet>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">No</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{tabl.rowIndex + 1}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Member
+												names</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.usermember.fullname}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Amount
+												provided</label>
+										</f:facet>
+										<br />
+										<h:inputText a:type="text" value="#{funds.formatAmount}"
+											rendered="#{funds.editchanges}"
+											class="form-control form-control-lg label" id="fines1"
+											style=" font-size: 14px !important;" 
+											converterMessage="#{msg['error.enter.invalid.amount']}"
+											validatorMessage="#{msg['error.enter.invalid.amount']}">
+											<f:validateRegex
+												pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+											<f:validateLength maximum="100"></f:validateLength>
+										</h:inputText>
+										<h:message for="fines1" styleClass="help-block label"
+											style="font-size:11pt"></h:message>
+
+										<h:outputText value="#{funds.formatAmount}" rendered="#{not funds.editchanges}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-primary" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Current balance</label>
+										</f:facet>
+										<br />
+
+
+										<h:outputText value="#{funds.formatBalance}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Transaction
+												date</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.givenDate}" class="label"
+											style="font-size:12pt;">
+											<f:convertDateTime type="date" dateType="short"
+												pattern="dd-MM-yyyy HH:mm" />
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Transaction
+												status</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.status}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-success">
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Fund
+												status</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.generiStatus}" rendered="#{not funds.editable}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info">
+										</h:outputText>
+										<h:outputText value="#{funds.generiStatus}" rendered="#{funds.editable}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-warning">
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Recorded
+												by</label>
+										</f:facet>
+										<br />
+
+
+										<h:outputText value="#{funds.recordedBy}"
+											style="font: italic  11pt/12pt Georgia, serif;">
+
+										</h:outputText>
+									</h:column>
+
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Action</label>
+										</f:facet>
+										<br />
+
+										<h:commandButton a:type="submit"
+											action="#{mutualCoopController.editFundAction(funds)}"
+											rendered="#{not funds.editable}"
+											class="btn btn-gradient-info mr-2 label"
+											style="font-size: 12pt;" value="Edit">
+											
+											</h:commandButton>
+
+										<h:commandButton data-toggle="tooltip" data-placement="left"
+											style="font-size:12pt"
+											value="#{msg['UserCategoryView.cancelButton']}"
+											class="btn btn-gradient-danger mr-2  label"
+											action="#{mutualCoopController.cancelFund(funds)}"
+											rendered="#{funds.editchanges}">
+
+										</h:commandButton>
+										<h:commandButton class="btn btn-gradient-primary mr-2  label"
+											style=" font-size:12pt;" data-toggle="tooltip"
+											data-placement="right"
+											value="#{msg['UserCategoryView.savechangeButton']}"
+											action="#{mutualCoopController.saveFundAction(funds)}"
+											rendered="#{funds.editchanges}">
+											<f:ajax render="@form" execute="@form" onevent="showProgress" />
+											</h:commandButton>
+									</h:column>
+
+
+									<f:facet name="footer">
+
+									</f:facet>
+								</h:dataTable>
+
+
+							</div>
+
+						</h:panelGroup>
+					</h:form>
+
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

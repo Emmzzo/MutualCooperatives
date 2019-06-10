@@ -41,11 +41,13 @@ public class LoanRequest extends CommonDomain implements Serializable {
 	private Date requestDate;
 	@Column(name = "approvedDate")
 	private Date approvedDate;
+	@Column(name = "returnDate")
+	private Date returnDate;
 	@Column(name = "status")
 	private String status;
 	@ManyToOne
-	@JoinColumn(name = "member")
-	private Users member;
+	@JoinColumn(name = "usermember")
+	private Users usermember;
 	@ManyToOne
 	@JoinColumn(name = "mutualcoop")
 	private MutualCooperative mutualcoop;
@@ -81,11 +83,12 @@ public class LoanRequest extends CommonDomain implements Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Users getMember() {
-		return member;
+	
+	public Users getUsermember() {
+		return usermember;
 	}
-	public void setMember(Users member) {
-		this.member = member;
+	public void setUsermember(Users usermember) {
+		this.usermember = usermember;
 	}
 	public MutualCooperative getMutualcoop() {
 		return mutualcoop;
@@ -99,5 +102,10 @@ public class LoanRequest extends CommonDomain implements Serializable {
 	public void setAction(String action) {
 		this.action = action;
 	}
-	
+	public Date getReturnDate() {
+		return returnDate;
+	}
+	public void setReturnDate(Date returnDate) {
+		this.returnDate = returnDate;
+	}
 }

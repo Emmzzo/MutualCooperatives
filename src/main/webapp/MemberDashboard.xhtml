@@ -9,10 +9,107 @@
 	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
 <h:body>
 
-	<ui:composition template="/template/common/adminLayout.xhtml">
+	<ui:composition template="/template/common/MemberDashLayout.xhtml">
 
 		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
 
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not membersController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{membersController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<!--MUTUAL COOP PROFILE TABLE -->
+						<code class="text-info label" style="font-size: 14pt;font-weight: bold">MUTUAL COOPERATIVE PROFILE</code>
+									
+						<div class="col-md-6 grid-margin stretch-card">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title label font-weight-bold"  style="font-size: 12pt">Logo</h4>
+									<p class="card-description">
+										
+										<h:graphicImage alt="profile" style="width:50px"
+																value="/images/dynamic/?file=#{guestController.mutualCoopMemberDto.mutualcoop.logo}" />
+
+										
+									</p>
+									<div class="row">
+										<div class="col-md-6">
+											<address>
+												<p class="font-weight-bold label" style="font-size: 12pt">Address</p>
+												<p class="label" style="font-size: 12pt">#{guestController.mutualCoopMemberDto.mutualcoop.address}</p>
+												
+											</address>
+										</div>
+										<div class="col-md-6">
+											<address class="text-primary">
+												<p class="font-weight-bold label" style="font-size: 12pt">Mutual Coop Name</p>
+												<p class="label" style="font-size: 12pt">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</p>
+												<p class="font-weight-bold label" style="font-size: 12pt">Mutual Coop Type</p>
+												<p class="label" style="font-size: 12pt">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopType}</p>
+											</address>
+										</div>
+									</div>
+								</div>
+								<div class="card-body">
+								
+									<h4 class="card-title label font-weight-bold" style="font-size: 13pt">Our policies</h4>
+									<p class="card-description">
+										<ol>
+										<li class="font-weight-bold label" style="font-size: 12pt">Interest charge</li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that a member who receive a loan will be charged an interest of<label class="badge badge-danger" style="margin-left:5px;">#{guestController.mutualCoopMemberDto.interesCharges}% </label> on loan.</p>
+											<li class="font-weight-bold label"  style="font-size: 12pt">Fines(contribution/loan)  </li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that any circumstance happen due to disobedience of our policies like not returning loan at time will be charged a fine of <label class="badge badge-danger" style="margin-left:5px;">#{guestController.mutualCoopMemberDto.fineCharges}</label> amount in Rwf,and not providing the contribution at a regular basis the fine will be <label class="badge badge-danger" style="margin-left:5px;">#{guestController.mutualCoopMemberDto.fineondelayedcontribution}</label> amount in Rwf. </p>
+											<li class="font-weight-bold label"  style="font-size: 12pt">Minimum contribution /Regular contribution</li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that every member must provide a minimum contribution of<label class="badge badge-info" style="margin-left:5px;">#{guestController.mutualCoopMemberDto.mincontribution}</label> amount in Rwf,and the contribution must be given on aggreed regular period of  <label class="badge badge-info" style="margin-left:5px;">#{guestController.mutualCoopMemberDto.periodicinvestterm} basis.</label>. </p>
+											
+										</ol>
+									</p>
+									<p class="lead label font-weight-bold" style="font-size: 12pt">#{guestController.mutualCoopMemberDto.policyDescription}.</p>
+									<p class="label font-weight-bold" style="font-size: 12pt">Made on #{guestController.mutualCoopMemberDto.crtdDtTime}.</p>
+								</div>
+							</div>
+						</div>
+						<!-- TABLE END -->
+
+					</h:form>
+
+
+				</div>
+			</div>
 		</ui:define>
 	</ui:composition>
 

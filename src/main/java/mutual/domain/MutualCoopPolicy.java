@@ -39,6 +39,12 @@ public class MutualCoopPolicy extends CommonDomain implements Serializable {
 	private Double fineCharges;
 	@Column(name = "interesCharges")
 	private Double interesCharges;
+	@Column(name = "minContribution")
+	private Double minContribution;
+	@Column(name = "periodicinvestterm")
+	private String periodicinvestterm;
+	@Column(name = "fineondelay")
+	private Double fineondelay;
 	@Column(name = "policyDescription")
 	private String policyDescription;
 	@ManyToOne
@@ -81,6 +87,24 @@ public class MutualCoopPolicy extends CommonDomain implements Serializable {
 	}
 	public void setAction(String action) {
 		this.action = action;
+	}
+	public Double getMinContribution() {
+		return minContribution;
+	}
+	public void setMinContribution(Double minContribution) {
+		this.minContribution = minContribution;
+	}
+	public String getPeriodicinvestterm() {
+		return periodicinvestterm;
+	}
+	public void setPeriodicinvestterm(String periodicinvestterm) {
+		this.periodicinvestterm = periodicinvestterm;
+	}
+	public Double getFineondelay() {
+		return fineondelay;
+	}
+	public void setFineondelay(Double fineondelay) {
+		this.fineondelay = fineondelay;
 	}
 	
 }

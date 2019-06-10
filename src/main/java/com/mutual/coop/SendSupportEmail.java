@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -295,6 +296,52 @@ public class SendSupportEmail extends HttpServlet implements DbConstant {
 		LOGGER.info("::: notidficatio sent   ");
 	}
 
+	public boolean sendMailMutualMember(String type,String receivername, String amount,Date givenDate, String senderName, String email) {
+
+		boolean valid = false;
+		if (( null !=receivername && null != amount) && (null != givenDate) && (null != email) && (null != senderName)) {
+			String msg = null;
+			if (type.equals("account")) {
+				msg = "<p>" + "I hope this email finds you well." + "<br/>"
+						+ "This is to notify you that there is a change on your funds, " + "<br/>"
+						+ " a change on the amount you provided we have update it with  the amount below." + "<br/>"
+						+ "Amount provided on." +givenDate+ "<br/>"
+						+ " Updated amount." +amount+ "<br/>"
+						+ "___________" +"<br/>"
+						+ "</p>";
+				
+			}
+			/* End send content in table sample */
+			try {
+
+				gen.sendEmailNotification(email, receivername, "Account Updates", msg);
+				valid = true;
+			} catch (AddressException e) {
+				LOGGER.info("returing false1");
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.emailerror"));
+				e.printStackTrace();
+				LOGGER.info("returing false2");
+				LOGGER.info("This content" + msg + " was not send to MY BE wrong address check email ::" + email
+						+ " on " + timestamp);
+			} catch (MessagingException e) {
+				LOGGER.info("This content" + msg + " was not send to ::" + email + " on " + timestamp);
+				valid = false;
+				setValid(false);
+				e.printStackTrace();
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.notificationError"));
+				e.printStackTrace();
+			}
+			LOGGER.info("::: notidficatio sent   ");
+		} else {
+			valid = false;
+		}
+		LOGGER.info("returing values" + valid);
+		return (valid);
+	}
+	
 	public boolean isValid() {
 		return isValid;
 	}

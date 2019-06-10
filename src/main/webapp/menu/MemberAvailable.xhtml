@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+
+	<ui:composition template="/template/common/MemberDashLayout.xhtml">
+
+		<ui:define name="content">
+				<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+						
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not mutualCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<!--MUTUAL REP LIST TABLE -->
+						<div class="col-lg-12 grid-margin stretch-card" >
+
+							<div class="card">
+								<div class="card-body">
+									<div class=" col-lg-12 grid-margin  stretch-card "
+										style="height: 330px; overflow-y: scroll;">
+										<table
+											class="table table-striped table-hover table-bordered tableUpdated"
+											style="margin-top: 20px;">
+
+											<thead>
+												<tr>
+
+												<th colspan="8" style="font-size: 12pt;"><h4 class="text-info"
+								style="font-family: Poppins, sans-serif; font-weight: bold; font-size: 14pt; margin-left: 20%; font-style:italic ">LIST
+										OF  MEMBERS FOR <span class="font-weight-bold badge badge-success" style="font-size:12pt">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</span>MUTUAL COOPERATIVE</h4></th>
+													
+												</tr>
+											</thead>
+
+											<thead>
+												<tr class="label">
+													<th style="font-size: 15px; font-weight: bold">No</th>
+													<th style="font-size: 15px; font-weight: bold">Names</th>
+													<th style="font-size: 15px; font-weight: bold">Address</th>
+													<th style="font-size: 15px; font-weight: bold">Gender</th>
+													<th style="font-size: 15px; font-weight: bold">Category</th>
+													<th style="font-size: 15px; font-weight: bold">Status</th>
+													
+												</tr>
+											</thead>
+											<tbody class="label">
+												<ui:repeat value="#{guestController.mutualMembersListDto}"
+													var="coop">
+													<tr>
+														<td style="font-size: 12pt;">#{coop.countinfo}</td>
+														<td style="font-size: 12pt;">  <h:outputText
+																value="#{coop.member.fullname}" rendered="#{not coop.editable}" />
+
+
+
+														</td>
+														<td style="font-size: 12pt;">  <h:outputText
+																value="#{coop.member.address}" rendered="#{not coop.editable}" />
+														</td>
+														<td class="text-info" style="font-size: 12pt;"> <h:outputText
+																value="#{coop.member.gender}" rendered="#{not coop.editable}" />
+
+														</td>
+														<td class="text-info" style="font-size: 12pt;"> <h:outputText
+																value="#{coop.member.userCategory.usercategoryName}" rendered="#{not coop.editable}" />
+
+														</td>
+														<td class="text-info" style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.loginStatus}" rendered="#{not coop.editable}" />
+
+														</td>
+														
+													</tr>
+												</ui:repeat>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- TABLE END -->
+					
+					</h:form>
+
+
+				</div>
+			</div>  
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+
+</html>

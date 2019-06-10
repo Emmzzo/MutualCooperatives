@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/MemberDashLayout.xhtml">
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+
+						<a
+							href="#{loadUserInformationsController.getContextPath()}/menu/FundsAvailable.xhtml"
+							class="btn btn-primary glyphicon glyphicon-chevron-left"
+							style="font-size: 11pt"> #{msg['BackButtom']}</a>
+
+
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not guestCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{guestController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<h:panelGroup rendered="#{guestController.renderForeignCountry}">
+							<div class=" col-md-12"
+								style="height: 330px; overflow-y: scroll;">
+								<h:dataTable id="activityTable" binding="#{tabl}"
+									style="font: italic 14pt/18pt Georgia, serif;box-sizing: border-box; width:100% !important;
+       							 -webkit-box-shadow: none;
+       							 box-shadow: none !important;
+       								 margin: 17pt 2pt 0 !important;"
+									value="#{guestController.fundDtoList}" var="funds"
+									class="table table-striped table-hover table-bordered tableUpdated">
+									<f:facet name="header">
+										<h:commandButton a:type="submit"
+											action="#{guestController.overallCoopFunds}"
+											class="btn btn-gradient-success mr-2 label"
+											style="font-size: 12pt;" value="View coop overall fund">
+											
+										</h:commandButton>
+										<label
+											style="margin-left: 25%; font: italic bold 13pt/16pt Georgia, serif;">List
+											of transactions performed</label>
+									</f:facet>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">No</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{tabl.rowIndex + 1}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Contributor
+												names</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.usermember.fullname}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Amount
+												provided</label>
+										</f:facet>
+										<br />
+										<h:inputText a:type="text" value="#{funds.formatAmount}"
+											rendered="#{funds.editchanges}"
+											class="form-control form-control-lg label" id="fines1"
+											style=" font-size: 14px !important;"
+											converterMessage="#{msg['error.enter.invalid.amount']}"
+											validatorMessage="#{msg['error.enter.invalid.amount']}">
+											<f:validateRegex
+												pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+											<f:validateLength maximum="100"></f:validateLength>
+										</h:inputText>
+										<h:message for="fines1" styleClass="help-block label"
+											style="font-size:11pt"></h:message>
+
+										<h:outputText value="#{funds.formatAmount}"
+											rendered="#{not funds.editchanges}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-primary" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Current
+												balance</label>
+										</f:facet>
+										<br />
+
+
+										<h:outputText value="#{funds.formatBalance}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Transaction
+												date</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.givenDate}" class="label"
+											style="font-size:12pt;">
+											<f:convertDateTime type="date" dateType="short"
+												pattern="dd-MM-yyyy HH:mm" />
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Transaction
+												status</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.status}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-success">
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Fund
+												status</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.generiStatus}"
+											rendered="#{not funds.editable}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info">
+										</h:outputText>
+										<h:outputText value="#{funds.generiStatus}"
+											rendered="#{funds.editable}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-warning">
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Recorded
+												by</label>
+										</f:facet>
+										<br />
+
+
+										<h:outputText value="#{funds.recordedBy}"
+											style="font: italic  11pt/12pt Georgia, serif;">
+
+										</h:outputText>
+									</h:column>
+									<f:facet name="footer">
+
+									</f:facet>
+								</h:dataTable>
+
+
+							</div>
+
+						</h:panelGroup>
+
+
+						<h:panelGroup rendered="#{guestController.rendersubmit}">
+							<div class=" col-md-12"
+								style="height: 330px; overflow-y: scroll;">
+								<h:dataTable id="activityTables" binding="#{table}"
+									style="font: italic 14pt/18pt Georgia, serif;box-sizing: border-box; width:100% !important;
+       							 -webkit-box-shadow: none;
+       							 box-shadow: none !important;
+       								 margin: 17pt 2pt 0 !important;"
+									value="#{guestController.overallFundDtoList}" var="funds"
+									class="table table-striped table-hover table-bordered tableUpdated">
+									<f:facet name="header">
+
+										<label
+											style="margin-left: 25%; font: italic bold 13pt/16pt Georgia, serif;">Overall
+											Mutual coop fund</label>
+									</f:facet>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">No</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{table.rowIndex + 1}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Mutual
+												coop name</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.mutualcoop.mutualCoopName}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Mutual
+												coop type</label>
+										</f:facet>
+										<br />
+
+										<h:outputText value="#{funds.mutualcoop.mutualCoopType}"
+											rendered="#{not funds.editchanges}"
+											style="font: italic  11pt/12pt Georgia, serif;" />
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Address
+											</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.mutualcoop.address}"
+											class="label" style="font-size:12pt;">
+
+										</h:outputText>
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Overall
+												coop fund</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.formatBalance}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info" />
+
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Overall
+												loan provided</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.overloanrequest}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info" />
+
+									</h:column>
+									<h:column>
+										<f:facet name="header">
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Current
+												coop fund</label>
+										</f:facet>
+										<br />
+										<h:outputText value="#{funds.fundavail}"
+											style="font: italic  11pt/12pt Georgia, serif;"
+											class="badge badge-info" />
+
+									</h:column>
+									<f:facet name="footer">
+
+									</f:facet>
+								</h:dataTable>
+
+
+							</div>
+
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{guestController.renderBoard}">
+							<div
+								class="card border-secondary mb-4 text-center col-md-5 col-sm-8 "
+								style="width: 30rem; margin-left: 25%">
+								<div class="card-header badge badge-primary label" style="font-size: 14pt">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopName}</div>
+								<div class="card-body">
+									<p class="card-text label"
+										style="font-size: 13pt;font-weight: bold">
+										Mutual coop type:<label class=" text text-black badge badge-info" style="font-size: 12pt;font-weight: bold">#{guestController.mutualCoopMemberDto.mutualcoop.mutualCoopType}</label>
+									</p>
+									<p class="card-text label"
+										style="font-size: 13pt;font-weight: bold">
+										Mutual coop address:<label class=" text text-black text text-black badge badge-info" style="font-size: 12pt;font-weight: bold">#{guestController.mutualCoopMemberDto.mutualcoop.address}</label>
+									</p>
+									<p class="card-text label"
+										style="font-size: 13pt;font-weight: bold">
+										Overall coop fund:<label class=" text text-black badge badge-danger" style="font-size: 12pt;font-weight: bold">0.0</label>
+									</p>
+									
+								</div>
+
+							</div>
+						</h:panelGroup>
+					</h:form>
+
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

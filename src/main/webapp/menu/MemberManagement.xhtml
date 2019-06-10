@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/MutualRepLayout.xhtml">
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+
+						<a
+							href="#{loadUserInformationsController.getContextPath()}/RepPage1.xhtml"
+							class="btn btn-primary glyphicon glyphicon-chevron-left"
+							style="font-size: 11pt"> #{msg['BackButtom']}</a>
+
+
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not mutualCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<!--MUTUAL REP LIST TABLE -->
+
+						<div class="col-lg-12 grid-margin stretch-card">
+
+							<div class="card">
+								<div class="card-body">
+									<div class=" col-lg-12 grid-margin "
+										style="height: 330px; overflow-y: scroll;">
+										<table
+											class="table table-striped table-hover table-bordered tableUpdated"
+											style="margin-top: 20px;">
+
+											<thead>
+												<tr>
+
+													<th colspan="9" style="font-size: 12pt;">
+														<h4 class="text-info"
+															style="font-family: Poppins, sans-serif; font-weight: bold; font-size: 14pt; margin-left: 15%; font-style: italic">LIST
+															OF MUTUAL COOPERATIVE MEMBERS</h4>
+													</th>
+													<!-- <th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th> -->
+												</tr>
+											</thead>
+
+											<thead>
+												<tr class="label">
+													<th style="font-size: 15px; font-weight: bold">No</th>
+													<th style="font-size: 15px; font-weight: bold">Names</th>
+													<th style="font-size: 15px; font-weight: bold">Email</th>
+													<th style="font-size: 15px; font-weight: bold">Phone</th>
+													<th style="font-size: 15px; font-weight: bold">Address</th>
+													<th style="font-size: 15px; font-weight: bold">Gender</th>
+													<th style="font-size: 15px; font-weight: bold">CATEGORY</th>
+													<th style="font-size: 15px; font-weight: bold">Status</th>
+													<th style="font-size: 15px; font-weight: bold">Action</th>
+												</tr>
+											</thead>
+											<tbody class="label">
+												<ui:repeat
+													value="#{mutualCoopController.mutualCoopMembersListDto}"
+													var="coop">
+													<tr>
+														<td style="font-size: 12pt;">#{coop.countinfo}</td>
+														<td style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.fullname}"
+																rendered="#{not coop.editable}" /></td>
+														<td class="text-info" style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.email}"
+																rendered="#{not coop.editable}" /></td>
+														<td class="text-info" style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.phone}"
+																rendered="#{not coop.editable}" /></td>
+														<td class="text-info" style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.address}"
+																rendered="#{not coop.editable}" /></td>
+														<td style="font-size: 12pt;"><h:outputText
+																value="#{coop.member.gender}"
+																rendered="#{not coop.editable}" /></td>
+																<td style="font-size: 12pt;">
+																<p:outputPanel
+																rendered="#{ not coop.hidecontact}" autoUpdate="true">
+																<h:outputText
+																value="#{coop.member.userCategory.usercategoryName}"
+																rendered="#{not coop.editable}" />
+																</p:outputPanel>
+																<p:outputPanel
+																rendered="#{ not coop.showcontact}" autoUpdate="true">
+																<h:outputText class="badge badge-info" style="font-size:12pt"
+																value="#{coop.member.userCategory.usercategoryName}"
+																rendered="#{not coop.editable}" />
+																</p:outputPanel>
+																</td>
+														<td><p:outputPanel
+																rendered="#{ not coop.blockedstatus}" autoUpdate="true">
+																<label class="badge badge-danger"
+																	style="font-size: 12pt;">Blocked</label>
+															</p:outputPanel> <p:outputPanel rendered="#{ not coop.approvedreq}"
+																autoUpdate="true">
+																<label class="badge badge-success">Approved</label>
+															</p:outputPanel></td>
+
+														<td><h:commandButton a:type="submit"
+																action="#{mutualCoopController.blockAction(coop)}"
+																rendered="#{not coop.approvedreq}"
+																class="btn btn-gradient-danger mr-2 label"
+																style="font-size: 12pt;" value="Block"></h:commandButton>
+
+															<h:commandButton data-toggle="tooltip"
+																data-placement="left" style="font-size:12pt"
+																value="#{msg['UserCategoryView.BlockButton']}"
+																class="btn btn-gradient-primary mr-2  label"
+																action="#{mutualCoopController.unblockAction(coop)}"
+																rendered="#{not coop.blockedstatus}">
+
+															</h:commandButton></td>
+													</tr>
+												</ui:repeat>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- TABLE END -->
+
+					</h:form>
+
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

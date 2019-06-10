@@ -19,11 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import mutual.common.DbConstant;
+import mutual.common.Formating;
 import mutual.common.JSFBoundleProvider;
 import mutual.common.JSFMessagers;
 import mutual.common.SessionUtils;
+import mutual.coop.dto.MutualCoopMemberDto;
+import mutual.dao.impl.LoanRequestImpl;
 import mutual.dao.impl.UserCategoryImpl;
 import mutual.dao.impl.UserImpl;
+import mutual.domain.LoanRequest;
 import mutual.domain.UserCategory;
 import mutual.domain.Users;
 
@@ -36,7 +40,7 @@ public class LoadUserInformationsController implements Serializable, DbConstant 
 	/* to manage validation messages */
 	private boolean isValid;
 	/* end manage validation messages */
-	private int notifSize;
+	private int notifSize,days;
 	private Users users;
 	private UserCategory userCategory;
 //	private MenuAssignment menuAssignment;
@@ -54,42 +58,45 @@ public class LoadUserInformationsController implements Serializable, DbConstant 
 	UserCategoryImpl categoryImpl = new UserCategoryImpl();
 	private String userCatName;
 	private String dob;
-	@SuppressWarnings("unused")
 	private String notifName;
+	private boolean daybefore,dayafter;
 	/* end class injection */
 	Timestamp timestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
-
-	@SuppressWarnings("unchecked")
+	private LoanRequestImpl requestImpl = new LoanRequestImpl();
+	private LoanRequest request;
+	private MutualCoopMemberDto mutualCoopMemberDto;
+	@SuppressWarnings({ "unchecked", "static-access" })
 	@PostConstruct
 	public void init() {
 		HttpSession session = SessionUtils.getSession();
 		if (users == null) {
 			users = new Users();
 		}
-
+		if(null==request) {
+			
+		}
 		if (userCategory == null) {
 			userCategory = new UserCategory();
 		}
-
+		if(null==mutualCoopMemberDto) {
+			mutualCoopMemberDto= new MutualCoopMemberDto();
+		}
 		users = (Users) session.getAttribute("userSession");
 		if (null != users) {
+			
 			try {
 				
-			} catch (Exception e) {
-				LOGGER.info(CLASSNAME + "... " + e.getMessage());
-			}
-			LOGGER.info("HHH>>" + users.getUserCategory().getUsercategoryName());
-			userCategory = users.getUserCategory();
-			userCatName = users.getUserCategory().getUsercategoryName();
-			SimpleDateFormat fmt = new SimpleDateFormat("yyyy/dd/MM");
-//			if (null != users && users.getDateOfBirth() != null)
-//				dob = fmt.format(users.getDateOfBirth());
-			try {
-//				menuAssignmentDetails = menuAssignmentImpl.getGenericListWithHQLParameter(
-//						new String[] { "userCategory", "genericStatus" },
-//						new Object[] { users.getUserCategory(), ACTIVE }, "MenuAssignment", "menuAssgnId asc");
-//				LOGGER.info("menu size ::>>" + menuAssignmentDetails.size());
-
+				/*mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+				if(users.getUserCategory().getUserCatid()==membercat && null!=mutualCoopMemberDto) {
+					
+					
+				}
+				
+				
+				
+				*/
+				
+				
 			} catch (Exception e) {
 				LOGGER.info("error loading generic menu:::");
 				setValid(false);
@@ -256,6 +263,42 @@ public class LoadUserInformationsController implements Serializable, DbConstant 
 
 	public void setNotifName(String notifName) {
 		this.notifName = notifName;
+	}
+	public LoanRequestImpl getRequestImpl() {
+		return requestImpl;
+	}
+	public void setRequestImpl(LoanRequestImpl requestImpl) {
+		this.requestImpl = requestImpl;
+	}
+	public LoanRequest getRequest() {
+		return request;
+	}
+	public void setRequest(LoanRequest request) {
+		this.request = request;
+	}
+	public MutualCoopMemberDto getMutualCoopMemberDto() {
+		return mutualCoopMemberDto;
+	}
+	public void setMutualCoopMemberDto(MutualCoopMemberDto mutualCoopMemberDto) {
+		this.mutualCoopMemberDto = mutualCoopMemberDto;
+	}
+	public int getDays() {
+		return days;
+	}
+	public void setDays(int days) {
+		this.days = days;
+	}
+	public boolean isDaybefore() {
+		return daybefore;
+	}
+	public void setDaybefore(boolean daybefore) {
+		this.daybefore = daybefore;
+	}
+	public boolean isDayafter() {
+		return dayafter;
+	}
+	public void setDayafter(boolean dayafter) {
+		this.dayafter = dayafter;
 	}
 
 }

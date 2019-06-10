@@ -158,5 +158,7 @@ public interface DbConstant {
 	public static final String Distributed_Pswd = "anonymous";
 	public static final String Block = "blocked";
 	public static final String RequestStatus = "join";
-	
+	public static final String FundStatus = "received";
+	public static final String LoanStatus = "loanrequest";
+	public static final String LoanPayStatus = "paid";
 }

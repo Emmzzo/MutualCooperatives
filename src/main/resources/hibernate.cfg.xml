@@ -23,7 +23,8 @@
 		<mapping class="mutual.domain.Funds" />
 		<mapping class="mutual.domain.LoanRequest" />
 		<mapping class="mutual.domain.Fines" />
-		<mapping class="mutual.domain.InterestCharges" />
+		<mapping class="mutual.domain.InterestCharges" />	
+		<mapping class="mutual.domain.OtherIncome" />
 	</session-factory>
 </hibernate-configuration>
 

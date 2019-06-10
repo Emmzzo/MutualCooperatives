@@ -147,15 +147,18 @@ h3 {
       Tip 2: you can also add an image using data-image tag
   -->
 			<div class="logo">
-				<a href="http://www.creative-tim.com" class="simple-text logo-mini label">
-					MUTUAL </a> <a href="http://www.creative-tim.com"
-					class="simple-text logo-normal label"> COOPERATIVES MS </a>
+				<a href="http://www.creative-tim.com"
+					class="simple-text logo-mini label text-success"> MUTUAL </a> <a
+					href="http://www.creative-tim.com"
+					class="simple-text logo-normal text-success label">
+					COOPERATIVES MS </a>
 			</div>
 			<div class="sidebar-wrapper">
 				<ul class="nav">
-					<li class="nav-item active "><a class="nav-link" href="#0">
+					<li class="nav-item badge badge-success"><a class="nav-link" href="#0">
 							<i class="material-icons">dashboard</i>
-							<p class="label" style="color:white;font-size: 14px;">Your Mutual Cooperatives </p>
+							<p class="label" style="color: white; font-size: 13pt;">Your|Mutual
+								Coop</p>
 					</a></li>
 					<!-- your sidebar here -->
 				</ul>
@@ -167,7 +170,7 @@ h3 {
 				class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
 			<div class="container-fluid">
 				<div class="navbar-wrapper">
-					<a class="navbar-brand" href="#pablo">Dashboard</a>
+					<a class="navbar-brand  label text-info" href="#{loadUserInformationsController.getContextPath()}/MemberPage1.xhtml" style="font-weight: bold;font-size: 14pt">Dashboard</a>
 				</div>
 				<button class="navbar-toggler" type="button" data-toggle="collapse"
 					aria-controls="navigation-index" aria-expanded="false"
@@ -179,17 +182,19 @@ h3 {
 				</button>
 				<div class="collapse navbar-collapse justify-content-end">
 					<ul class="navbar-nav">
-						<li class="nav-item"><a class="nav-link" href="#pablo"> <i
-								class="material-icons">notifications</i> <span class="label">Notifications</span>
+						<li class="nav-item"><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/MemberPage1.xhtml"> <i
+								class="material-icons">notifications</i> <span
+								class=" text-info label" style="font-size: 12pt">#{guestController.count}&nbsp;Notifications</span>
 						</a></li>
+						<li class="nav-item"><h:form>
+								<h:commandLink class="nav-link" action="#{login.logout}">
+									<!-- <a class="nav-link" href="#pablo"> -->
+									<i class="material-icons text-danger">logout</i>
+									<span class="text-danger label" style="font-size: 12pt">Logout</span>
+									<!-- </a> -->
+								</h:commandLink>
+							</h:form></li>
 						<!-- your navbar here -->
-						<li class="nav-item">
-						<h:form><h:commandLink class="nav-link" action="#{login.logout}">
-						<!-- <a class="nav-link" href="#pablo"> --> <i
-								class="material-icons text-danger">logout</i> <span class="text-danger label">Logout</span>
-						<!-- </a> -->
-						</h:commandLink></h:form>
-						</li>
 					</ul>
 				</div>
 			</div>
@@ -197,55 +202,20 @@ h3 {
 			<!-- End Navbar -->
 			<div class="content">
 				<div class="container-fluid">
-					<div class="row">
-						<div class="col-lg-4 col-md-7 col-sm-7">
-							<div class="card card-stats">
-								<div class="card-header card-header-success card-header-icon">
-									<div class="card-icon">
-										<i class="material-icons">account_box</i>
-									</div>
-									<p class="card-category label">Mutual Coop Members</p>
-									<h3 class="card-title">
-										75 <small class="label">Members</small>
-									</h3>
-								</div>
-								<div class="card-footer">
-									<div class="stats">
-										<i class="material-icons text-danger">account_box</i> <a class="label"
-											href="#pablo">Get More Details..</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-7 col-sm-7">
-							<div class="card card-stats">
-								<div class="card-header card-header-success card-header-icon">
-									<div class="card-icon">
-										<i class="material-icons">account_box</i>
-									</div>
-									<p class="card-category label">Mutual Coop Members</p>
-									<h3 class="card-title">75<small class="label">Members</small></h3>
-								</div>
-								<div class="card-footer">
-									<div class="stats">
-										<i class="material-icons text-danger">account_box</i> <a class="label"
-											href="#pablo">Get More Details..</a>
-									</div>
-								</div>
-							</div>
-						</div>	
-					</div>
+					<ui:insert name="content" id="cont">
+						<ui:include src="/template/common/commonContent.xhtml" />
+					</ui:insert>
 				</div>
 			</div>
 			<footer class="footer">
 			<div class="container-fluid">
 				<nav class="float-left">
 				<ul>
-					<li><a href="https://www.creative-tim.com" class="label"> Mutual Cooperative </a>
-					</li>
+					<li><a href="https://www.creative-tim.com" class="label" style="font-size: 12pt">
+							Mutual Cooperative </a></li>
 				</ul>
 				</nav>
-				<div class="copyright float-right">
+				<div class="copyright float-right label" style="font-size: 12pt">
 					&copy;
 					<script>
 						document.write(new Date().getFullYear())

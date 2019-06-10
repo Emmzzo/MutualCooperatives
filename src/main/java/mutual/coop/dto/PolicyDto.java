@@ -8,8 +8,8 @@ import mutual.domain.MutualCooperative;
 public class PolicyDto implements Serializable {
 
 	private int policyId;
-	private String fineCharges;
-	private String interesCharges;
+	private String fineCharges,termofcontribution;
+	private String interesCharges,fineondelayedcontribution,mincontribution;
 	private boolean editable;
 	private String policyDescription;
 	private MutualCooperative mutualcoop;
@@ -92,6 +92,30 @@ public class PolicyDto implements Serializable {
 	}
 	public void setCountinfo(int countinfo) {
 		this.countinfo = countinfo;
+	}
+
+	public String getTermofcontribution() {
+		return termofcontribution;
+	}
+
+	public void setTermofcontribution(String termofcontribution) {
+		this.termofcontribution = termofcontribution;
+	}
+
+	public String getFineondelayedcontribution() {
+		return fineondelayedcontribution;
+	}
+
+	public void setFineondelayedcontribution(String fineondelayedcontribution) {
+		this.fineondelayedcontribution = fineondelayedcontribution;
+	}
+
+	public String getMincontribution() {
+		return mincontribution;
+	}
+
+	public void setMincontribution(String mincontribution) {
+		this.mincontribution = mincontribution;
 	}
 }
 

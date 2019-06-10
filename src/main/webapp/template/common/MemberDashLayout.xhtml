@@ -57,7 +57,7 @@
 		crossorigin="anonymous" />
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
  	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"/>
-	
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
 	<h:outputStylesheet name="bootstrap-fileupload.min.css" library="css" />
 	<h:outputStylesheet name="loading.css" library="css" />
 	<h:outputScript library="js" name="loading.js" />
@@ -142,13 +142,13 @@ h3 {
 
 		<div class="container-fluid page-body-wrapper">
 			<ui:insert name="sideBar">
-				<ui:include src="/template/common/commonSideBar.xhtml" />
+				<ui:include src="/template/common/MemberSideBar.xhtml" />
 			</ui:insert>
 
 			<div class="main-panel">
 				<div class="content-wrapper">
 					<div class="row">
-						<div class="col-12">
+						<!-- <div class="col-12">
 							<span class="d-flex align-items-center purchase-popup">
 								<p>Like what you see? Check out our premium version for
 									more.</p> <a
@@ -159,18 +159,21 @@ h3 {
 								target="_blank" class="btn purchase-button">Upgrade To Pro</a> <i
 								class="mdi mdi-close popup-dismiss"></i>
 							</span>
-						</div>
+						</div> -->
 					</div>
 					<div class="page-header"></div>
 					<div class="row">
 						<div class="col-12 grid-margin stretch-card">
 							<div class="card">
 								<div class="card-body">
-									<h4 class="card-title">Gradient buttons</h4>
+									<h4 class="card-title label" style="font-size: 13pt;font-weight: bold">MC-MS</h4>
 									<p class="card-description">
-										Add class
-										<code>.btn-gradient-{color}</code>
-										for gradient buttons
+									<h:panelGroup rendered="#{guestController.dayafter}" style="margin-left:25%">
+										<code class="text-info label" style="font-size: 13pt;font-weight: bold">You have </code><label class=" text-info label badge badge-warning" style="font-size: 14pt;font-weight: bold">#{guestController.days} day(s) remained to return back the loan you have taken</label> 
+									</h:panelGroup>
+										<h:panelGroup rendered="#{guestController.daybefore}"  style="margin-left:25%">
+										<code class="text-info label" style="font-size: 13pt;font-weight: bold">You have </code><label class="label badge badge-danger" style="font-size: 14pt;font-weight: bold">#{guestController.days} day(s) exceed on the return date of the loan you have taken  </label> 
+									</h:panelGroup>
 									</p>
 									<div class="table-responsive">
 										<div id="page-wrappe">

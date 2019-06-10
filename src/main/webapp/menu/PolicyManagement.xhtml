@@ -59,7 +59,7 @@
 						</h:panelGroup>
 						<p:outputPanel
 							rendered="#{mutualCoopController.renderForeignCountry}">
-							<div class="col-md-6 grid-margin stretch-card">
+							<div class="col-md-7 grid-margin stretch-card">
 								<div class="card">
 									<div class="card-body">
 										<p:outputPanel autoUpdate="true">
@@ -96,8 +96,9 @@
 											</div>
 											<div class="form-group">
 												<label for="exampleInputEmail1" class="label"
-													style="font-size: 13pt; font-weight: bold">Add Fine
-													<span style="color: red; font-size: 15px">*</span>
+													style="font-size: 13pt; font-weight: bold">Fine on
+													late to return loan <span
+													style="color: red; font-size: 15px">*</span>
 												</label>
 
 												<h:inputText a:type="number"
@@ -116,6 +117,70 @@
 													styleClass="help-block label"></h:message>
 											</div>
 
+											<div class="form-group">
+												<label for="exampleInputamount" class="label"
+													style="font-size: 13pt; font-weight: bold">Minimum
+													contribution amount <span
+													style="color: red; font-size: 15px">*</span>
+												</label>
+												<h:inputText a:type="number"
+													value="#{mutualCoopController.mincontribution}"
+													class="form-control form-control-lg label"
+													id="exampleamountcontrib"
+													a:placeholder="Add minimum contribution"
+													style=" font-size: 14px !important;" required="true"
+													requiredMessage="#{msg['requiered.fine.message']}"
+													converterMessage="#{msg['error.enter.invalid.fine']}"
+													validatorMessage="#{msg['error.enter.invalid.fine']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputText>
+												<h:message for="exampleamountcontrib"
+													styleClass="help-block label"></h:message>
+											</div>
+											<div class="form-group">
+												<label for="exampleInputterm" class="label"
+													style="font-size: 13pt; font-weight: bold"> Term of
+													contribution <span style="color: red; font-size: 15px">*</span>
+												</label>
+												<h:selectOneMenu id="exampleInputtermper"
+													styleClass="form-control form-control-lg label"
+													value="#{mutualCoopController.newpolicy.periodicinvestterm}"
+													requiredMessage="#{msg['requiered.categoryname.message']}">
+													<f:selectItem
+														itemLabel="#{msg['common.message.select.period.PLACEHOLDER']}"
+														itemValue="#{null}" escapeItem="true" itemDisabled="true" />
+													<f:selectItem itemLabel="Daily" itemValue="Daily" />
+													<f:selectItem itemLabel="Weekly" itemValue="Weekly" />
+													<f:selectItem itemLabel="Monthly" itemValue="Monthly" />
+												</h:selectOneMenu>
+												<h:message for="exampleInputtermper"
+													styleClass="help-block label"></h:message>
+											</div>
+											<div class="form-group">
+												<label for="exampleInputfine" class="label"
+													style="font-size: 13pt; font-weight: bold">Fine on
+													delayed contribution <span
+													style="color: red; font-size: 15px">*</span>
+												</label>
+
+												<h:inputText a:type="number"
+													value="#{mutualCoopController.fineoncontribution}"
+													class="form-control form-control-lg label"
+													id="examplefinecontrib"
+													a:placeholder="Add fine on contribution"
+													style=" font-size: 14px !important;" required="true"
+													requiredMessage="#{msg['requiered.fine.message']}"
+													converterMessage="#{msg['error.enter.invalid.fine']}"
+													validatorMessage="#{msg['error.enter.invalid.fine']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputText>
+												<h:message for="examplefinecontrib"
+													styleClass="help-block label"></h:message>
+											</div>
 
 											<div class="form-group">
 												<label for="exampleDate" class="label font-weight-bold"
@@ -151,25 +216,28 @@
 													validatorMessage="#{msg['error.enter.invalid.policydesc']}">
 													<f:validateRegex
 														pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}"></f:validateRegex>
-													<f:validateLength maximum="100"></f:validateLength>
+
 												</h:inputTextarea>
 
 												<h:message for="exampleInputPhone1"
 													styleClass="help-block label"></h:message>
 											</div>
-											<p:outputPanel rendered="#{mutualCoopController.rendersubmit}" autoUpdate="true">
+											<p:outputPanel
+												rendered="#{mutualCoopController.rendersubmit}"
+												autoUpdate="true">
 												<h:commandButton a:type="submit"
-												action="#{mutualCoopController.savePolicy}"
-												class="btn btn-gradient-info mr-2 label"
-												style="font-size: 12pt;" value="Submit"></h:commandButton>
-												</p:outputPanel>
-												<p:outputPanel rendered="#{mutualCoopController.renderBoard}" autoUpdate="true">
+													action="#{mutualCoopController.savePolicy}"
+													class="btn btn-gradient-info mr-2 label"
+													style="font-size: 12pt;" value="Submit"></h:commandButton>
+											</p:outputPanel>
+											<p:outputPanel rendered="#{mutualCoopController.renderBoard}"
+												autoUpdate="true">
 												<h:commandButton a:type="submit"
-												action="#{mutualCoopController.newPolicy}"
-												class="btn btn-gradient-success mr-2 label"
-												style="font-size: 12pt;" value="Submit"></h:commandButton>
-												
-												</p:outputPanel>
+													action="#{mutualCoopController.newPolicy}"
+													class="btn btn-gradient-success mr-2 label"
+													style="font-size: 12pt;" value="Submit"></h:commandButton>
+
+											</p:outputPanel>
 										</h:form>
 									</div>
 								</div>
@@ -193,7 +261,7 @@
 												<thead>
 													<tr>
 
-														<th colspan="8" style="font-size: 12pt;"><h:commandLink
+														<th colspan="10" style="font-size: 12pt;"><h:commandLink
 																data-toggle="tooltip" data-placement="left"
 																value="New Policy"
 																action="#{mutualCoopController.editPolicy}"
@@ -216,8 +284,14 @@
 														<th style="font-size: 15px; font-weight: bold">No</th>
 														<th style="font-size: 15px; font-weight: bold">Description</th>
 														<th style="font-size: 15px; font-weight: bold">Interest
-															charge</th>
-														<th style="font-size: 15px; font-weight: bold">Fine</th>
+															charge on loan</th>
+														
+														<th style="font-size: 15px; font-weight: bold">Fine
+															on delayed contribution</th>
+														<th style="font-size: 15px; font-weight: bold">Minimum
+															contribution</th>
+														<th style="font-size: 15px; font-weight: bold">Term
+															of contribution</th>
 														<th style="font-size: 15px; font-weight: bold">Aggreed
 															date</th>
 														<th style="font-size: 15px; font-weight: bold">Status</th>
@@ -242,7 +316,7 @@
 																	validatorMessage="#{msg['error.enter.invalid.policydesc']}">
 																	<f:validateRegex
 																		pattern="#{regex['regex.validation.message.VALID.FIRST_NAME']}"></f:validateRegex>
-																	<f:validateLength maximum="100"></f:validateLength>
+
 																</h:inputTextarea> <h:message errorClass="errorMsg1"
 																	for="exampleInputPhone1" styleClass="label"
 																	style="font-size:11pt"></h:message> <h:outputText
@@ -266,10 +340,13 @@
 
 																</h:message> <h:outputText value="#{coop.interesCharges}"
 																	style="font-size:11pt" rendered="#{not coop.editable}" /></td>
+																
+
 															<td class="text-info" style="font-size: 12pt;"><h:inputText
-																	a:type="number" value="#{coop.fineCharges}"
+																	a:type="number"
+																	value="#{coop.fineondelayedcontribution}"
 																	rendered="#{coop.editable}"
-																	class="form-control form-control-lg label" id="fines1"
+																	class="form-control form-control-lg label" id="fines2"
 																	style=" font-size: 14px !important;" required="true"
 																	requiredMessage="#{msg['requiered.fine.message']}"
 																	converterMessage="#{msg['error.enter.invalid.fine']}"
@@ -277,10 +354,51 @@
 																	<f:validateRegex
 																		pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
 																	<f:validateLength maximum="100"></f:validateLength>
-																</h:inputText> <h:message for="fines1" styleClass="help-block label"
+																</h:inputText> <h:message for="fines2" styleClass="help-block label"
 																	style="font-size:11pt"></h:message> <h:outputText
-																	value="#{coop.fineCharges}" style="font-size:11pt"
-																	rendered="#{not coop.editable}" /></td>
+																	value="#{coop.fineondelayedcontribution}"
+																	style="font-size:11pt" rendered="#{not coop.editable}" /></td>
+
+															<td class="text-info" style="font-size: 12pt;"><h:inputText
+																	a:type="number" value="#{coop.mincontribution}"
+																	rendered="#{coop.editable}"
+																	class="form-control form-control-lg label"
+																	id="minamount" style=" font-size: 14px !important;"
+																	required="true"
+																	requiredMessage="#{msg['requiered.fine.message']}"
+																	converterMessage="#{msg['error.enter.invalid.fine']}"
+																	validatorMessage="#{msg['error.enter.invalid.fine']}">
+																	<f:validateRegex
+																		pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+																	<f:validateLength maximum="100"></f:validateLength>
+																</h:inputText> <h:message for="minamount"
+																	styleClass="help-block label" style="font-size:11pt"></h:message>
+																<h:outputText value="#{coop.mincontribution}"
+																	style="font-size:11pt" rendered="#{not coop.editable}" /></td>
+
+															<td class="text-info" style="font-size: 12pt;"><h:selectOneMenu
+																	id="exampleInputterm"
+																	styleClass="form-control form-control-lg label"
+																	value="#{coop.termofcontribution}"
+																	rendered="#{coop.editable}"
+																	requiredMessage="#{msg['requiered.categoryname.message']}">
+																	<f:selectItem
+																		itemLabel="#{msg['common.message.select.period.PLACEHOLDER']}"
+																		itemValue="#{null}" escapeItem="true"
+																		itemDisabled="true" />
+																	<f:selectItem itemLabel="Daily" itemValue="Daily" />
+																	<f:selectItem itemLabel="Weekly" itemValue="Weekly" />
+																	<f:selectItem itemLabel="Monthly" itemValue="Monthly" />
+																</h:selectOneMenu> <h:message for="exampleInputterm"
+																	styleClass="help-block label" style="font-size:11pt"></h:message>
+																<h:outputText value="#{coop.termofcontribution}"
+																	style="font-size:11pt" rendered="#{not coop.editable}" />
+
+
+
+															</td>
+
+
 															<td class="text-info" style="font-size: 12pt;"><h:inputText
 																	a:type="date" rendered="#{coop.editable}"
 																	class="form-control form-control-lg label"
@@ -297,16 +415,17 @@
 																	rendered="#{not coop.editable}" /></td>
 
 
-															<td><p:outputPanel rendered="#{ not coop.approved}"
-																	autoUpdate="true">
+															<td style="font-size: 12pt;"><p:outputPanel
+																	rendered="#{ not coop.approved}" autoUpdate="true">
 																	<label class="badge badge-success">Approved</label>
 																</p:outputPanel> <p:outputPanel rendered="#{ not coop.rejected}"
 																	autoUpdate="true">
 																	<label class="badge badge-danger">Rejected</label>
 																</p:outputPanel></td>
-															<td style="font-size: 12pt;"><h:outputText
-																	value="#{coop.recordedBy}"
-																	rendered="#{not coop.editable}" /></td>
+															
+															<td class="text-info" style="font-size: 12pt;"> 
+																<h:outputText value="#{coop.recordedBy}"
+																	style="font-size:11pt" /></td>
 															<td><h:commandButton a:type="submit"
 																	action="#{mutualCoopController.editAction(coop)}"
 																	rendered="#{not coop.editable}"

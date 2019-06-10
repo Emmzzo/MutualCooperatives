@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,17 +28,25 @@ import javax.servlet.http.HttpSession;
 
 import org.hibernate.HibernateException;
 import org.primefaces.model.UploadedFile;
+
+import com.google.gson.Gson;
+
 import mutual.common.DbConstant;
+import mutual.common.Formating;
 import mutual.common.JSFBoundleProvider;
 import mutual.common.JSFMessagers;
 import mutual.common.SessionUtils;
 import mutual.coop.dto.ContactDto;
+import mutual.coop.dto.FundsDto;
+import mutual.coop.dto.LoanDto;
 import mutual.coop.dto.MutualCoopMemberDto;
 import mutual.coop.dto.MutualMembersPolicyDto;
 import mutual.coop.dto.PolicyDto;
 import mutual.coop.dto.UserDto;
 import mutual.dao.impl.ContactImpl;
 import mutual.dao.impl.DistrictImpl;
+import mutual.dao.impl.FundsImpl;
+import mutual.dao.impl.LoanRequestImpl;
 import mutual.dao.impl.LoginImpl;
 import mutual.dao.impl.MemberRequestImpl;
 import mutual.dao.impl.MutualCoopMembersImpl;
@@ -48,6 +57,8 @@ import mutual.dao.impl.UserCategoryImpl;
 import mutual.dao.impl.UserImpl;
 import mutual.domain.Contact;
 import mutual.domain.District;
+import mutual.domain.Funds;
+import mutual.domain.LoanRequest;
 import mutual.domain.MemberRequest;
 import mutual.domain.MutualCoopMembers;
 import mutual.domain.MutualCoopPolicy;
@@ -55,12 +66,11 @@ import mutual.domain.MutualCooperative;
 import mutual.domain.Province;
 import mutual.domain.UserCategory;
 import mutual.domain.Users;
-
 @ManagedBean
 @ViewScoped
 public class GuestController implements Serializable, DbConstant {
 	private static final Logger LOGGER = Logger.getLogger(Thread.currentThread().getStackTrace()[0].getClassName());
-	private String CLASSNAME = "MutualCoopController :: ";
+	private String CLASSNAME = "GuestController :: ";
 	private static final long serialVersionUID = 1L;
 	/* to manage validation messages */
 	private boolean isValid;
@@ -74,6 +84,7 @@ public class GuestController implements Serializable, DbConstant {
 	private String password;
 	private String confirmPswd;
 	private String useremail;
+	private String overallFunds;
 	private UserDto userDto;
 	private List<Users> usersDetails = new ArrayList<Users>();
 	private List<Users> useravail = new ArrayList<Users>();
@@ -98,20 +109,32 @@ public class GuestController implements Serializable, DbConstant {
 	MutualCoopMembersImpl mutualMembersImpl = new MutualCoopMembersImpl();
 	private List<MutualCoopMembers> mutualMembersList = new ArrayList<MutualCoopMembers>();
 	private List<MutualCoopMemberDto> mutualMembersListDto = new ArrayList<MutualCoopMemberDto>();
-
+	private List<MutualCoopMemberDto> memberCoopList = new ArrayList<MutualCoopMemberDto>();
+	private MutualCoopMemberDto mutualCoopMemberDto = new MutualCoopMemberDto();
 	private List<MutualCooperative> mutualCoopPendingRequest = new ArrayList<MutualCooperative>();
 	private List<MutualMembersPolicyDto> availablecoop = new ArrayList<MutualMembersPolicyDto>();
 	private MutualCoopPolicy policy = new MutualCoopPolicy();
 	private List<MutualCoopPolicy> mutualpolicy, listofAvailableCoop = new ArrayList<MutualCoopPolicy>();
+	private List<LoanRequest> loanRequestList = new ArrayList<LoanRequest>();
+	private List<LoanRequest>memberLoanRequest= new ArrayList<LoanRequest>();
 	MutualCoopPolicyImpl policyImpl = new MutualCoopPolicyImpl();
 	private MutualCoopPolicy newpolicy = new MutualCoopPolicy();
 	private List<PolicyDto> policyDtoList = new ArrayList<PolicyDto>();
+	private List<LoanDto> loanDtoList = new ArrayList<LoanDto>();
+	private List<LoanDto> memberLoanDtoList = new ArrayList<LoanDto>();
+	private List<FundsDto> fundDtoList,fundsStat = new ArrayList<FundsDto>();
+	private List<FundsDto> overallFundDtoList = new ArrayList<FundsDto>();
+	private List<Funds> fundsList = new ArrayList<Funds>();
+	private List<Funds> overallFundsList = new ArrayList<Funds>();
 	private PolicyDto policyDto = new PolicyDto();
 	private MutualMembersPolicyDto mutualcoopinfo = new MutualMembersPolicyDto();
 	private MemberRequest memberReq;
+	private LoanRequest request;
+	FundsImpl fundsImpl = new FundsImpl();
+	private LoanRequestImpl requestImpl = new LoanRequestImpl();
 	private MemberRequestImpl memberReqImpl = new MemberRequestImpl();
 	private String choice;
-	private boolean rendered;
+	private boolean rendered,daybefore,dayafter;;
 	private boolean renderForeignCountry;
 	private boolean rendersaveButton;
 	private boolean renderprofile;
@@ -119,11 +142,11 @@ public class GuestController implements Serializable, DbConstant {
 	private boolean renderBoard, rendersubmit;
 	private String option;
 	private String selection;
-	private String fines, interest;
-	private Date recordeddate;
-	private int count;
+	private String fines, interest, amount;
+	private Date recordeddate,returnDate;
+	private int count,days;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "static-access" })
 	@PostConstruct
 	public void init() {
 		HttpSession session = SessionUtils.getSession();
@@ -143,12 +166,77 @@ public class GuestController implements Serializable, DbConstant {
 		if (memberReq == null) {
 			memberReq = new MemberRequest();
 		}
+		if (request == null) {
+			request = new LoanRequest();
+		}
 		try {
 
 			if (usersSession.getUserCategory().getUserCatid() == guestcat) {
 				availablecoop = mutualCoopList();
 				this.rendered = true;
 				count = availablecoop.size();
+			} else {
+				memberCoopList = memberMutualCoopList();
+				this.rendered = true;
+				count = memberCoopList.size();
+				mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+				if (null != mutualCoopMemberDto) {
+					mutualMembersList = mutualMembersImpl.getGenericListWithHQLParameter(
+							new String[] { "genericStatus", "mutualcoop" },
+							new Object[] { ACTIVE, mutualCoopMemberDto.getMutualcoop() }, "MutualCoopMembers",
+							"mutualMemberId asc");
+					mutualMembersListDto = availableMembers(mutualMembersList);
+				loanRequestList = requestImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "mutualcoop", "usermember" },
+						new Object[] { ACTIVE, mutualCoopMemberDto.getMutualcoop(), usersSession }, "LoanRequest",
+						"requestDate desc");
+				if(loanRequestList.size()>0) {
+					renderDataTable=true;
+					loanDtoList = loanRequested(loanRequestList);
+				}else {
+					rendersaveButton=true;
+				}	
+					memberLoanRequest=requestImpl.getGenericListWithHQLParameter(
+						new String[] { "genericStatus", "mutualcoop"},
+						new Object[] { ACTIVE, mutualCoopMemberDto.getMutualcoop()}, "LoanRequest",
+						"requestDate asc");
+				
+					memberLoanDtoList=memberLoanRequested(memberLoanRequest);
+					
+				fundsList = fundsImpl.getGenericListWithHQLParameter(new String[] { "status", "usermember","mutualcoop" },
+						new Object[] { FundStatus, usersSession,mutualCoopMemberDto.getMutualcoop() },
+						"Funds", "balance asc");
+				
+				
+				if(fundsList.size()>0) {
+					renderForeignCountry=true;
+					fundDtoList = listFunds(fundsList);
+					//overallFundDtoList=overallCoopFunds();
+				}else {
+					renderForeignCountry=false;
+					renderBoard=true;
+				}
+				LoanRequest request2= new LoanRequest();
+				request2=requestImpl.getModelWithMyHQL(new String[] { "status", "usermember","mutualcoop"},
+						new Object[] { ACCEPTED, usersImpl.gettUserById(usersSession.getUserId(), "userId"),mutualCoopMemberDto.getMutualcoop()},
+						"from LoanRequest");
+				Formating fmt = new Formating();
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				Date today = fmt.getCurrentDateFormtNOTime();
+				if(null!=request2) {
+					simpleDateFormat.format(request2.getReturnDate());
+					
+					if(request2.getReturnDate().after(today)) {
+						days = fmt.daysBetween(today,request2.getReturnDate());
+						dayafter=true;
+					}else {
+						days = fmt.daysBetween(request2.getReturnDate(),today);
+						daybefore=true;
+					}
+				}
+				overallFundsStatistics();
+			}
+				 
 			}
 
 		} catch (Exception e) {
@@ -159,6 +247,239 @@ public class GuestController implements Serializable, DbConstant {
 		}
 
 	}
+	
+	
+	
+
+
+	public List<FundsDto> overallCoopFunds() {
+		HttpSession session = SessionUtils.getSession();
+		overallFundDtoList= new ArrayList<FundsDto>();
+		mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+		DecimalFormat fmt= new DecimalFormat("###,###.##");
+		double overloan=overallLoanAccepted();
+		if (null != mutualCoopMemberDto) {
+			
+			for(Object[]data:fundsImpl.reportList("select sum(f.amount),f.mutualcoop from Funds f where mutualcoop ="+mutualCoopMemberDto.getMutualcoop().getMutualCoopId()+" and f.status='"+FundStatus+"'")) {
+				
+				FundsDto fundDto= new FundsDto();	
+				fundDto.setMutualcoop((MutualCooperative)data[1]);
+				if(null!=data[0]) {
+					fundDto.setFormatBalance(fmt.format(data[0])+"");
+				}else {
+					fundDto.setFormatBalance(fmt.format(decimalpoint));
+				}
+				
+				if(Double.parseDouble(data[0]+"")>overloan) {
+					fundDto.setFundavail(fmt.format(Double.parseDouble(data[0]+"")-overloan));
+					fundDto.setOverloanrequest(fmt.format(overloan));
+				}
+				overallFundDtoList.add(fundDto);
+			}
+			
+		}
+		
+		renderForeignCountry=false;
+		rendersubmit=true;
+		return overallFundDtoList;
+	}
+	public Double currentCoopFunds() {
+		HttpSession session = SessionUtils.getSession();
+		mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+		double overloan=overallLoanAccepted();
+		double fundoverloan=0.0;
+		if (null != mutualCoopMemberDto) {
+			
+			for(Object[]data:fundsImpl.reportList("select sum(f.balance),f.mutualcoop from Funds f where mutualcoop ="+mutualCoopMemberDto.getMutualcoop().getMutualCoopId()+" and f.genericStatus='"+ACTIVE+"' and f.status='"+FundStatus+"'")) {
+				
+				if(Double.parseDouble(data[0]+"")>overloan&& null!=data[0]) {
+				fundoverloan=Double.parseDouble(data[0]+"")-overloan;
+				}
+			}
+			
+		}
+
+		return fundoverloan;
+	}
+	
+	public double overallLoanAccepted() {
+		HttpSession session = SessionUtils.getSession();
+		overallFundDtoList= new ArrayList<FundsDto>();
+		mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+		double overloan=0.0;
+		if (null != mutualCoopMemberDto) {
+			for(Object[]data:requestImpl.reportList("select sum(l.amount),l.mutualcoop from LoanRequest l where l.mutualcoop ="+mutualCoopMemberDto.getMutualcoop().getMutualCoopId()+" and l.status='"+ACCEPTED+"'")) {
+			if(null!=data[0]) {
+				overloan=Double.parseDouble(data[0]+"");
+			}else {
+				overloan=overloan+overloan;	
+			}
+			
+			}
+		}
+		
+		return overloan;
+	}
+	
+	
+	public List<FundsDto> listFunds(List<Funds> list) {
+		fundDtoList = new ArrayList<FundsDto>();
+		DecimalFormat fmt= new DecimalFormat("###,###.##");
+		for (Funds funds : list) {
+			FundsDto fundDto = new FundsDto();
+			if(funds.getGenericStatus().equalsIgnoreCase(ACTIVE)) {
+			fundDto.setEditable(false);	
+			}else {
+				fundDto.setEditable(true);
+			}
+			fundDto.setEditchanges(false);
+			fundDto.setFundId(funds.getFundId());
+			//fundDto.setAmount(funds.getAmount());
+			fundDto.setFormatAmount(fmt.format(funds.getAmount()));
+			//fundDto.setBalance(funds.getBalance());
+			fundDto.setFormatBalance(fmt.format(funds.getBalance()));
+			fundDto.setGivenDate(funds.getGivenDate());
+			fundDto.setRecordedBy(funds.getCreatedBy());
+			fundDto.setStatus(funds.getStatus());
+			fundDto.setUsermember(funds.getUsermember());
+			fundDto.setMutualcoop(funds.getMutualcoop());
+			fundDto.setGeneriStatus(funds.getGenericStatus());
+			fundDtoList.add(fundDto);
+		}
+
+		return (fundDtoList);
+	}
+
+	public void backMember() {
+		this.rendersaveButton=true;
+		this.renderDataTable=false;
+	}
+	public List<LoanDto> memberLoanRequested(List<LoanRequest> list) {
+		memberLoanDtoList = new ArrayList<LoanDto>();
+		DecimalFormat fmt= new DecimalFormat("###,###.##");
+		for (LoanRequest loan : list) {
+			LoanDto request = new LoanDto();
+			request.setEditable(false);
+			request.setRequestId(loan.getRequestId());
+			request.setMutualcoop(loan.getMutualcoop());
+			request.setUsermember(loan.getUsermember());
+			/*request.setAmount(loan.getAmount());*/
+			request.setFormatBalance(fmt.format(loan.getAmount()));
+			request.setApprovedDate(loan.getApprovedDate());
+			request.setRequestDate(loan.getRequestDate());
+			request.setGeneriStatus(loan.getGenericStatus());
+			request.setRecordedBy(loan.getUpdatedBy());
+			request.setStatus(loan.getStatus());
+			request.setReturnDate(loan.getReturnDate());
+			if(loan.getStatus().equalsIgnoreCase(LoanStatus)) {
+				request.setEditchanges(false);
+			}else {
+				request.setEditchanges(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(ACCEPTED)) {
+				request.setAccept(false);
+			}else {
+				request.setAccept(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(REJECTED)) {
+				request.setApproval(false);
+			}else {
+				request.setApproval(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(LoanPayStatus)) {
+				request.setPaidStatus(false);
+			}else {
+				request.setPaidStatus(true);
+			}
+			
+			memberLoanDtoList.add(request);
+		}
+
+		return memberLoanDtoList;
+	}
+	
+	public void overallFundsStatistics() {
+		HttpSession session = SessionUtils.getSession();
+		// Get the values from the session
+		mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+		fundsStat= new ArrayList<FundsDto>();
+		for (Object[] data : fundsImpl.reportList("select sum(f.amount),DATE_FORMAT(f.givenDate,'%d/%m/%Y') from Funds f where status='"+FundStatus+"' and f.mutualcoop="+mutualCoopMemberDto.getMutualcoop().getMutualCoopId()+" and f.givenDate is not null group by DATE_FORMAT(givenDate,'%d/%m/%Y')")) {
+			FundsDto funds= new FundsDto();
+			
+			LOGGER.info("::amount::::"+data[0]+"::Date:"+data[1]+"");
+			funds.setAmount(Double.parseDouble(data[0]+""));
+			funds.setContDate(data[1]+"");
+			fundsStat.add(funds);
+		}
+		
+		this.overallFunds = new Gson().toJson(fundsStat);
+		
+	}
+	
+	
+	
+	public List<LoanDto> loanRequested(List<LoanRequest> list) {
+		loanDtoList = new ArrayList<LoanDto>();
+		DecimalFormat fmt= new DecimalFormat("###,###.##");
+		for (LoanRequest loan : list) {
+			LoanDto request = new LoanDto();
+			request.setEditable(false);
+			request.setRequestId(loan.getRequestId());
+			request.setMutualcoop(loan.getMutualcoop());
+			request.setUsermember(loan.getUsermember());
+			/*request.setAmount(loan.getAmount());*/
+			request.setFormatBalance(fmt.format(loan.getAmount()));
+			request.setApprovedDate(loan.getApprovedDate());
+			request.setRequestDate(loan.getRequestDate());
+			request.setGeneriStatus(loan.getGenericStatus());
+			request.setRecordedBy(loan.getUpdatedBy());
+			request.setStatus(loan.getStatus());
+			request.setReturnDate(loan.getReturnDate());
+			if(loan.getStatus().equalsIgnoreCase(LoanStatus)) {
+				request.setEditchanges(false);
+			}else {
+				request.setEditchanges(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(REJECTED)) {
+				request.setLoanrequest(false);
+			}else {
+				request.setLoanrequest(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(ACCEPTED)) {
+				request.setAccept(false);
+			}else {
+				request.setAccept(true);
+			}
+			if(loan.getStatus().equalsIgnoreCase(LoanPayStatus)) {
+				request.setPaidStatus(false);
+			}else {
+				request.setPaidStatus(true);
+			}
+			
+			if(null==loan.getApprovedDate()&& null==loan.getUpdatedBy()) {
+				request.setApproval(false);
+			}else {
+				request.setApproval(true);
+			}
+			loanDtoList.add(request);
+		}
+
+		return loanDtoList;
+	}
+
+	public List<MutualCoopMemberDto> availableMembers(List<MutualCoopMembers> list) {
+		mutualMembersListDto = new ArrayList<MutualCoopMemberDto>();
+		int i = 1;
+		for (MutualCoopMembers usermember : list) {
+			MutualCoopMemberDto mbrDto = new MutualCoopMemberDto();
+			mbrDto.setCountinfo(i);
+			mbrDto.setEditable(false);
+			mbrDto.setMember(usermember.getUsermember());
+			mutualMembersListDto.add(mbrDto);
+			i++;
+		}
+		return mutualMembersListDto;
+	}
 
 	public void mutualDetails(MutualMembersPolicyDto coop) {
 		if (coop.getMembers().getUserCategory().getUserCatid() == MutualRepcat) {
@@ -168,6 +489,83 @@ public class GuestController implements Serializable, DbConstant {
 			this.rendered = false;
 			this.renderDataTable = true;
 
+		}
+	}
+
+	public String mutualInfo(MutualCoopMemberDto coop) {
+		if (null != coop) {
+			// mutualCoopMemberDto=coop;
+			HttpSession sessionuser = SessionUtils.getSession();
+			sessionuser.setAttribute("coopdetails", coop);
+			return "/MemberDashboard.xhtml?faces-redirect=true";
+		} else {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("static-access")
+	public void saveLoanRequest() throws Exception {
+		try {
+			try {
+				if (Double.parseDouble(amount) > 0 && null!=returnDate) {
+					LOGGER.info(CLASSNAME + "INFORMATION VALID!");
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+			}
+			HttpSession session = SessionUtils.getSession();
+			mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+			if (null != mutualCoopMemberDto) {
+
+				MutualCooperative coop = new MutualCooperative();
+				Users user = new Users();
+				coop = mutualImpl.getMutualCooperativeById(mutualCoopMemberDto.getMutualcoop().getMutualCoopId(),
+						"mutualCoopId");
+				user = usersImpl.gettUserById(usersSession.getUserId(), "userId");
+				Formating fmt = new Formating();
+				SimpleDateFormat fmtdate = new SimpleDateFormat("yyyy-MM-dd");
+				Date today = fmt.getCurrentDateFormtNOTime();
+				Date rdate = null;
+				rdate=fmtdate.parse(fmtdate.format(returnDate));
+				if (null != coop && null != user &&rdate.after(today)) {
+
+					request.setGenericStatus(ACTIVE);
+					request.setCreatedBy(usersSession.getFullname());
+					request.setCrtdDtTime(timestamp);
+					request.setRequestDate(timestamp);
+					request.setStatus(LoanStatus);
+					request.setAmount(Double.parseDouble(amount));
+					request.setMutualcoop(coop);
+					request.setUsermember(user);
+					request.setReturnDate(new java.sql.Date(returnDate.getTime()));
+					requestImpl.saveLoanRequest(request);
+					
+					JSFMessagers.resetMessages();
+					setValid(true);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.loan.request"));
+					amount = new String();
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.dateinternal.error"));
+				}
+			}
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::User Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
@@ -188,6 +586,33 @@ public class GuestController implements Serializable, DbConstant {
 			availablecoop.add(mutualcoop);
 		}
 		return (availablecoop);
+	}
+
+	public List<MutualCoopMemberDto> memberMutualCoopList() {
+
+		memberCoopList = new ArrayList<MutualCoopMemberDto>();
+		for (Object[] data : mutualMembersImpl.reportList(
+				"select sum(mb.memberSize), mb.mutualcoop,mb.usermember,p.policyDescription,p.interesCharges,p.fineCharges,p.crtdDtTime,p.minContribution,p.periodicinvestterm,p.fineondelay from MutualCooperative m,MutualCoopMembers mb,Users us ,MutualCoopPolicy p\r\n"
+						+ "where m.mutualCoopId=mb.mutualcoop and us.userId=mb.usermember  and mb.usermember = "
+						+ usersSession.getUserId() + " and m.mutualCoopId=p.mutualcoop and p.genericStatus='" + ACTIVE
+						+ "' group by mb.mutualcoop")) {
+			MutualCoopMemberDto mutualcoop = new MutualCoopMemberDto();
+			mutualcoop.setCountinfo(Integer.parseInt(data[0] + ""));
+			mutualcoop.setMutualcoop((MutualCooperative) data[1]);
+			// if(((Users) data[2]).getUserCategory().getUserCatid()==MutualRepcat) {
+			// mutualcoop.setEmail(((Users) data[2]).getEmail());
+			// }
+			mutualcoop.setMembers((Users) data[2]);
+			mutualcoop.setPolicyDescription(data[3] + "");
+			mutualcoop.setInteresCharges(data[4] + "");
+			mutualcoop.setFineCharges(data[5] + "");
+			mutualcoop.setCrtdDtTime((Timestamp) data[6]);
+			mutualcoop.setMincontribution(data[7] + "");
+			mutualcoop.setPeriodicinvestterm(data[8] + "");
+			mutualcoop.setFineondelayedcontribution(data[9] + "");
+			memberCoopList.add(mutualcoop);
+		}
+		return (memberCoopList);
 	}
 
 	public void guestRequest() {
@@ -685,4 +1110,143 @@ public class GuestController implements Serializable, DbConstant {
 		this.memberReqImpl = memberReqImpl;
 	}
 
+	public List<MutualCoopMemberDto> getMemberCoopList() {
+		return memberCoopList;
+	}
+
+	public void setMemberCoopList(List<MutualCoopMemberDto> memberCoopList) {
+		this.memberCoopList = memberCoopList;
+	}
+
+	public MutualCoopMemberDto getMutualCoopMemberDto() {
+		return mutualCoopMemberDto;
+	}
+
+	public void setMutualCoopMemberDto(MutualCoopMemberDto mutualCoopMemberDto) {
+		this.mutualCoopMemberDto = mutualCoopMemberDto;
+	}
+
+	public List<LoanRequest> getLoanRequestList() {
+		return loanRequestList;
+	}
+
+	public void setLoanRequestList(List<LoanRequest> loanRequestList) {
+		this.loanRequestList = loanRequestList;
+	}
+
+	public LoanRequest getRequest() {
+		return request;
+	}
+
+	public void setRequest(LoanRequest request) {
+		this.request = request;
+	}
+
+	public LoanRequestImpl getRequestImpl() {
+		return requestImpl;
+	}
+
+	public void setRequestImpl(LoanRequestImpl requestImpl) {
+		this.requestImpl = requestImpl;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public List<LoanDto> getLoanDtoList() {
+		return loanDtoList;
+	}
+
+	public void setLoanDtoList(List<LoanDto> loanDtoList) {
+		this.loanDtoList = loanDtoList;
+	}
+
+	public List<FundsDto> getFundDtoList() {
+		return fundDtoList;
+	}
+
+	public void setFundDtoList(List<FundsDto> fundDtoList) {
+		this.fundDtoList = fundDtoList;
+	}
+
+	public List<Funds> getFundsList() {
+		return fundsList;
+	}
+
+	public void setFundsList(List<Funds> fundsList) {
+		this.fundsList = fundsList;
+	}
+
+	public FundsImpl getFundsImpl() {
+		return fundsImpl;
+	}
+
+	public void setFundsImpl(FundsImpl fundsImpl) {
+		this.fundsImpl = fundsImpl;
+	}
+	public List<FundsDto> getOverallFundDtoList() {
+		return overallFundDtoList;
+	}
+	public void setOverallFundDtoList(List<FundsDto> overallFundDtoList) {
+		this.overallFundDtoList = overallFundDtoList;
+	}
+	public List<Funds> getOverallFundsList() {
+		return overallFundsList;
+	}
+	public void setOverallFundsList(List<Funds> overallFundsList) {
+		this.overallFundsList = overallFundsList;
+	}
+	public List<LoanRequest> getMemberLoanRequest() {
+		return memberLoanRequest;
+	}
+	public void setMemberLoanRequest(List<LoanRequest> memberLoanRequest) {
+		this.memberLoanRequest = memberLoanRequest;
+	}
+	public List<LoanDto> getMemberLoanDtoList() {
+		return memberLoanDtoList;
+	}
+	public void setMemberLoanDtoList(List<LoanDto> memberLoanDtoList) {
+		this.memberLoanDtoList = memberLoanDtoList;
+	}
+	public Date getReturnDate() {
+		return returnDate;
+	}
+	public void setReturnDate(Date returnDate) {
+		this.returnDate = returnDate;
+	}
+	public boolean isDaybefore() {
+		return daybefore;
+	}
+	public void setDaybefore(boolean daybefore) {
+		this.daybefore = daybefore;
+	}
+	public boolean isDayafter() {
+		return dayafter;
+	}
+	public void setDayafter(boolean dayafter) {
+		this.dayafter = dayafter;
+	}
+	public int getDays() {
+		return days;
+	}
+	public void setDays(int days) {
+		this.days = days;
+	}
+	public String getOverallFunds() {
+		return overallFunds;
+	}
+	public void setOverallFunds(String overallFunds) {
+		this.overallFunds = overallFunds;
+	}
+	public List<FundsDto> getFundsStat() {
+		return fundsStat;
+	}
+	public void setFundsStat(List<FundsDto> fundsStat) {
+		this.fundsStat = fundsStat;
+	}	
 }

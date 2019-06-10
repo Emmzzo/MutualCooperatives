@@ -55,7 +55,7 @@
 						<!--MUTUAL COOP PROFILE TABLE -->
 						<code class="text-info label" style="font-size: 14pt;font-weight: bold">MUTUAL COOPERATIVE PROFILE</code>
 									
-						<div class="col-md-6 grid-margin stretch-card">
+						<div class="col-md-8 grid-margin stretch-card">
 							<div class="card">
 								<div class="card-body">
 									<h4 class="card-title label font-weight-bold"  style="font-size: 12pt">Logo</h4>
@@ -95,8 +95,10 @@
 										<ol>
 										<li class="font-weight-bold label" style="font-size: 12pt">Interest charge</li>
 											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that a member who receive a loan will be charged an interest of<label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.interesCharges}% </label> on loan.</p>
-											<li class="font-weight-bold label"  style="font-size: 12pt">Fines </li>
-											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that any circumstance happen due to disobedience of our policies like not returning loan at time will be charged a fine of <label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.fineCharges}</label> amount.</p>
+											<li class="font-weight-bold label"  style="font-size: 12pt">Fines(contribution/loan) </li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that any circumstance happen due to disobedience of our policies like not returning loan at time will be charged a fine of <label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.fineCharges}</label> amount in Rwf,and not providing the contribution at a regular basis the fine will be <label class="badge badge-danger" style="margin-left:5px;">#{mutualCoopController.policy.fineondelay}</label> amount in Rwf. </p>
+											<li class="font-weight-bold label"  style="font-size: 12pt">Minimum contribution /Regular contribution</li>
+											<p class="label" style="font-size: 12pt">We members of&nbsp;<label class="badge badge-success">#{mutualCoopController.mutualMembers.mutualcoop.mutualCoopName}</label>&nbsp;we agreed that every member must provide a minimum contribution of<label class="badge badge-info" style="margin-left:5px;">#{mutualCoopController.policy.minContribution}</label> amount in Rwf,and the contribution must be given on aggreed regular period of  <label class="badge badge-info" style="margin-left:5px;">#{mutualCoopController.policy.periodicinvestterm} basis.</label>. </p>
 											
 										</ol>
 									</p>

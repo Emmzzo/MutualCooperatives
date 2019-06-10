@@ -171,6 +171,8 @@ public class MembersController implements Serializable, DbConstant {
 					repavail = mutualRepRequestSize();
 					renderBoardOption = true;
 				}
+				
+				
 			} else {
 				LOGGER.info("NO USER LOGGED IN!!");
 			}

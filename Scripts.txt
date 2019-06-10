@@ -71,6 +71,10 @@ Guest(Be able to edit his/her account profile but to be implemented after)
 1.My task
 -->>Membership request(Able to view Mutual coop profile(profile include policy ,Number of members) and click to join  the coop Note ::If guest join the coop  the coop should be removed in his account )
 
+Script for generating chart for overall coop funds by date and amount(line chart)
+--------------------------------------------------------------------------------------------
+
+select sum(amount),DATE_FORMAT(givenDate,'%d/%m/%Y')givenDate from funds where status='received' and mutualcoop=7 group by DATE_FORMAT(givenDate,'%d/%m/%Y');
 
 
 
