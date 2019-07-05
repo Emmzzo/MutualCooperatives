@@ -1,13 +1,9 @@
 package com.mutual.coop;
 
-import java.awt.image.renderable.RenderedImageFactory;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -15,33 +11,53 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hibernate.HibernateException;
-import org.primefaces.model.UploadedFile;
+
+import com.google.gson.Gson;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import mutual.common.DbConstant;
 import mutual.common.Formating;
 import mutual.common.JSFBoundleProvider;
 import mutual.common.JSFMessagers;
 import mutual.common.SessionUtils;
-import mutual.coop.dto.ContactDto;
+import mutual.coop.dto.DistributedInterestDto;
+import mutual.coop.dto.FinesDto;
 import mutual.coop.dto.FundsDto;
+import mutual.coop.dto.IncomeDto;
+import mutual.coop.dto.InterestChargeDto;
 import mutual.coop.dto.LoanDto;
 import mutual.coop.dto.MemberRequestDto;
 import mutual.coop.dto.MutualCoopMemberDto;
 import mutual.coop.dto.PolicyDto;
+import mutual.coop.dto.PostsDto;
 import mutual.coop.dto.UserDto;
-import mutual.dao.impl.ContactImpl;
+import mutual.dao.impl.DistributedInterestImpl;
 import mutual.dao.impl.DistrictImpl;
 import mutual.dao.impl.FinesImpl;
 import mutual.dao.impl.FundsImpl;
@@ -52,11 +68,12 @@ import mutual.dao.impl.MemberRequestImpl;
 import mutual.dao.impl.MutualCoopMembersImpl;
 import mutual.dao.impl.MutualCoopPolicyImpl;
 import mutual.dao.impl.MutualCooperativeImpl;
+import mutual.dao.impl.OtherIncomeImpl;
+import mutual.dao.impl.PostsImpl;
 import mutual.dao.impl.ProvinceImpl;
 import mutual.dao.impl.UserCategoryImpl;
 import mutual.dao.impl.UserImpl;
-import mutual.domain.Contact;
-import mutual.domain.District;
+import mutual.domain.DistributedInterest;
 import mutual.domain.Fines;
 import mutual.domain.Funds;
 import mutual.domain.InterestCharges;
@@ -65,7 +82,8 @@ import mutual.domain.MemberRequest;
 import mutual.domain.MutualCoopMembers;
 import mutual.domain.MutualCoopPolicy;
 import mutual.domain.MutualCooperative;
-import mutual.domain.Province;
+import mutual.domain.OtherIncome;
+import mutual.domain.Posts;
 import mutual.domain.UserCategory;
 import mutual.domain.Users;
 
@@ -123,26 +141,48 @@ public class MutualCoopController implements Serializable, DbConstant {
 	private List<PolicyDto> policyDtoList = new ArrayList<PolicyDto>();
 	private PolicyDto policyDto = new PolicyDto();
 	private Funds memberFunds = new Funds();
-	private Fines finees= new Fines();
-	FinesImpl finesImpl= new FinesImpl();
+	private Fines finees = new Fines();
+	FinesImpl finesImpl = new FinesImpl();
 	FundsImpl fundsImpl = new FundsImpl();
+	private List<FinesDto> finesDtoList, finesStatistic = new ArrayList<FinesDto>();
+	private List<Fines> finesList = new ArrayList<Fines>();
 	private List<MemberRequestDto> requestDtoList = new ArrayList<MemberRequestDto>();
 	private List<MemberRequest> requestList = new ArrayList<MemberRequest>();
-	private List<FundsDto> fundDtoList = new ArrayList<FundsDto>();
+	private List<FundsDto> fundDtoList, fundsStat = new ArrayList<FundsDto>();
 	private List<Funds> fundsList = new ArrayList<Funds>();
-	private List<LoanDto> loanDtoList = new ArrayList<LoanDto>();
+	private List<LoanDto> loanDtoList, loanStatDto = new ArrayList<LoanDto>();
 	private LoanRequest request;
 	private InterestCharges charges;
 	private InterestChargesImpl chargeImpl = new InterestChargesImpl();
 	private LoanRequestImpl requestImpl = new LoanRequestImpl();
+	private InterestChargeDto chargeDto = new InterestChargeDto();
+	private List<InterestChargeDto> chargeDtosList, interestDtosList,
+			interestStatDto = new ArrayList<InterestChargeDto>();
+	private List<InterestCharges> chargeList = new ArrayList<InterestCharges>();
+	private Posts post = new Posts();
+	private List<Posts> allposts, listOfPendPost = new ArrayList<Posts>();
+	PostsImpl postImpl = new PostsImpl();
+	private PostsDto postDtos = new PostsDto();
+	private OtherIncome income;
+	private OtherIncomeImpl incomeImpl = new OtherIncomeImpl();
+	private List<OtherIncome> incomeList = new ArrayList<OtherIncome>();
+	private MutualCoopMemberDto mutualCoopMemberDto = new MutualCoopMemberDto();
+	private List<PostsDto> mutualpost = new ArrayList<PostsDto>();
+	private List<IncomeDto> allIncomeDto,incomeStatDto = new ArrayList<IncomeDto>();
 	private String choice;
 	private boolean rendered, renderBoard, rendersubmit, memberfunds, fundsform, renderDataTable, renderprofile,
-			rendersaveButton, renderCount, renderForeignCountry, fundsDetails, renderdialog;
-	private String option;
+			rendersaveButton, renderCount, renderForeignCountry, fundsDetails, renderdialog, renderNotify,
+			renderIncomeTable, renderIncomeForm,printPdf;
+	private String option, dt1, dt2;
 	private String selection;
-	private String fines, interest, amount, mincontribution, fineoncontribution;
-	private Date recordeddate;
-	private int count;
+	private String fines, interest, amount, mincontribution, fineoncontribution, incomeAmount, receiveAmount,
+			sourceOfIncome, overAllFunds, overAllFines, overAllLoan, overAllInterest,overAllIncome;
+	private Date recordeddate, date1, date2;
+	private int count, days, countPendPost;
+	private DistributedInterest distInterest;
+	private List<DistributedInterest> distIncomeList = new ArrayList<DistributedInterest>();
+	DistributedInterestImpl distInterestImpl = new DistributedInterestImpl();
+	private List<DistributedInterestDto> interestDto = new ArrayList<DistributedInterestDto>();
 
 	@SuppressWarnings("unchecked")
 	@PostConstruct
@@ -170,8 +210,19 @@ public class MutualCoopController implements Serializable, DbConstant {
 		if (null == charges) {
 			charges = new InterestCharges();
 		}
-		if(null==finees) {
-			finees= new Fines();
+		if (null == finees) {
+			finees = new Fines();
+		}
+		if (null == post) {
+			post = new Posts();
+		}
+
+		if (null == income) {
+			income = new OtherIncome();
+		}
+
+		if (null == distInterest) {
+			distInterest = new DistributedInterest();
 		}
 		try {
 
@@ -203,27 +254,56 @@ public class MutualCoopController implements Serializable, DbConstant {
 				policyDtoList = mutualPolicyList(mutualpolicy);
 				rendersubmit = true;
 
+				allposts = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "Posts", "postId desc");
+				mutualpost = mutualPostList(allposts);
 				requestList = memberReqImpl.getGenericListWithHQLParameter(
 						new String[] { "requestStatus", "mutualcoop" },
 						new Object[] { RequestStatus, mutualMembers.getMutualcoop() }, "MemberRequest",
 						"requestDate asc");
 
+				incomeList = incomeImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "OtherIncome", "incomeId desc");
+
+				allIncomeDto = mutualIncomeList(incomeList);
+
+				renderIncomeTable = true;
+
 				count = requestList.size();
 				if (count > 0) {
 					renderCount = true;
 				}
+				overallFinesStatistics();
 				requestDtoList = mutualCoopFollowers(requestList);
 
 				mutualCoopMembersListDto = mutualCoopMembersDetails();
 				this.memberfunds = true;
 
 				loanDtoList = loanRequestDetails();
+				finesDtoList = finesDetails();
+				chargeDtosList = interestChargesDetailsDetails();
 
+				listOfPendPost = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "status" },
+						new Object[] { ACTIVE, PENDING }, "Posts", "postId desc");
+				if (listOfPendPost.size() > 0) {
+					countPendPost = listOfPendPost.size();
+					renderNotify = true;
+				}
+				overallInterestStatistics();
+				overallIncomeStatistics();
+				interestDtosList = new ArrayList<InterestChargeDto>();
+				interestDtosList = showTotInterestReady();
+				interestDto = new ArrayList<DistributedInterestDto>();
+				interestDto = showMemberTotInterestReceived();
+				overallFundsStatistics();
+				overallLoanStatistics();
+				
 			} else {
 				mutualCoopPendingRequest = mutualCoopList();
 				if (mutualCoopPendingRequest.size() > 0) {
 					this.renderForeignCountry = true;
 				}
+
 			}
 
 			//
@@ -242,7 +322,359 @@ public class MutualCoopController implements Serializable, DbConstant {
 
 	}
 
+	public double showTotRegInvest() throws Exception {
+		double sum = 0.0;
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		for (Object[] data : fundsImpl.reportList("select sum(f.amount),f.mutualcoop from Funds f where mutualcoop="
+				+ mutualMembers.getMutualcoop().getMutualCoopId() + " and f.genericStatus='" + ACTIVE + "'")) {
+			sum = sum + Double.parseDouble(data[0] + "");
+
+		}
+		LOGGER.info("TOTAL REGULAR INVEST FOR ALL MEMBERS::" + sum);
+		return sum;
+	}
+
+	public List<InterestChargeDto> showTotInterestReady() throws Exception {
+		int countinfo = 1;
+		interestDtosList = new ArrayList<InterestChargeDto>();
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		for (Object[] data : chargeImpl.reportList(
+				"select sum(inc.amount),inc.status,inc.genericStatus,inc.mutualcoop from InterestCharges inc where inc.status='"
+						+ LoanPayStatus + "'and inc.mutualcoop=" + mutualMembers.getMutualcoop().getMutualCoopId()
+						+ "")) {
+			InterestChargeDto interest = new InterestChargeDto();
+			interest.setCountInfo(countinfo);
+			if (null != data[0]) {
+				interest.setAmount(Double.parseDouble(data[0] + ""));
+				interest.setApproval(false);
+				interest.setStatus(data[1] + "");
+			} else {
+				interest.setAmount(Double.parseDouble("0.0"));
+				interest.setStatus("Unavailable");
+				interest.setApproval(true);
+			}
+			interestDtosList.add(interest);
+			countinfo++;
+		}
+		return interestDtosList;
+	}
+
+	public void overallFundsStatistics() throws Exception {
+		// Get the values from the session
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		fundDtoList = new ArrayList<FundsDto>();
+		for (Object[] data : fundsImpl
+				.reportList("select sum(f.amount),DATE_FORMAT(f.givenDate,'%d/%m/%Y') from Funds f where status='"
+						+ FundStatus + "' and f.mutualcoop=" + mutualMembers.getMutualcoop().getMutualCoopId()
+						+ " and f.givenDate is not null group by DATE_FORMAT(givenDate,'%d/%m/%Y')")) {
+			FundsDto funds = new FundsDto();
+
+			LOGGER.info("::amount::::" + data[0] + "::Date:" + data[1] + "");
+			funds.setAmount(Double.parseDouble(data[0] + ""));
+			funds.setContDate(data[1] + "");
+			fundsStat.add(funds);
+		}
+
+		this.overAllFunds = new Gson().toJson(fundsStat);
+
+	}
+
+	public void overallFinesStatistics() throws Exception {
+		// Get the values from the session
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		finesStatistic = new ArrayList<FinesDto>();
+		for (Object[] data : fundsImpl.reportList("select sum(f.amount),f.status from Fines f where mutualcoop="
+				+ mutualMembers.getMutualcoop().getMutualCoopId() + " group by f.status")) {
+			FinesDto fines = new FinesDto();
+			fines.setAmount(Double.parseDouble(data[0] + ""));
+			fines.setStatus(data[1] + "");
+			finesStatistic.add(fines);
+			LOGGER.info("Amount::" + data[0] + "::Status:" + data[1] + "");
+		}
+
+		this.overAllFines = new Gson().toJson(finesStatistic);
+
+	}
+
+	public void overallLoanStatistics() throws Exception {
+		// Get the values from the session
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		loanStatDto = new ArrayList<LoanDto>();
+		for (Object[] data : fundsImpl.reportList("select sum(l.amount),l.status from LoanRequest l where mutualcoop="
+				+ mutualMembers.getMutualcoop().getMutualCoopId() + " group by l.status")) {
+			LoanDto loan = new LoanDto();
+			loan.setAmount(Double.parseDouble(data[0] + ""));
+			loan.setStatus(data[1] + "");
+			loanStatDto.add(loan);
+			LOGGER.info("Amount::" + data[0] + "::Status:" + data[1] + "");
+		}
+
+		this.overAllLoan = new Gson().toJson(loanStatDto);
+
+	}
+
+	public void overallInterestStatistics() throws Exception {
+		// Get the values from the session
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		interestStatDto = new ArrayList<InterestChargeDto>();
+		for (Object[] data : fundsImpl
+				.reportList("select sum(inc.amount),inc.status from InterestCharges inc where inc.mutualcoop="
+						+ mutualMembers.getMutualcoop().getMutualCoopId()
+						+ "  and inc.status is not null group by inc.status")) {
+			InterestChargeDto interest = new InterestChargeDto();
+			interest.setAmount(Double.parseDouble(data[0] + ""));
+			interest.setStatus(data[1] + "");
+			interestStatDto.add(interest);
+			LOGGER.info("Amount::" + data[0] + "::Status:" + data[1] + "");
+		}
+
+		this.overAllInterest = new Gson().toJson(interestStatDto);
+
+	}
+	
+	
+	public void overallIncomeStatistics() throws Exception {
+		// Get the values from the session
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		incomeStatDto = new ArrayList<IncomeDto>();
+		for (Object[] data : fundsImpl
+				.reportList("select  sum(inc.incomeAmount),inc.status from OtherIncome inc where inc.mutualcoop="
+						+ mutualMembers.getMutualcoop().getMutualCoopId()
+						+ "  and inc.status is not null group by inc.status")) {
+			IncomeDto inc = new IncomeDto();
+			inc.setIncomeAmount(Double.parseDouble(data[0] + ""));
+			if(data[1].equals(DESACTIVE)) {
+				inc.setStatus("shared");
+			}else {
+			inc.setStatus(data[1] + "");
+			}
+			
+			incomeStatDto.add(inc);
+			LOGGER.info("Amount::" + data[0] + "::Status:" + data[1] + "");
+		}
+
+		this.overAllIncome = new Gson().toJson(incomeStatDto);
+
+	}
+	
+
+	public void approveInterestDistribution(DistributedInterestDto income) {
+		if (null != income.getUsermember()) {
+			/// UPDADING INCOME STATUS TO DESACTIVE
+
+			for (Object[] data : chargeImpl.reportList(
+					"select inc.interestId,inc.status,inc.usermember from DistributedInterest inc where inc.usermember="
+							+ income.getUsermember().getUserId() + " and inc.status='" + PENDING + "'")) {
+				InterestCharges charges = new InterestCharges();
+				DistributedInterest interest = new DistributedInterest();
+				interest = distInterestImpl.getDistributedInterestById(Integer.parseInt(data[0] + ""), "interestId");
+				interest.setStatus(FundStatus);
+				distInterestImpl.UpdateDistributedInterest(interest);
+
+				LOGGER.info("UPDATE DONE SUCCESS !!!! FOR INTEREST ID" + charges.getChargeId());
+			}
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.interestreceived.successinterest"));
+			LOGGER.info(CLASSNAME + ":::ACTION COMPLETE SUCCESSFULL!!");
+			LOGGER.info("--------------------------------------------");
+		}
+	}
+
+	public List<DistributedInterestDto> showMemberTotInterestReceived() throws Exception {
+		int countinfo = 1;
+		DecimalFormat fmt = new DecimalFormat("###,###.##");
+		interestDto = new ArrayList<DistributedInterestDto>();
+		mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+				new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+				"from MutualCoopMembers");
+		for (Object[] data : chargeImpl.reportList(
+				"select inc.interestId,us.fullname,us.phone,sum(inc.amount),inc.givenDate,inc.status,inc.usermember from DistributedInterest inc,Users us  where us.userId=inc.usermember and inc.genericStatus='"
+						+ ACTIVE + "' and inc.mutualcoop=" + mutualMembers.getMutualcoop().getMutualCoopId()
+						+ " group by inc.usermember order by inc.interestId")) {
+			DistributedInterestDto interest = new DistributedInterestDto();
+			interest.setCountRecord(countinfo);
+			if (null != data[3]) {
+				interest.setFullname(data[1] + "");
+				interest.setPhone(data[2] + "");
+				interest.setStatus(data[5] + "");
+				interest.setFormatAmount(fmt.format(Double.parseDouble(data[3] + "")));
+				interest.setGivenDate((Timestamp) data[4]);
+				interest.setUsermember((Users) data[6]);
+				this.printPdf=true;
+				if (data[5].equals(PENDING)) {
+					interest.setApproval(false);
+				} else {
+					interest.setEditable(true);
+					interest.setApproval(true);
+				}
+			} else {
+				interest.setStatus("Unavailable");
+				interest.setApproval(true);
+				interest.setFormatAmount("0.0");
+				this.printPdf=false;
+			}
+			interestDto.add(interest);
+			countinfo++;
+		}
+		return interestDto;
+	}
+
+	// Function for interest collected from member for loan taken
+
 	@SuppressWarnings("unchecked")
+	public void interestDistribution(InterestChargeDto interest) throws Exception {
+		if (null != interest.getAmount()) {
+			double distamount = 0.0;
+			double totIncome = showTotRegInvest();
+			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+					"from MutualCoopMembers");
+
+			for (Object[] data : fundsImpl
+					.reportList("select f.amount,f.usermember,f.mutualcoop from Funds f where f.mutualcoop="
+							+ mutualMembers.getMutualcoop().getMutualCoopId() + " and f.genericStatus='" + ACTIVE
+							+ "'")) {
+				distamount = (Double.parseDouble(data[0] + "") * interest.getAmount()) / totIncome;
+				LOGGER.info("USERMEMBER ::" + ((Users) data[1]).getFullname() + "OBTAINED EQUIV INCOME OF ::::"
+						+ distamount);
+				Users us = new Users();
+				us = ((Users) data[1]);
+				MutualCooperative coop = new MutualCooperative();
+				coop = ((MutualCooperative) data[2]);
+				saveDistributedIncome(us, coop, distamount);
+				LOGGER.info("DISTRIBUTION OF INCOME DONE !! SAVING ACTION DONE");
+
+			}
+
+			/// UPDADING INCOME STATUS TO DESACTIVE
+
+			for (Object[] data : chargeImpl.reportList(
+					"select inc.chargeId,inc.status,inc.mutualcoop,inc.usermember from InterestCharges inc where inc.status='"
+							+ LoanPayStatus + "' and inc.mutualcoop=" + mutualMembers.getMutualcoop().getMutualCoopId()
+							+ "")) {
+				InterestCharges charges = new InterestCharges();
+				charges = chargeImpl.getInterestChargesById(Integer.parseInt(data[0] + ""), "chargeId");
+				charges.setGenericStatus(INTERESTSHARED);
+				charges.setStatus(INTERESTSHARED);
+				chargeImpl.UpdateInterestCharges(charges);
+
+				LOGGER.info("UPDATE DONE SUCCESS !!!! FOR INTEREST ID" + charges.getChargeId());
+			}
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.interestDistributed.successinterest"));
+			LOGGER.info(CLASSNAME + ":::ACTION COMPLETE SUCCESSFULL!!");
+			LOGGER.info("--------------------------------------------");
+
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public void incomeDistribution(IncomeDto amountrecord) throws Exception {
+		if (null != amountrecord.getRecordedAmount()) {
+			double distamount = 0.0;
+			double totIncome = showTotRegInvest();
+			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+					"from MutualCoopMembers");
+
+			for (Object[] data : fundsImpl
+					.reportList("select f.amount,f.usermember,f.mutualcoop from Funds f where f.mutualcoop="
+							+ mutualMembers.getMutualcoop().getMutualCoopId() + " and f.genericStatus='" + ACTIVE
+							+ "'")) {
+				distamount = (Double.parseDouble(data[0] + "") * amountrecord.getRecordedAmount()) / totIncome;
+				LOGGER.info("USERMEMBER ::" + ((Users) data[1]).getFullname() + "OBTAINED EQUIV INCOME OF ::::"
+						+ distamount);
+				Users us = new Users();
+				us = ((Users) data[1]);
+				MutualCooperative coop = new MutualCooperative();
+				coop = ((MutualCooperative) data[2]);
+				saveDistributedIncome(us, coop, distamount);
+				LOGGER.info("DISTRIBUTION OF INCOME DONE !! SAVING ACTION DONE");
+
+			}
+
+			/// UPDADING INCOME STATUS TO DESACTIVE
+			OtherIncome income = new OtherIncome();
+			income = incomeImpl.getOtherIncomeById(amountrecord.getIncomeId(), "incomeId");
+			income.setStatus(DESACTIVE);
+			income.setUpdatedBy(usersSession.getFullname());
+			income.setUpDtTime(timestamp);
+			incomeImpl.UpdateOtherIncome(income);
+			incomeList = incomeImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+					new Object[] { ACTIVE }, "OtherIncome", "incomeId desc");
+
+			allIncomeDto = mutualIncomeList(incomeList);
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.incomeDistributed.successincome"));
+			LOGGER.info(CLASSNAME + ":::ACTION COMPLETE SUCCESSFULL!!");
+			LOGGER.info("--------------------------------------------");
+
+		}
+
+	}
+
+	public String saveDistributedIncome(Users members, MutualCooperative coop, Double amountEarn) throws Exception {
+		try {
+			try {
+				if (null != members && null != coop && null != amountEarn) {
+					LOGGER.info(CLASSNAME + "INFORMATION VALID!");
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+			distInterest.setGenericStatus(ACTIVE);
+			distInterest.setStatus(PENDING);
+			distInterest.setCreatedBy(usersSession.getFullname());
+			distInterest.setCrtdDtTime(timestamp);
+			distInterest.setAmount(amountEarn);
+			distInterest.setGivenDate(timestamp);
+			distInterest.setMutualcoop(coop);
+			distInterest.setUsermember(members);
+			distInterestImpl.saveInterest(distInterest);
+			clearDistributedIncomeFuileds();
+
+			return "";
+
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::Income Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return "";
+	}
+
+	@SuppressWarnings({ "unchecked", "static-access" })
 	public List<LoanDto> loanRequestDetails() {
 
 		try {
@@ -260,6 +692,10 @@ public class MutualCoopController implements Serializable, DbConstant {
 					loanDtoList = new ArrayList<LoanDto>();
 					DecimalFormat fmt = new DecimalFormat("###,###.##");
 
+					Formating fms = new Formating();
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date today = fms.getCurrentDateFormtNOTime();
+
 					for (LoanRequest loan : loanRequestList) {
 						LoanDto request = new LoanDto();
 						request.setEditable(false);
@@ -270,6 +706,7 @@ public class MutualCoopController implements Serializable, DbConstant {
 						request.setFormatBalance(fmt.format(loan.getAmount()));
 						request.setApprovedDate(loan.getApprovedDate());
 						request.setRequestDate(loan.getRequestDate());
+						request.setReturnDate(loan.getReturnDate());
 						request.setGeneriStatus(loan.getGenericStatus());
 						request.setRecordedBy(loan.getUpdatedBy());
 						request.setStatus(loan.getStatus());
@@ -286,6 +723,10 @@ public class MutualCoopController implements Serializable, DbConstant {
 						}
 						if (loan.getStatus().equalsIgnoreCase(ACCEPTED)) {
 							request.setAccept(false);
+							simpleDateFormat.format(loan.getReturnDate());
+							days = fms.daysBetween(today, loan.getReturnDate());
+							request.setDayremaining(days);
+							LOGGER.info(":::DAYS REMAINING:::::" + days);
 						} else {
 							request.setAccept(true);
 						}
@@ -308,6 +749,121 @@ public class MutualCoopController implements Serializable, DbConstant {
 			e.printStackTrace();
 		}
 		return (loanDtoList);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<FinesDto> finesDetails() {
+
+		try {
+			if (usersSession.getUserCategory().getUserCatid() == MutualRepcat) {
+
+				MutualCoopMembers members = new MutualCoopMembers();
+				members = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+						new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+						"from MutualCoopMembers");
+				if (null != members) {
+					finesList = finesImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "mutualcoop" },
+							new Object[] { ACTIVE, members.getMutualcoop() }, "Fines", "givenDate asc");
+
+					finesDtoList = new ArrayList<FinesDto>();
+					DecimalFormat fmt = new DecimalFormat("###,###.##");
+					for (Fines fines : finesList) {
+						FinesDto fine = new FinesDto();
+						fine.setEditable(false);
+						fine.setFineId(fines.getFineId());
+						fine.setMutualcoop(fines.getMutualcoop());
+						fine.setUsermember(fines.getUsermember());
+						fine.setGeneriStatus(fines.getGenericStatus());
+						fine.setFormatBalance(fmt.format(fines.getAmount()));
+						fine.setGivenDate(fines.getGivenDate());
+						fine.setRecordedBy(fines.getCreatedBy());
+						fine.setStatus(fines.getStatus());
+						if (fines.getStatus().equalsIgnoreCase(PENDING)) {
+							fine.setApproval(false);
+						} else {
+							fine.setApproval(true);
+						}
+						if (fines.getStatus().equalsIgnoreCase(LoanPayStatus)) {
+							fine.setAccept(false);
+						} else {
+							fine.setAccept(true);
+						}
+						if (fines.getStatus().equalsIgnoreCase(REJECTED)) {
+							fine.setPaidStatus(false);
+						} else {
+							fine.setPaidStatus(true);
+						}
+
+						finesDtoList.add(fine);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(e.getMessage());
+			e.printStackTrace();
+		}
+		return (finesDtoList);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<InterestChargeDto> interestChargesDetailsDetails() {
+
+		try {
+			if (usersSession.getUserCategory().getUserCatid() == MutualRepcat) {
+
+				MutualCoopMembers members = new MutualCoopMembers();
+				members = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+						new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+						"from MutualCoopMembers");
+				if (null != members) {
+					chargeList = chargeImpl.getGenericListWithHQLParameter(
+							new String[] { "genericStatus", "mutualcoop" },
+							new Object[] { ACTIVE, members.getMutualcoop() }, "InterestCharges", "crtdDtTime asc");
+					chargeDtosList = new ArrayList<InterestChargeDto>();
+
+					DecimalFormat fmt = new DecimalFormat("###,###.##");
+					for (InterestCharges charge : chargeList) {
+						InterestChargeDto interest = new InterestChargeDto();
+						interest.setEditable(false);
+						interest.setChargeId(charge.getChargeId());
+						interest.setMutualcoop(charge.getMutualcoop());
+						interest.setUsermember(charge.getUsermember());
+						interest.setGeneriStatus(charge.getGenericStatus());
+						interest.setFormatBalance(fmt.format(charge.getAmount()));
+						interest.setCreatedDate(charge.getCrtdDtTime());
+						interest.setRecordedBy(charge.getCreatedBy());
+						interest.setStatus(charge.getStatus());
+						if (charge.getStatus().equalsIgnoreCase(PENDING)) {
+							interest.setApproval(false);
+						} else {
+							interest.setApproval(true);
+						}
+						if (charge.getStatus().equalsIgnoreCase(LoanPayStatus)) {
+							interest.setAccept(false);
+						} else {
+							interest.setAccept(true);
+						}
+						if (charge.getStatus().equalsIgnoreCase(REJECTED)) {
+							interest.setPaidStatus(false);
+						} else {
+							interest.setPaidStatus(true);
+						}
+
+						chargeDtosList.add(interest);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(e.getMessage());
+			e.printStackTrace();
+		}
+		return (chargeDtosList);
 	}
 
 	public List<PolicyDto> mutualPolicyList(List<MutualCoopPolicy> list) {
@@ -345,11 +901,111 @@ public class MutualCoopController implements Serializable, DbConstant {
 		return (policyDtoList);
 	}
 
+	public List<PostsDto> mutualPostList(List<Posts> list) {
+
+		mutualpost = new ArrayList<PostsDto>();
+		int i = 1;
+		for (Posts p : list) {
+
+			PostsDto pdto = new PostsDto();
+			pdto.setPostId(p.getPostId());
+			pdto.setDescription(p.getDescription());
+			pdto.setGeneriStatus(p.getGenericStatus());
+			pdto.setCreatedDate(p.getPostDate());
+			pdto.setMutualcoop(p.getMutualcoop());
+			pdto.setUsermember(p.getMember());
+			pdto.setEditable(false);
+			pdto.setCountInfo(i);
+			pdto.setStatus(p.getStatus());
+			pdto.setRecordedBy(p.getCreatedBy());
+			if (p.getStatus().equalsIgnoreCase(ACTIVE)) {
+				pdto.setAccept(false);
+			} else {
+				pdto.setAccept(true);
+			}
+			if (p.getStatus().equalsIgnoreCase(PENDING)) {
+				pdto.setApproval(false);
+
+			} else {
+
+				pdto.setApproval(true);
+			}
+			if (p.getStatus().equalsIgnoreCase(Block)) {
+				pdto.setPaidStatus(false);
+
+			} else {
+
+				pdto.setPaidStatus(true);
+			}
+			mutualpost.add(pdto);
+			i++;
+		}
+		return (mutualpost);
+	}
+
+	public List<IncomeDto> mutualIncomeList(List<OtherIncome> list) {
+
+		allIncomeDto = new ArrayList<IncomeDto>();
+		int i = 1;
+		for (OtherIncome inc : list) {
+			IncomeDto incDto = new IncomeDto();
+			incDto.setIncomeId(inc.getIncomeId());
+			incDto.setSourceOfIncome(inc.getSourceOfIncome());
+			incDto.setIncomeAmount(inc.getIncomeAmount());
+			incDto.setRecordedAmount(inc.getRecordedAmount());
+			incDto.setGeneriStatus(inc.getGenericStatus());
+			incDto.setStatus(inc.getStatus());
+			incDto.setCountRecord(i);
+
+			if (inc.getStatus().equalsIgnoreCase(DESACTIVE)) {
+				incDto.setAccept(false);
+			} else {
+				incDto.setAccept(true);
+			}
+			if (inc.getStatus().equalsIgnoreCase(PENDING)) {
+				incDto.setApproval(false);
+
+			} else {
+
+				incDto.setApproval(true);
+			}
+
+			allIncomeDto.add(incDto);
+			i++;
+		}
+		return (allIncomeDto);
+	}
+
+	public void showIncomeForm() {
+		this.renderIncomeTable = false;
+		this.renderIncomeForm = true;
+	}
+
 	public void doAction(LoanDto loan) {
 		if (null != loan) {
 			LOGGER.info("::::LOAN INFO::: " + loan);
 			HttpSession sessionmember = SessionUtils.getSession();
 			sessionmember.setAttribute("loaninfo", loan);
+			this.memberfunds = false;
+			this.renderdialog = true;
+		}
+	}
+
+	public void doInterestAction(InterestChargeDto charge) {
+		if (null != charge) {
+			LOGGER.info("::::LOAN INFO::: " + charge);
+			HttpSession sessionmember = SessionUtils.getSession();
+			sessionmember.setAttribute("interstinfo", charge);
+			this.memberfunds = false;
+			this.renderdialog = true;
+		}
+	}
+
+	public void doFineAction(FinesDto fines) {
+		if (null != fines) {
+			LOGGER.info("::::Fines INFO::: " + fines);
+			HttpSession sessionmember = SessionUtils.getSession();
+			sessionmember.setAttribute("fineinfo", fines);
 			this.memberfunds = false;
 			this.renderdialog = true;
 		}
@@ -422,6 +1078,12 @@ public class MutualCoopController implements Serializable, DbConstant {
 			sessionpolicy.setAttribute("policy", policy);
 		}
 		return null;
+	}
+
+	public void newPost() {
+		this.rendered = false;
+		renderForeignCountry = true;
+		renderDataTable = false;
 	}
 
 	public void newPolicy() {
@@ -538,6 +1200,318 @@ public class MutualCoopController implements Serializable, DbConstant {
 		return "";
 	}
 
+	public String saveIncome() throws Exception {
+		try {
+			try {
+				if (Double.parseDouble(incomeAmount) > 0 && Double.parseDouble(receiveAmount) > 0
+						&& null != sourceOfIncome) {
+					LOGGER.info(CLASSNAME + "INFORMATION VALID!");
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+
+			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+					"from MutualCoopMembers");
+			income.setGenericStatus(ACTIVE);
+			income.setStatus(PENDING);
+			income.setCreatedBy(usersSession.getFullname());
+			income.setCrtdDtTime(timestamp);
+			income.setMutualcoop(mutualMembers.getMutualcoop());
+			income.setRecordedAmount(Double.parseDouble(receiveAmount));
+			income.setIncomeAmount(Double.parseDouble(incomeAmount));
+			income.setSourceOfIncome(sourceOfIncome);
+			incomeImpl.saveOtherIncome(income);
+
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.income.successincome"));
+			LOGGER.info(CLASSNAME + ":::No fines Details is saved");
+			clearIncomeFuileds();
+
+			return "";
+
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::Income Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return "";
+	}
+
+	@SuppressWarnings({ "unchecked", "unchecked" })
+	public String savePost() throws Exception {
+		try {
+			try {
+				mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+						new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+						"from MutualCoopMembers");
+				if (null != post.getDescription() && null != mutualMembers) {
+					LOGGER.info(CLASSNAME + "INFORMATION VALID!");
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+
+			post.setCreatedBy(usersSession.getFullname());
+			post.setGenericStatus(ACTIVE);
+			post.setStatus(PENDING);
+			post.setPostDate(timestamp);
+			post.setCrtdDtTime(timestamp);
+			post.setMember(usersImpl.gettUserById(usersSession.getUserId(), "userId"));
+			post.setMutualcoop(mutualMembers.getMutualcoop());
+			postImpl.savePosts(post);
+			listOfPendPost = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "status" },
+					new Object[] { ACTIVE, PENDING }, "Posts", "postId desc");
+			countPendPost = listOfPendPost.size();
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.post"));
+			LOGGER.info(CLASSNAME + ":::post Details is saved");
+			clearPostFuileds();
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::Post Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return "";
+	}
+
+	@SuppressWarnings("unchecked")
+	public String saveMembersPost() throws Exception {
+		try {
+			try {
+
+				HttpSession session = SessionUtils.getSession();
+				mutualCoopMemberDto = (MutualCoopMemberDto) session.getAttribute("coopdetails");
+				if (null != post.getDescription() && null != mutualCoopMemberDto) {
+					LOGGER.info(CLASSNAME + "INFORMATION VALID! COOP DETAILS"
+							+ mutualCoopMemberDto.getMutualcoop().getMutualCoopId());
+				} else {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+				}
+
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+				return null;
+			}
+
+			post.setCreatedBy(usersSession.getFullname());
+			post.setGenericStatus(ACTIVE);
+			post.setStatus(PENDING);
+			post.setPostDate(timestamp);
+			post.setCrtdDtTime(timestamp);
+			post.setMember(usersImpl.gettUserById(usersSession.getUserId(), "userId"));
+			post.setMutualcoop(mutualCoopMemberDto.getMutualcoop());
+			postImpl.savePosts(post);
+			listOfPendPost = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus", "status" },
+					new Object[] { ACTIVE, PENDING }, "Posts", "postId desc");
+			countPendPost = listOfPendPost.size();
+			JSFMessagers.resetMessages();
+			setValid(true);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.post"));
+			LOGGER.info(CLASSNAME + ":::post Details is saved");
+			clearPostFuileds();
+		} catch (HibernateException ex) {
+			LOGGER.info(CLASSNAME + ":::Post Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+		return "";
+	}
+
+	@SuppressWarnings("static-access")
+	public void saveMemberFunds() {
+		try {
+			int days = 0;
+			Formating fmt = new Formating();
+			Funds funds = new Funds();
+			funds = fundsImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember", "mutualcoop" },
+					new Object[] { ACTIVE, coopMemberDto.getMember(), coopMemberDto.getMutualcoop() }, "from Funds");
+			try {
+				policy = policyImpl.getModelWithMyHQL(new String[] { "genericStatus", "mutualcoop" },
+						new Object[] { ACTIVE, mutualMembers.getMutualcoop() }, "from MutualCoopPolicy");
+				if (Double.parseDouble(amount) == 0) {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error.validdata"));
+					this.renderBoard = false;
+				}
+				HttpSession session = SessionUtils.getSession();
+				coopMemberDto = (MutualCoopMemberDto) session.getAttribute("memberfunds");
+
+				if (null == coopMemberDto) {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers
+							.addErrorMessage(getProvider().getValue("com.server.side.internal.membernotfounderror"));
+					this.renderBoard = false;
+				}
+
+				if (Double.parseDouble(amount) < policy.getMinContribution()) {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers.addErrorMessage(
+							getProvider().getValue("com.server.side.internal.membercontributionerror"));
+					this.renderBoard = true;
+
+				}
+
+				SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
+				dt1 = smf.format(new Date());
+				dt2 = smf.format(funds.getGivenDate());
+				date1 = smf.parse(dt1);
+				date2 = smf.parse(dt2);
+				LOGGER.info("TODAY DATE:::" + smf.format(date1));
+				LOGGER.info("::::Yesterday DATE::::" + smf.format(date2));
+				if (date1.compareTo(date2) == 0) {
+					JSFMessagers.resetMessages();
+					setValid(false);
+					JSFMessagers
+							.addErrorMessage(getProvider().getValue("com.server.side.internal.membercontributederror"));
+					this.renderBoard = false;
+				}
+			} catch (Exception e) {
+				JSFMessagers.resetMessages();
+				setValid(false);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+				LOGGER.info(CLASSNAME + "" + e.getMessage());
+				e.printStackTrace();
+			}
+			// GETTING MEMBERS INFO WHO PROVIDE CONTRIBUTION
+
+			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+					"from MutualCoopMembers");
+			policy = policyImpl.getModelWithMyHQL(new String[] { "genericStatus", "mutualcoop" },
+					new Object[] { ACTIVE, mutualMembers.getMutualcoop() }, "from MutualCoopPolicy");
+
+			if (null == funds && Double.parseDouble(amount) >= policy.getMinContribution()) {
+				memberFunds.setGenericStatus(ACTIVE);
+				memberFunds.setCreatedBy(usersSession.getFullname());
+				memberFunds.setCrtdDtTime(timestamp);
+				memberFunds.setGivenDate(timestamp);
+				memberFunds.setUsermember(coopMemberDto.getMember());
+				memberFunds.setMutualcoop(coopMemberDto.getMutualcoop());
+				memberFunds.setAmount(Double.parseDouble(amount));
+				memberFunds.setBalance(Double.parseDouble(amount));
+				memberFunds.setStatus(FundStatus);
+				fundsImpl.saveFunds(memberFunds);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.funds"));
+				LOGGER.info(CLASSNAME + ":::New Funds Details is saved");
+				clearFundsFuileds();
+				this.renderBoard = false;
+			} else if (null != funds && Double.parseDouble(amount) >= policy.getMinContribution()) {
+
+				if (date1.compareTo(date2) > 0) {
+					days = fmt.daysBetween(date2, date1);
+					LOGGER.info("DAYS BETWEEN :::::" + days);
+					if (days == 1) {
+						/// updating member existing funds previous
+						funds.setGenericStatus(DESACTIVE);
+						fundsImpl.UpdateFunds(funds);
+						LOGGER.info("::::PREVIOUS FUND UPDATED TO DESACTIVE STATUS:::");
+
+						memberFunds.setGenericStatus(ACTIVE);
+						memberFunds.setCreatedBy(usersSession.getFullname());
+						memberFunds.setCrtdDtTime(timestamp);
+						memberFunds.setGivenDate(timestamp);
+						memberFunds.setUsermember(coopMemberDto.getMember());
+						memberFunds.setMutualcoop(coopMemberDto.getMutualcoop());
+						memberFunds.setAmount(Double.parseDouble(amount));
+						memberFunds.setBalance(funds.getBalance() + Double.parseDouble(amount));
+						memberFunds.setStatus(FundStatus);
+						fundsImpl.saveFunds(memberFunds);
+						JSFMessagers.resetMessages();
+						setValid(true);
+						JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.funds"));
+						LOGGER.info(CLASSNAME + ":::No fines Details is saved");
+						clearFundsFuileds();
+						this.renderBoard = false;
+					} else {
+						/// updating member existing funds previous
+						funds.setGenericStatus(DESACTIVE);
+						fundsImpl.UpdateFunds(funds);
+						LOGGER.info("::::PREVIOUS FUND UPDATED TO DESACTIVE STATUS:::");
+
+						memberFunds.setGenericStatus(ACTIVE);
+						memberFunds.setCreatedBy(usersSession.getFullname());
+						memberFunds.setCrtdDtTime(timestamp);
+						memberFunds.setGivenDate(timestamp);
+						memberFunds.setUsermember(coopMemberDto.getMember());
+						memberFunds.setMutualcoop(coopMemberDto.getMutualcoop());
+						memberFunds.setAmount(Double.parseDouble(amount));
+						memberFunds.setBalance(funds.getBalance() + Double.parseDouble(amount));
+						memberFunds.setStatus(FundStatus);
+						fundsImpl.saveFunds(memberFunds);
+						finees.setGenericStatus(ACTIVE);
+						finees.setCreatedBy(usersSession.getFullname());
+						finees.setCrtdDtTime(timestamp);
+						finees.setGivenDate(timestamp);
+						finees.setUsermember(coopMemberDto.getMember());
+						finees.setAmount(policy.getFineondelay() * (days - 1));
+						finees.setMutualcoop(coopMemberDto.getMutualcoop());
+						finees.setStatus(PENDING);
+						finesImpl.saveFines(finees);
+						clearFundsFuileds();
+						JSFMessagers.resetMessages();
+						setValid(true);
+						JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.fineesoncontribution"));
+						LOGGER.info(CLASSNAME + ":::Fines Details is saved");
+						this.renderBoard = false;
+					}
+				}
+
+			}
+
+		} catch (Exception ex) {
+			LOGGER.info(CLASSNAME + ":::User Details is fail with HibernateException  error");
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("com.server.side.internal.error"));
+			LOGGER.info(CLASSNAME + "" + ex.getMessage());
+			ex.printStackTrace();
+		}
+	}
+
 	@SuppressWarnings("static-access")
 	public void saveFunds() throws Exception {
 		try {
@@ -585,7 +1559,7 @@ public class MutualCoopController implements Serializable, DbConstant {
 					Formating fmt = new Formating();
 					LOGGER.info("TODAY DATE:::" + smf.format(date1));
 					LOGGER.info("::::Yesterday DATE::::" + smf.format(date2));
-					
+
 					mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
 							new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
 							"from MutualCoopMembers");
@@ -593,8 +1567,8 @@ public class MutualCoopController implements Serializable, DbConstant {
 							new Object[] { ACTIVE, mutualMembers.getMutualcoop() }, "from MutualCoopPolicy");
 					if (date1.compareTo(date2) > 0) {
 						days = fmt.daysBetween(date2, date1);
-						LOGGER.info("DAYS BETWEEN :::::"+days);
-						if (days == 1 && Double.parseDouble(amount)>=policy.getMinContribution()) {
+						LOGGER.info("DAYS BETWEEN :::::" + days);
+						if (days == 1 && Double.parseDouble(amount) >= policy.getMinContribution()) {
 							memberFunds.setGenericStatus(ACTIVE);
 							memberFunds.setCreatedBy(usersSession.getFullname());
 							memberFunds.setCrtdDtTime(timestamp);
@@ -610,8 +1584,8 @@ public class MutualCoopController implements Serializable, DbConstant {
 							JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.funds"));
 							LOGGER.info(CLASSNAME + ":::No fines Details is saved");
 							clearFundsFuileds();
-						}else {
-							if(Double.parseDouble(amount)>=policy.getMinContribution()) {
+						} else {
+							if (Double.parseDouble(amount) >= policy.getMinContribution()) {
 								memberFunds.setGenericStatus(ACTIVE);
 								memberFunds.setCreatedBy(usersSession.getFullname());
 								memberFunds.setCrtdDtTime(timestamp);
@@ -627,14 +1601,15 @@ public class MutualCoopController implements Serializable, DbConstant {
 								finees.setCrtdDtTime(timestamp);
 								finees.setGivenDate(timestamp);
 								finees.setUsermember(coopMemberDto.getMember());
-								finees.setAmount(policy.getFineondelay()*(days-1));
+								finees.setAmount(policy.getFineondelay() * (days - 1));
 								finees.setMutualcoop(coopMemberDto.getMutualcoop());
 								finees.setStatus(PENDING);
 								finesImpl.saveFines(finees);
 								JSFMessagers.resetMessages();
 								setValid(true);
-								JSFMessagers.addErrorMessage(getProvider().getValue("com.save.form.fineesoncontribution"));
-								LOGGER.info(CLASSNAME + ":::Fines Details is saved");	
+								JSFMessagers
+										.addErrorMessage(getProvider().getValue("com.save.form.fineesoncontribution"));
+								LOGGER.info(CLASSNAME + ":::Fines Details is saved");
 							}
 						}
 					}
@@ -679,9 +1654,25 @@ public class MutualCoopController implements Serializable, DbConstant {
 		recordeddate = null;
 	}
 
+	public void clearPostFuileds() {
+		post = new Posts();
+	}
+
 	public void clearFundsFuileds() {
 		memberFunds = new Funds();
+		finees = new Fines();
 		amount = null;
+	}
+
+	public void clearIncomeFuileds() {
+		income = new OtherIncome();
+		receiveAmount = new String();
+		incomeAmount = new String();
+		sourceOfIncome = new String();
+	}
+
+	public void clearDistributedIncomeFuileds() {
+		distInterest = new DistributedInterest();
 	}
 
 	public List<MutualCooperative> mutualCoopList() {
@@ -706,6 +1697,17 @@ public class MutualCoopController implements Serializable, DbConstant {
 	public String editAction(PolicyDto policy) {
 		policy.setEditable(true);
 		return null;
+	}
+
+	public String editPostAction(PostsDto post) {
+		post.setEditable(true);
+		return null;
+	}
+
+	public String cancelPost(PostsDto post) {
+		post.setEditable(false);
+		return null;
+
 	}
 
 	public String cancel(PolicyDto policy) {
@@ -841,6 +1843,38 @@ public class MutualCoopController implements Serializable, DbConstant {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public String savePostAction(PostsDto post) throws Exception {
+		LOGGER.info("update  saveAction method");
+		if (policy != null) {
+			Posts pol = new Posts();
+
+			pol = postImpl.getPostsById(post.getPostId(), "postId");
+			LOGGER.info("here update sart for " + pol + " PiD " + pol.getPostId());
+			if (null != pol) {
+
+				post.setEditable(false);
+				pol.setDescription(post.getDescription());
+				pol.setUpdatedBy(usersSession.getFullname());
+				pol.setUpDtTime(timestamp);
+				pol.setGenericStatus(post.getGeneriStatus());
+				postImpl.UpdatePosts(pol);
+				allposts = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "Posts", "postId desc");
+				mutualpost = mutualPostList(allposts);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("info.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroinfo.changed.message"));
+		}
+
+		return null;
+	}
+
 	public String getCLASSNAME() {
 		return CLASSNAME;
 	}
@@ -934,6 +1968,93 @@ public class MutualCoopController implements Serializable, DbConstant {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public String blockPostAction(PostsDto post) throws Exception {
+		LOGGER.info("update  saveAction method");
+		if (post != null) {
+			Posts p = new Posts();
+			p = postImpl.getPostsById(post.getPostId(), "postId");
+			LOGGER.info("here update sart for " + p + " postiD " + p.getPostId());
+			if (null != p) {
+				p.setStatus(Block);
+				p.setUpdatedBy(usersSession.getViewId());
+				p.setUpDtTime(timestamp);
+				postImpl.UpdatePosts(p);
+
+				allposts = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "Posts", "postId desc");
+				mutualpost = mutualPostList(allposts);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("blockpost.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public String unBlockPostAction(PostsDto post) throws Exception {
+		LOGGER.info("update  saveAction method");
+		if (post != null) {
+			Posts p = new Posts();
+			p = postImpl.getPostsById(post.getPostId(), "postId");
+			LOGGER.info("here update sart for " + p + " postiD " + p.getPostId());
+			if (null != p) {
+				p.setStatus(DESACTIVE);
+				p.setUpdatedBy(usersSession.getViewId());
+				p.setUpDtTime(timestamp);
+				postImpl.UpdatePosts(p);
+
+				allposts = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "Posts", "postId desc");
+				mutualpost = mutualPostList(allposts);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("blockpost.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public String publishAction(PostsDto post) throws Exception {
+		LOGGER.info("update  saveAction method");
+		if (post != null) {
+			Posts p = new Posts();
+			p = postImpl.getPostsById(post.getPostId(), "postId");
+			LOGGER.info("here update sart for " + p + " postiD " + p.getPostId());
+			if (null != p) {
+				p.setStatus(ACTIVE);
+				p.setUpdatedBy(usersSession.getViewId());
+				p.setUpDtTime(timestamp);
+				postImpl.UpdatePosts(p);
+
+				allposts = postImpl.getGenericListWithHQLParameter(new String[] { "genericStatus" },
+						new Object[] { ACTIVE }, "Posts", "postId desc");
+				mutualpost = mutualPostList(allposts);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("publishpost.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
 	public String rejectAction(LoanDto loan) {
 		LOGGER.info("update  saveAction method");
 		if (loan != null) {
@@ -951,6 +2072,94 @@ public class MutualCoopController implements Serializable, DbConstant {
 				JSFMessagers.resetMessages();
 				setValid(true);
 				JSFMessagers.addErrorMessage(getProvider().getValue("reject.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	public String rejectInterestAction(InterestChargeDto interest) {
+		LOGGER.info("update  saveAction method");
+		if (interest != null) {
+			InterestCharges req = new InterestCharges();
+			req = chargeImpl.getInterestChargesById(interest.getChargeId(), "chargeId");
+
+			LOGGER.info("++++++++++++++++++++++++++here update sart for " + req + " useriD " + req.getChargeId());
+			if (null != req) {
+
+				req.setStatus(REJECTED);
+				req.setUpdatedBy(usersSession.getFullname());
+				req.setUpDtTime(timestamp);
+				chargeImpl.UpdateInterestCharges(req);
+				chargeDtosList = new ArrayList<InterestChargeDto>();
+				chargeDtosList = interestChargesDetailsDetails();
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("interest.reject.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	public String rejectFineAction(FinesDto fines) {
+		LOGGER.info("update  saveAction method");
+		if (fines != null) {
+			LoanRequest req = new LoanRequest();
+			Fines fine = new Fines();
+			fine = finesImpl.getFinesById(fines.getFineId(), "fineId");
+
+			LOGGER.info("++++++++++++++++++++++++++here update sart for " + fine + " useriD " + fine.getFineId());
+			if (null != fine) {
+
+				fine.setStatus(REJECTED);
+				fine.setUpdatedBy(usersSession.getFullname());
+				fine.setUpDtTime(timestamp);
+				finesImpl.UpdateFines(fine);
+				finesDtoList = new ArrayList<FinesDto>();
+				finesDtoList = finesDetails();
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("fine.reject.changed.message"));
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	public String finesPaymentAction() throws Exception {
+		LOGGER.info("update  saveAction method");
+		HttpSession session = SessionUtils.getSession();
+		FinesDto fine = new FinesDto();
+		fine = (FinesDto) session.getAttribute("fineinfo");
+		if (fine != null) {
+			Fines req = new Fines();
+			req = finesImpl.getFinesById(fine.getFineId(), "fineId");
+			LOGGER.info("++++++++++++++++++++++++++here update sart for " + req + " useriD " + req.getFineId());
+			if (null != req) {
+				req.setStatus(LoanPayStatus);
+				req.setUpdatedBy(usersSession.getFullname());
+				req.setUpDtTime(timestamp);
+				finesImpl.UpdateFines(req);
+				finesDtoList = new ArrayList<FinesDto>();
+				finesDtoList = finesDetails();
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("approvepayment.changed.message"));
+				this.memberfunds = true;
+				this.renderdialog = false;
 			}
 		} else {
 			JSFMessagers.resetMessages();
@@ -988,6 +2197,37 @@ public class MutualCoopController implements Serializable, DbConstant {
 				funds.setUpdatedBy(usersSession.getFullname());
 				funds.setUpDtTime(timestamp);
 				fundsImpl.UpdateFunds(funds);
+				JSFMessagers.resetMessages();
+				setValid(true);
+				JSFMessagers.addErrorMessage(getProvider().getValue("approvepayment.changed.message"));
+				this.memberfunds = true;
+				this.renderdialog = false;
+			}
+		} else {
+			JSFMessagers.resetMessages();
+			setValid(false);
+			JSFMessagers.addErrorMessage(getProvider().getValue("erroblock.changed.message"));
+		}
+
+		return null;
+	}
+
+	public String interestPaymentAction() throws Exception {
+		LOGGER.info("update  saveAction method");
+		HttpSession session = SessionUtils.getSession();
+		InterestChargeDto interest = new InterestChargeDto();
+		interest = (InterestChargeDto) session.getAttribute("interstinfo");
+		if (interest != null) {
+			InterestCharges req = new InterestCharges();
+			req = chargeImpl.getInterestChargesById(interest.getChargeId(), "chargeId");
+			LOGGER.info("++++++++++++++++++++++++++here update sart for " + req + " useriD " + req.getChargeId());
+			if (null != req) {
+				req.setStatus(LoanPayStatus);
+				req.setUpdatedBy(usersSession.getFullname());
+				req.setUpDtTime(timestamp);
+				chargeImpl.UpdateInterestCharges(req);
+				chargeDtosList = new ArrayList<InterestChargeDto>();
+				chargeDtosList = interestChargesDetailsDetails();
 				JSFMessagers.resetMessages();
 				setValid(true);
 				JSFMessagers.addErrorMessage(getProvider().getValue("approvepayment.changed.message"));
@@ -1409,6 +2649,159 @@ public class MutualCoopController implements Serializable, DbConstant {
 		return null;
 
 	}
+
+	
+	
+	// CREATING FOOTER AND HEADER FOR PAGES
+
+		class MyFooter extends PdfPageEventHelper {
+
+			Font ffont1 = new Font(Font.FontFamily.UNDEFINED, 12, Font.ITALIC);
+
+			Font ffont2 = new Font(Font.FontFamily.COURIER, 16, Font.ITALIC);
+
+			public void onEndPage(PdfWriter writer, Document document) {
+
+				try {
+					PdfContentByte cb = writer.getDirectContent();
+					Phrase header = new Phrase("");
+					document.add(new Paragraph("\n"));
+					Phrase footer = new Phrase("@Copyright MUTUAL COOPERATIVE...!\n", ffont2);
+					ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, header,
+							(document.right() - document.left()) / 2 + document.leftMargin(), document.top() + 10, 0);
+					ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, footer,
+							(document.right() - document.left()) / 2 + document.leftMargin(), document.bottom() - 10, 0);
+
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		// Codes for creating the table and its contents
+	
+	public void membersInterestRecievedPdf() throws IOException, DocumentException {
+		Date date = new Date();
+		SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");
+		String xdate = dt.format(date);
+		FacesContext context = FacesContext.getCurrentInstance();
+		Document document = new Document();
+		Rectangle rect = new Rectangle(20, 20, 800, 600);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PdfWriter writer = PdfWriter.getInstance(document, baos);
+		MyFooter event = new MyFooter();
+		writer.setPageEvent(event);
+		writer.setBoxSize("art", rect);
+		document.setPageSize(rect);
+		if (!document.isOpen()) {
+			document.open();
+		}
+		Image img1 = Image.getInstance("D:\\Projects\\Nshimiye\\Project\\src\\main\\webapp\\resources\\image\\MCMSLOG2.jpg");
+		document.add(img1);
+		document.add(new Paragraph("\n"));
+
+		Font font0 = new Font(Font.FontFamily.COURIER, 14, Font.ITALIC);
+		PdfPTable table = new PdfPTable(6);
+
+		table.setWidthPercentage(107);
+		Paragraph header1 = new Paragraph("MEMBER INTEREST REPORT MADE ON  " + xdate + "",font0);
+		// header.setAlignment(Element.ALIGN_RIGHT);
+		header1.setAlignment(Element.ALIGN_CENTER);
+		// header.add(header1);
+		document.add(header1);
+		document.add(new Paragraph("                                        "));
+		// String myBoardName=t.getBoardName();
+
+		PdfPCell pc = new PdfPCell(new Paragraph("MUTUAL COOPERATIVE MEMBERS INTEREST REPORT",font0));
+		pc.setColspan(6);
+		pc.setBackgroundColor(BaseColor.CYAN);
+		pc.setHorizontalAlignment(Element.ALIGN_CENTER);
+		table.addCell(pc);
+
+		PdfPCell pc1 = new PdfPCell(new Paragraph("No", font0));
+		pc1.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc1);
+
+		PdfPCell pc2 = new PdfPCell(new Paragraph("Member names", font0));
+		pc2.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc2);
+
+		PdfPCell pc3 = new PdfPCell(new Paragraph("Phone number", font0));
+		pc3.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc3);
+		
+		PdfPCell pc4 = new PdfPCell(new Paragraph("Total interest", font0));
+		pc4.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc4);
+		
+		PdfPCell pc5= new PdfPCell(new Paragraph("Given date", font0));
+		pc5.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc5);
+		
+		PdfPCell pc6 = new PdfPCell(new Paragraph("Interest status", font0));
+		pc6.setBackgroundColor(BaseColor.ORANGE);
+		table.addCell(pc6);
+		table.setHeaderRows(1);
+		int index = 1;
+		try {
+			DecimalFormat fmt = new DecimalFormat("###,###.##");
+			mutualMembers = mutualMembersImpl.getModelWithMyHQL(new String[] { "genericStatus", "usermember" },
+					new Object[] { ACTIVE, usersImpl.gettUserById(usersSession.getUserId(), "userId") },
+					"from MutualCoopMembers");
+			for (Object[] data : chargeImpl.reportList(
+					"select inc.interestId,us.fullname,us.phone,sum(inc.amount),inc.givenDate,inc.status,inc.usermember from DistributedInterest inc,Users us  where us.userId=inc.usermember and inc.genericStatus='"
+							+ ACTIVE + "' and inc.mutualcoop=" + mutualMembers.getMutualcoop().getMutualCoopId()
+							+ " group by inc.usermember order by inc.interestId")) {
+				if (null != data[3]) {
+					table.addCell(index + "");
+					table.addCell(data[1] + "");
+					table.addCell(data[2] + "");
+					table.addCell(fmt.format(Double.parseDouble(data[3] + "")));
+					table.addCell(dt.format((Timestamp)data[4]));
+					table.addCell(data[5] + "");
+				
+				} else {
+				}
+				index++;
+			}
+			document.add(table);
+			document.add(new Paragraph("\n"));
+			document.add(new Paragraph("\n"));
+			document.add(new Paragraph(new Chunk("Printed By:  " + usersSession.getFullname()+ "",
+					FontFactory.getFont(FontFactory.COURIER_BOLD, 14, Font.ITALIC, BaseColor.ORANGE))));
+			document.close();
+
+			writePDFToResponse(context.getExternalContext(), baos, "MCREP_REPORT");
+
+			context.responseComplete();
+
+		} catch (Exception e) {
+
+			LOGGER.info(e.getMessage() + "Internal server error");
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void writePDFToResponse(ExternalContext externalContext, ByteArrayOutputStream baos, String fileName) {
+		try {
+			externalContext.responseReset();
+			externalContext.setResponseContentType("application/pdf");
+			externalContext.setResponseHeader("Expires", "0");
+			externalContext.setResponseHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			externalContext.setResponseHeader("Pragma", "public");
+			externalContext.setResponseHeader("Content-disposition", "attachment;filename=" + fileName + ".pdf");
+			externalContext.setResponseContentLength(baos.size());
+			OutputStream out = externalContext.getResponseOutputStream();
+			baos.writeTo(out);
+			externalContext.responseFlushBuffer();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 	public void backMember() {
 		this.fundsDetails = false;
@@ -2047,4 +3440,357 @@ public class MutualCoopController implements Serializable, DbConstant {
 		this.finesImpl = finesImpl;
 	}
 
+	public List<FinesDto> getFinesDtoList() {
+		return finesDtoList;
+	}
+
+	public void setFinesDtoList(List<FinesDto> finesDtoList) {
+		this.finesDtoList = finesDtoList;
+	}
+
+	public List<Fines> getFinesList() {
+		return finesList;
+	}
+
+	public void setFinesList(List<Fines> finesList) {
+		this.finesList = finesList;
+	}
+
+	public InterestChargeDto getChargeDto() {
+		return chargeDto;
+	}
+
+	public void setChargeDto(InterestChargeDto chargeDto) {
+		this.chargeDto = chargeDto;
+	}
+
+	public List<InterestChargeDto> getChargeDtosList() {
+		return chargeDtosList;
+	}
+
+	public void setChargeDtosList(List<InterestChargeDto> chargeDtosList) {
+		this.chargeDtosList = chargeDtosList;
+	}
+
+	public List<InterestCharges> getChargeList() {
+		return chargeList;
+	}
+
+	public void setChargeList(List<InterestCharges> chargeList) {
+		this.chargeList = chargeList;
+	}
+
+	public int getDays() {
+		return days;
+	}
+
+	public void setDays(int days) {
+		this.days = days;
+	}
+
+	public Posts getPost() {
+		return post;
+	}
+
+	public void setPost(Posts post) {
+		this.post = post;
+	}
+
+	public List<Posts> getAllposts() {
+		return allposts;
+	}
+
+	public void setAllposts(List<Posts> allposts) {
+		this.allposts = allposts;
+	}
+
+	public PostsImpl getPostImpl() {
+		return postImpl;
+	}
+
+	public void setPostImpl(PostsImpl postImpl) {
+		this.postImpl = postImpl;
+	}
+
+	public PostsDto getPostDtos() {
+		return postDtos;
+	}
+
+	public void setPostDtos(PostsDto postDtos) {
+		this.postDtos = postDtos;
+	}
+
+	public List<PostsDto> getMutualpost() {
+		return mutualpost;
+	}
+
+	public void setMutualpost(List<PostsDto> mutualpost) {
+		this.mutualpost = mutualpost;
+	}
+
+	public MutualCoopMemberDto getMutualCoopMemberDto() {
+		return mutualCoopMemberDto;
+	}
+
+	public void setMutualCoopMemberDto(MutualCoopMemberDto mutualCoopMemberDto) {
+		this.mutualCoopMemberDto = mutualCoopMemberDto;
+	}
+
+	public List<Posts> getListOfPendPost() {
+		return listOfPendPost;
+	}
+
+	public void setListOfPendPost(List<Posts> listOfPendPost) {
+		this.listOfPendPost = listOfPendPost;
+	}
+
+	public int getCountPendPost() {
+		return countPendPost;
+	}
+
+	public void setCountPendPost(int countPendPost) {
+		this.countPendPost = countPendPost;
+	}
+
+	public boolean isRenderNotify() {
+		return renderNotify;
+	}
+
+	public void setRenderNotify(boolean renderNotify) {
+		this.renderNotify = renderNotify;
+	}
+
+	public String getDt1() {
+		return dt1;
+	}
+
+	public void setDt1(String dt1) {
+		this.dt1 = dt1;
+	}
+
+	public String getDt2() {
+		return dt2;
+	}
+
+	public void setDt2(String dt2) {
+		this.dt2 = dt2;
+	}
+
+	public Date getDate1() {
+		return date1;
+	}
+
+	public void setDate1(Date date1) {
+		this.date1 = date1;
+	}
+
+	public Date getDate2() {
+		return date2;
+	}
+
+	public void setDate2(Date date2) {
+		this.date2 = date2;
+	}
+
+	public OtherIncome getIncome() {
+		return income;
+	}
+
+	public void setIncome(OtherIncome income) {
+		this.income = income;
+	}
+
+	public OtherIncomeImpl getIncomeImpl() {
+		return incomeImpl;
+	}
+
+	public void setIncomeImpl(OtherIncomeImpl incomeImpl) {
+		this.incomeImpl = incomeImpl;
+	}
+
+	public List<OtherIncome> getIncomeList() {
+		return incomeList;
+	}
+
+	public void setIncomeList(List<OtherIncome> incomeList) {
+		this.incomeList = incomeList;
+	}
+
+	public String getIncomeAmount() {
+		return incomeAmount;
+	}
+
+	public void setIncomeAmount(String incomeAmount) {
+		this.incomeAmount = incomeAmount;
+	}
+
+	public String getReceiveAmount() {
+		return receiveAmount;
+	}
+
+	public void setReceiveAmount(String receiveAmount) {
+		this.receiveAmount = receiveAmount;
+	}
+
+	public String getSourceOfIncome() {
+		return sourceOfIncome;
+	}
+
+	public void setSourceOfIncome(String sourceOfIncome) {
+		this.sourceOfIncome = sourceOfIncome;
+	}
+
+	public boolean isRenderIncomeTable() {
+		return renderIncomeTable;
+	}
+
+	public void setRenderIncomeTable(boolean renderIncomeTable) {
+		this.renderIncomeTable = renderIncomeTable;
+	}
+
+	public boolean isRenderIncomeForm() {
+		return renderIncomeForm;
+	}
+
+	public void setRenderIncomeForm(boolean renderIncomeForm) {
+		this.renderIncomeForm = renderIncomeForm;
+	}
+
+	public List<IncomeDto> getAllIncomeDto() {
+		return allIncomeDto;
+	}
+
+	public void setAllIncomeDto(List<IncomeDto> allIncomeDto) {
+		this.allIncomeDto = allIncomeDto;
+	}
+
+	public DistributedInterest getDistInterest() {
+		return distInterest;
+	}
+
+	public void setDistInterest(DistributedInterest distInterest) {
+		this.distInterest = distInterest;
+	}
+
+	public List<DistributedInterest> getDistIncomeList() {
+		return distIncomeList;
+	}
+
+	public void setDistIncomeList(List<DistributedInterest> distIncomeList) {
+		this.distIncomeList = distIncomeList;
+	}
+
+	public DistributedInterestImpl getDistInterestImpl() {
+		return distInterestImpl;
+	}
+
+	public void setDistInterestImpl(DistributedInterestImpl distInterestImpl) {
+		this.distInterestImpl = distInterestImpl;
+	}
+
+	public List<InterestChargeDto> getInterestDtosList() {
+		return interestDtosList;
+	}
+
+	public void setInterestDtosList(List<InterestChargeDto> interestDtosList) {
+		this.interestDtosList = interestDtosList;
+	}
+
+	public List<DistributedInterestDto> getInterestDto() {
+		return interestDto;
+	}
+
+	public void setInterestDto(List<DistributedInterestDto> interestDto) {
+		this.interestDto = interestDto;
+	}
+
+	public String getOverAllFunds() {
+		return overAllFunds;
+	}
+
+	public void setOverAllFunds(String overAllFunds) {
+		this.overAllFunds = overAllFunds;
+	}
+
+	public List<FundsDto> getFundsStat() {
+		return fundsStat;
+	}
+
+	public void setFundsStat(List<FundsDto> fundsStat) {
+		this.fundsStat = fundsStat;
+	}
+
+	public List<FinesDto> getFinesStatistic() {
+		return finesStatistic;
+	}
+
+	public void setFinesStatistic(List<FinesDto> finesStatistic) {
+		this.finesStatistic = finesStatistic;
+	}
+
+	public String getOverAllFines() {
+		return overAllFines;
+	}
+
+	public void setOverAllFines(String overAllFines) {
+		this.overAllFines = overAllFines;
+	}
+
+	public List<LoanDto> getLoanStatDto() {
+		return loanStatDto;
+	}
+
+	public void setLoanStatDto(List<LoanDto> loanStatDto) {
+		this.loanStatDto = loanStatDto;
+	}
+
+	public String getOverAllLoan() {
+		return overAllLoan;
+	}
+
+	public void setOverAllLoan(String overAllLoan) {
+		this.overAllLoan = overAllLoan;
+	}
+
+	public List<InterestChargeDto> getInterestStatDto() {
+		return interestStatDto;
+	}
+
+	public void setInterestStatDto(List<InterestChargeDto> interestStatDto) {
+		this.interestStatDto = interestStatDto;
+	}
+
+	public String getOverAllInterest() {
+		return overAllInterest;
+	}
+
+	public void setOverAllInterest(String overAllInterest) {
+		this.overAllInterest = overAllInterest;
+	}
+
+	public List<IncomeDto> getIncomeStatDto() {
+		return incomeStatDto;
+	}
+
+	public void setIncomeStatDto(List<IncomeDto> incomeStatDto) {
+		this.incomeStatDto = incomeStatDto;
+	}
+
+	public String getOverAllIncome() {
+		return overAllIncome;
+	}
+
+	public void setOverAllIncome(String overAllIncome) {
+		this.overAllIncome = overAllIncome;
+	}
+
+	public boolean isPrintPdf() {
+		return printPdf;
+	}
+
+	public void setPrintPdf(boolean printPdf) {
+		this.printPdf = printPdf;
+	}	
+	
+	
 }

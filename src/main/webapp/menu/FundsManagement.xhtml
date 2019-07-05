@@ -40,12 +40,24 @@
 										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
 										<center>
 											<h:outputText value="#{facesMessage.summary}" escape="false" />
+											
 										</center>
 									</li>
 								</ui:repeat>
 							</ul>
 						</h:panelGroup>
-
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.renderBoard}">
+							<ul>
+								<li class="alert alert-info label"
+									style="list-style: none; background-color: #ffc107; color: white; font-size: 12pt;">
+									<center>
+										<h:outputText
+											value="Due to minimum contribution agreed  for &nbsp;#{mutualCoopController.policy.minContribution}" />
+									</center>
+								</li>
+							</ul>
+						</h:panelGroup>
 						<h:panelGroup layout="block"
 							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
 							<ul>
@@ -233,7 +245,7 @@
 
 
 											<h:commandButton a:type="submit"
-												action="#{mutualCoopController.saveFunds}"
+												action="#{mutualCoopController.saveMemberFunds}"
 												class="btn btn-gradient-success mr-2 label"
 												style="font-size: 12pt;" value="Submit"></h:commandButton>
 
@@ -248,7 +260,7 @@
 								action="#{mutualCoopController.backMember}"
 								style="font-size: 14px !important;"
 								class="btn btn-primary glyphicon glyphicon-chevron-left">
-								
+
 							</h:commandLink>
 
 
@@ -293,7 +305,7 @@
 										<h:inputText a:type="text" value="#{funds.formatAmount}"
 											rendered="#{funds.editchanges}"
 											class="form-control form-control-lg label" id="fines1"
-											style=" font-size: 14px !important;" 
+											style=" font-size: 14px !important;"
 											converterMessage="#{msg['error.enter.invalid.amount']}"
 											validatorMessage="#{msg['error.enter.invalid.amount']}">
 											<f:validateRegex
@@ -303,13 +315,15 @@
 										<h:message for="fines1" styleClass="help-block label"
 											style="font-size:11pt"></h:message>
 
-										<h:outputText value="#{funds.formatAmount}" rendered="#{not funds.editchanges}"
+										<h:outputText value="#{funds.formatAmount}"
+											rendered="#{not funds.editchanges}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-primary" />
 									</h:column>
 									<h:column>
 										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Current balance</label>
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Current
+												balance</label>
 										</f:facet>
 										<br />
 
@@ -347,11 +361,13 @@
 												status</label>
 										</f:facet>
 										<br />
-										<h:outputText value="#{funds.generiStatus}" rendered="#{not funds.editable}"
+										<h:outputText value="#{funds.generiStatus}"
+											rendered="#{not funds.editable}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-info">
 										</h:outputText>
-										<h:outputText value="#{funds.generiStatus}" rendered="#{funds.editable}"
+										<h:outputText value="#{funds.generiStatus}"
+											rendered="#{funds.editable}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-warning">
 										</h:outputText>
@@ -381,8 +397,8 @@
 											rendered="#{not funds.editable}"
 											class="btn btn-gradient-info mr-2 label"
 											style="font-size: 12pt;" value="Edit">
-											
-											</h:commandButton>
+
+										</h:commandButton>
 
 										<h:commandButton data-toggle="tooltip" data-placement="left"
 											style="font-size:12pt"
@@ -399,7 +415,7 @@
 											action="#{mutualCoopController.saveFundAction(funds)}"
 											rendered="#{funds.editchanges}">
 											<f:ajax render="@form" execute="@form" onevent="showProgress" />
-											</h:commandButton>
+										</h:commandButton>
 									</h:column>
 
 

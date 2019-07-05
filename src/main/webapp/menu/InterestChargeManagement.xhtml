@@ -19,21 +19,11 @@
 						<p:outputPanel rendered="#{membersController.rendered}"
 							autoUpdate="true">
 							<a
-								href="#{loadUserInformationsController.getContextPath()}/page1.xhtml"
+								href="#{loadUserInformationsController.getContextPath()}/RepPage1.xhtml"
 								class="btn btn-primary glyphicon glyphicon-chevron-left"
 								style="font-size: 11pt"> #{msg['BackButtom']}</a>
 						</p:outputPanel>
-						<p:outputPanel rendered="#{membersController.renderBoard}"
-							autoUpdate="true">
-							<h:form>
-								<h:commandLink data-toggle="tooltip" data-placement="left"
-									value="Back" action="#{membersController.BackRepForm}"
-									style=" font-size:11pt;"
-									class="btn btn-gradient-info mr-2 glyphicon glyphicon-chevron-left ">
-
-								</h:commandLink>
-							</h:form>
-						</p:outputPanel>
+						
 					</ui:repeat>
 				</div>
 				<div class="panel-body"
@@ -74,18 +64,13 @@
        							 -webkit-box-shadow: none;
        							 box-shadow: none !important;
        								 margin: 18pt 2pt 0 !important;"
-									value="#{mutualCoopController.loanDtoList}" var="loan"
+									value="#{mutualCoopController.chargeDtosList}" var="charge"
 									class="table table-striped table-hover table-bordered tableUpdated">
 									<f:facet name="header">
-										<h:commandLink value="Loan request"
-											action="#{guestController.backMember}"
-											style="font-size: 13pt !important;"
-											class="btn btn-info label">
-
-										</h:commandLink>
+										
 										<label
 											style="margin-left: 25%; font: italic bold 13pt/16pt Georgia, serif;">List
-											of requested loan</label>
+											of interest generated from members</label>
 									</f:facet>
 									<h:column>
 										<f:facet name="header">
@@ -97,100 +82,59 @@
 									</h:column>
 									<h:column>
 										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Requested
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Interest generated
 												by</label>
 										</f:facet>
 										<br />
-										<h:outputText value="#{loan.usermember.fullname}"
+										<h:outputText value="#{charge.usermember.fullname}"
 											style="font: italic  11pt/12pt Georgia, serif;" />
 									</h:column>
 									<h:column>
 										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Amount
-												requested</label>
+											<label style="font: italic bold 12pt/13pt Georgia, serif;"> Interest amount
+												</label>
 										</f:facet>
 										<br />
 
 
-										<h:outputText value="#{loan.formatBalance}"
+										<h:outputText value="#{charge.formatBalance}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-primary" />
 									</h:column>
 									<h:column>
 										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Requested
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Generated
 												date</label>
 										</f:facet>
 										<br />
-										<h:outputText value="#{loan.requestDate}"
+										<h:outputText value="#{charge.createdDate }"
 											style="font: italic  11pt/12pt Georgia, serif;">
 											<f:convertDateTime type="date" dateType="short"
 												pattern="dd-MM-yyyy" />
 										</h:outputText>
 									</h:column>
-									<h:column>
-										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Approved
-												date</label>
-										</f:facet>
-										<br />
-										<h:outputText value="#{loan.approvedDate}"
-											style="font: italic  11pt/12pt Georgia, serif;"
-											class="badge badge-primary">
-											<f:convertDateTime type="date" dateType="short"
-												pattern="dd-MM-yyyy" />
-										</h:outputText>
-									</h:column>
-									<h:column>
-										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Return
-												date</label>
-										</f:facet>
-										<br />
-										<h:outputText value="#{loan.returnDate}"
-											style="font: italic  11pt/12pt Georgia, serif;"
-											class="badge badge-info">
-											<f:convertDateTime type="date" dateType="short"
-												pattern="dd-MM-yyyy" />
-										</h:outputText>
-									</h:column>
-									<h:column>
-										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Days
-												remaining</label>
-										</f:facet>
-										<br />
-										<h:outputText value="#{loan.dayremaining} &nbsp;days"
-											style="font: italic  11pt/12pt Georgia, serif;"
-											class="badge badge-warning" rendered="#{not loan.accept}">
-										</h:outputText>
-									</h:column>
 									
 									<h:column>
 										<f:facet name="header">
-											<label style="font: italic bold 12pt/13pt Georgia, serif;">Loan
+											<label style="font: italic bold 12pt/13pt Georgia, serif;">Interest
 												status</label>
 										</f:facet>
 										<br />
 										<h:outputText value="pending"
-											rendered="#{not loan.editchanges}"
+											rendered="#{not charge.approval}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-info">
 										</h:outputText>
-										<h:outputText value="#{loan.status}"
-											rendered="#{not loan.loanrequest}"
-											style="font: italic  11pt/12pt Georgia, serif;"
-											class="badge badge-danger">
-										</h:outputText>
-										<h:outputText value="#{loan.status}"
-											rendered="#{not loan.accept}"
+										
+										<h:outputText value="#{charge.status}"
+											rendered="#{not charge.accept}"
 											style="font: italic  11pt/12pt Georgia, serif;"
 											class="badge badge-success">
 										</h:outputText>
-										<h:outputText value="#{loan.status}"
-											rendered="#{not loan.approval}"
+										<h:outputText value="#{charge.status}"
+											rendered="#{not charge.paidStatus}"
 											style="font: italic  11pt/12pt Georgia, serif;"
-											class="badge badge-info">
+											class="badge badge-danger">
 										</h:outputText>
 									</h:column>
 									<h:column>
@@ -201,7 +145,7 @@
 										<br />
 
 
-										<h:outputText value="#{loan.recordedBy}"
+										<h:outputText value="#{charge.recordedBy}"
 											style="font: italic  11pt/12pt Georgia, serif;">
 
 										</h:outputText>
@@ -213,40 +157,41 @@
 											<label style="font: italic bold 12pt/13pt Georgia, serif;">Action</label>
 										</f:facet>
 										<br />
+										
 										<h:commandButton a:type="submit"
-											action="#{mutualCoopController.rejectAction(loan)}"
-											rendered="#{not loan.editchanges}"
+											action="#{mutualCoopController.rejectInterestAction(charge)}"
+											rendered="#{not charge.accept}"
 											class="btn btn-gradient-warning mr-2 label"
 											style="font-size: 12pt;" value="reject"></h:commandButton>
-										<h:commandButton data-toggle="tooltip" data-placement="left"
-											style="font-size:12pt" value="approve"
-											action="#{mutualCoopController.appAction(loan)}"
-											class="btn btn-gradient-primary mr-2  label"
-											rendered="#{not loan.editchanges}">
-										</h:commandButton>
-
-										<h:commandButton a:type="submit"
-											action="#{mutualCoopController.rejectAction(loan)}"
-											rendered="#{not loan.accept}"
+											
+											<h:commandButton a:type="submit"
+											action="#{mutualCoopController.rejectInterestAction(charge)}"
+											rendered="#{not charge.approval}"
 											class="btn btn-gradient-warning mr-2 label"
 											style="font-size: 12pt;" value="reject"></h:commandButton>
-										<h:panelGroup rendered="#{not loan.accept}">
+											
+											
+										<h:panelGroup rendered="#{not charge.approval}">
 
-											<h:commandLink value="Approve loan payment"
+											<h:commandLink value="Approve interest payment"
 												class="btn btn-gradient-primary mr-2 label"
-												action="#{mutualCoopController.doAction(loan)}"
+												action="#{mutualCoopController.doInterestAction(charge)}"
+												style="font-size: 12pt;">
+											</h:commandLink>
+
+										</h:panelGroup>
+										
+										
+										<h:panelGroup rendered="#{not charge.paidStatus}">
+
+											<h:commandLink value="Approve interest payment"
+												class="btn btn-gradient-primary mr-2 label"
+												action="#{mutualCoopController.doInterestAction(charge)}"
 												style="font-size: 12pt;">
 											</h:commandLink>
 
 										</h:panelGroup>
 
-
-										<h:commandButton data-toggle="tooltip" data-placement="left"
-											style="font-size:12pt" value="approve"
-											action="#{mutualCoopController.appAction(loan)}"
-											class="btn btn-gradient-primary mr-2  label"
-											rendered="#{not loan.loanrequest}">
-										</h:commandButton>
 									</h:column>
 									<f:facet name="footer">
 
@@ -261,19 +206,19 @@
 								<div class="modal-dialog modal-md ">
 									<div class="modal-content">
 										<div class="modal-header">
-											<h4 class="modal-title label" style="font-size: 12pt;">Loan
-												payment check</h4>
+											<h4 class="modal-title label" style="font-size: 12pt;">Interest
+												payment verification</h4>
 											<h:commandLink action="#{mutualCoopController.close}"
 												class="close" data-dismiss="modal">&times;</h:commandLink>
 										</div>
 										<div class="modal-body">
 											<p class="label" style="font-size: 13pt; font-weight: bold">Are
-												you sure the loan have been paid?</p>
+												you sure interest have been paid?</p>
 										</div>
 
 										<div class="modal-footer">
 											<h:commandButton a:type="submit"
-												action="#{mutualCoopController.paymentAction}"
+												action="#{mutualCoopController.interestPaymentAction}"
 												class="btn btn-gradient-primary mr-2 label"
 												style="font-size: 12pt;" value="Yes"></h:commandButton>
 											<h:commandLink action="#{mutualCoopController.close}"

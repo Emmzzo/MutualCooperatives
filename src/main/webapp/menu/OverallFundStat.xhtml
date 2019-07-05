@@ -9,7 +9,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
 <h:body>
-	<ui:composition template="/template/common/MemberDashLayout.xhtml">
+	<ui:composition template="/template/common/MutualRepLayout.xhtml">
 
 		<ui:define name="content">
 			<h:body>
@@ -90,16 +90,16 @@
 												<div class="card">
 													<div class="card-body">
 														<h4 class="card-title label" style="font-size: 14pt;font-weight: bold;">Overall daily contribution by statistics</h4>
-														<canvas id="taskperformance" style="height:300px;margin-top:5%;font-size:12pt"></canvas>
+														<canvas id="fundsformance" style="height:300px;margin-top:5%;font-size:12pt"></canvas>
 													</div>
 												</div>
 												
 											</div>
 											<h:form class="form-horizontal">
 												<div class="form-group">
-													<h:inputText class="overallPerformance"
+													<h:inputText class="overAllFunds"
 														style="display:none;"
-														value="#{guestController.overallFunds}"></h:inputText>
+														value="#{mutualCoopController.overAllFunds}"></h:inputText>
 												</div>
 											</h:form>
 										</div>
@@ -119,8 +119,8 @@
 					<script>
 						$(function Myname() {
 							var taskperform = document.getElementById(
-									'taskperformance').getContext('2d');
-							var replaceTaskData = $(".overallPerformance")
+									'fundsformance').getContext('2d');
+							var replaceTaskData = $(".overAllFunds")
 									.val();
 							var taskReq = replaceTaskData.replace("id", "x");
 							taskReq.replace("Rate", "y");
@@ -140,7 +140,7 @@
 							}
 
 							var testTaskData = JSON.parse($(
-									".overallPerformance").val());
+									".overAllFunds").val());
 							//console.log("RESULT"+testTaskData[1].contDate);
 							recusiveTask(0, testTaskData,
 									testTaskData.length - 1);

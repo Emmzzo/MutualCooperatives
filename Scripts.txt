@@ -78,4 +78,46 @@ select sum(amount),DATE_FORMAT(givenDate,'%d/%m/%Y')givenDate from funds where s
 
 
 
+PROJECT TASK REMAINING
+======================
+
+Mutual-Rep
+---------------
+1.My task
+	-Manage post:::DONE::::
+2.Report
+	-Fund contributed
+	-Loan accepted
+	-Interest&fines raised
+	-overall coop fund
+
+3.Online users
+
+4.Manage mutual coop profile.
+
+ADMIN
+=========
+-online rep users
+
+
+Coop-Member
+============
+1.Advertisement 
+	-view avail advert::::DONE::::
+
+2.Report
+	-overall coop loan approved
+	-overall interest and fine raised
+	-Account estimated interest .
+
+3.Online and offline users
+
+
+
+
+
+
+
+
+
 

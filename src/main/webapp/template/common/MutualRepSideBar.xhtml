@@ -8,105 +8,142 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 <h:body>
-	<ui:composition >
-<!-- partial:partials/_sidebar.html -->
-      <nav class="sidebar sidebar-offcanvas" id="sidebar" >
-        <ul class="nav">
-          <li class="nav-item nav-profile">
-            <a href="#" class="nav-link">
-             <div class="nav-profile-image">
-                <!-- <img src="./resources/image/face1.jpg" alt="profile"/> -->
-                <h:graphicImage  style="margin: 5pt" alt="profile" value="/images/dynamic/?file=#{loadUserInformationsController.users.image}" /> 
-                <span class="login-status online"></span> <!--change to offline or busy as needed-->              
-              </div>
-              <div class="nav-profile-text d-flex flex-column" >
-                <span class="font-weight-bold mb-2 label" style="font-size: 11pt">#{loadUserInformationsController.users.fullname}</span>
-                <span class="text-secondary text-small label" style="font-size: 13px">System #{loadUserInformationsController.users.userCategory.usercategoryName}</span>
-              </div>
-              <i class="glyphicon glyphicon-bookmark text-success nav-profile-badge"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/RepPage1.xhtml">
-              <span class="menu-title label" style="font-size: 13pt;font-weight: bold">Dashboard</span>
-              <i class="glyphicon glyphicon-home menu-icon"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-              <span class="menu-title label" style="font-size: 13pt;font-weight: bold;">My Task</span>
-              <i class="glyphicon glyphicon-menu-left"></i>
-              <i class="glyphicon glyphicon-tasks menu-icon"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-              <ul class="nav flex-column sub-menu label">
-                <li > <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/MemberRequestManagement.xhtml" style="font-size: 12pt">Member request management</a></li>
-                <li> <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/LoanManagement.xhtml" style="font-size: 12pt">Loan management</a></li>
-                <li> <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/MemberManagement.xhtml" style="font-size: 12pt">Member managment</a></li>
-                <li> <a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/FundsManagement.xhtml" style="font-size: 12pt">Funds management</a></li>
-                <li> <a class="nav-link" href="pages/ui-features/typography.html" style="font-size: 12pt">Manage post</a></li>
-              </ul>
-            </div>
-          </li>
-          
-         <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
-              <span class="menu-title label" style="font-size: 13pt;font-weight: bold;">Report</span>
-              <i class="glyphicon glyphicon-menu-left"></i>
-              <i class=" glyphicon glyphicon-stats menu-icon"></i>
-            </a>
-            <div class="collapse label" id="general-pages">
-              <ul class="nav flex-column sub-menu label" >
-                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12pt"> Funds  </a></li>
-                <li > <a class="nav-link" href="pages/samples/login.html" style="font-size: 12pt"> Loan distribution </a></li>
-                <li> <a class="nav-link" href="pages/samples/register.html" style="font-size: 12pt"> Interest and fines raised </a></li>
-                <li> <a class="nav-link" href="pages/samples/error-404.html" style="font-size: 12pt"> Overall coop funds </a></li>
-              </ul>
-              </div>
-          </li> 
-           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#general-pages2" aria-expanded="false" aria-controls="general-pages2">
-              <span class="menu-title label" style="font-size: 13pt;font-weight: bold;">Interest And Funds</span>
-              <i class="glyphicon glyphicon-menu-left"></i>
-              <i class=" glyphicon glyphicon-usd menu-icon"></i>
-            </a>
-            <div class="collapse label" id="general-pages2">
-              <ul class="nav flex-column sub-menu label" >
-                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12pt"> Fines management</a></li>
-                <li > <a class="nav-link" href="pages/samples/login.html" style="font-size: 12pt">Interest charges management </a></li>
-              </ul>
-              </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#general-pages3" aria-expanded="false" aria-controls="general-pages3">
-              <span class="menu-title label" style="font-size: 13pt;font-weight: bold;">Mutual coop profile</span>
-              <i class="glyphicon glyphicon-menu-left"></i>
-              <i class=" glyphicon glyphicon-user menu-icon"></i>
-            </a>
-            <div class="collapse label" id="general-pages3">
-              <ul class="nav flex-column sub-menu label" >
-                <li > <a class="nav-link" href="pages/samples/blank-page.html" style="font-size: 12pt"> Manage profile</a></li>
+	<ui:composition>
+		<!-- partial:partials/_sidebar.html -->
+		<nav class="sidebar sidebar-offcanvas" id="sidebar">
+		<ul class="nav">
+			<li class="nav-item nav-profile"><a href="#" class="nav-link">
+					<div class="nav-profile-image">
+						<!-- <img src="./resources/image/face1.jpg" alt="profile"/> -->
+						<h:graphicImage style="margin: 5pt" alt="profile"
+							value="/images/dynamic/?file=#{loadUserInformationsController.users.image}" />
+						<span class="login-status online"></span>
+						<!--change to offline or busy as needed-->
+					</div>
+					<div class="nav-profile-text d-flex flex-column">
+						<span class="font-weight-bold mb-2 label" style="font-size: 11pt">#{loadUserInformationsController.users.fullname}</span>
+						<span class="text-secondary text-small label"
+							style="font-size: 13px">System
+							#{loadUserInformationsController.users.userCategory.usercategoryName}</span>
+					</div> <i
+					class="glyphicon glyphicon-bookmark text-success nav-profile-badge"></i>
+			</a></li>
+			<li class="nav-item"><a class="nav-link"
+				href="#{loadUserInformationsController.getContextPath()}/RepPage1.xhtml">
+					<span class="menu-title label"
+					style="font-size: 13pt; font-weight: bold">Dashboard</span> <i
+					class="glyphicon glyphicon-home menu-icon"></i>
+			</a></li>
+			<li class="nav-item"><a class="nav-link" data-toggle="collapse"
+				href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+					<span class="menu-title label"
+					style="font-size: 13pt; font-weight: bold;">My Task</span> <i
+					class="glyphicon glyphicon-menu-left"></i> <i
+					class="glyphicon glyphicon-tasks menu-icon"></i>
+			</a>
+				<div class="collapse" id="ui-basic">
+					<ul class="nav flex-column sub-menu label">
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/MemberRequestManagement.xhtml"
+							style="font-size: 12pt">Member request management</a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/LoanManagement.xhtml"
+							style="font-size: 12pt">Loan management</a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/MemberManagement.xhtml"
+							style="font-size: 12pt">Member managment</a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/FundsManagement.xhtml"
+							style="font-size: 12pt">Funds management</a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/PostManagement.xhtml"
+							style="font-size: 12pt">Manage post<h:panelGrid
+									rendered="#{mutualCoopController.renderNotify}">
+									<span class="text text-primary"
+										style="font-weight: bold; font-size: 10pt">&nbsp;#{mutualCoopController.countPendPost}</span>
+								</h:panelGrid> <span
+								class="text text-primary glyphicon glyphicon-bell menu-icon"></span></a>
+						</li>
+					</ul>
+				</div></li>
 
-              </ul>
-              </div>
-          </li>
-          <li class="nav-item sidebar-actions">
-            <span class="nav-link">
-              <div class="mt-4">
-                <div class="border-bottom">
-                  <p class="text-secondary label" style="font-weight: bold;font-size: 13pt;">Online Users</p>                  
-                </div>
-                <ul class="gradient-bullet-list mt-4">
-                  <li>Free</li>
-                  <li>Pro</li>
-                </ul>
-              </div>
-            </span>
-          </li>
-        </ul>
-      </nav>
-      <!-- partial -->
-	
+			<li class="nav-item"><a class="nav-link" data-toggle="collapse"
+				href="#general-pages" aria-expanded="false"
+				aria-controls="general-pages"> <span class="menu-title label"
+					style="font-size: 13pt; font-weight: bold;">Report</span> <i
+					class="glyphicon glyphicon-menu-left"></i> <i
+					class=" glyphicon glyphicon-stats menu-icon"></i>
+			</a>
+				<div class="collapse label" id="general-pages">
+					<ul class="nav flex-column sub-menu label">
+						<li><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/OverAllFineStat.xhtml"
+							style="font-size: 12pt"> Fines generated stat </a></li>
+						<li><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/OverLoanStatistic.xhtml"
+							style="font-size: 12pt"> Loan distribution stat</a></li>
+						<li><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/OverInterestStatistics.xhtml"
+							style="font-size: 12pt"> Interest and other income  raised </a></li>
+						<li><a class="nav-link" href="#{loadUserInformationsController.getContextPath()}/menu/OverallFundStat.xhtml"
+							style="font-size: 12pt"> Overall coop funds </a></li>
+					</ul>
+				</div></li>
+			<li class="nav-item"><a class="nav-link" data-toggle="collapse"
+				href="#general-pages2" aria-expanded="false"
+				aria-controls="general-pages2"> <span class="menu-title label"
+					style="font-size: 13pt; font-weight: bold;">Interest And
+						Funds</span> <i class="glyphicon glyphicon-menu-left"></i> <i
+					class=" glyphicon glyphicon-usd menu-icon"></i>
+			</a>
+				<div class="collapse label" id="general-pages2">
+					<ul class="nav flex-column sub-menu label">
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/FinesManagement.xhtml"
+							style="font-size: 12pt"> Fines management</a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/InterestChargeManagement.xhtml"
+							style="font-size: 12pt">Interest charges management </a></li>
+							<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/SharedInterest.xhtml"
+							style="font-size: 12pt">Share interest raised </a></li>
+							
+							<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/MemberInterest.xhtml"
+							style="font-size: 12pt">Interest distributed </a></li>
+						<li><a class="nav-link"
+							href="#{loadUserInformationsController.getContextPath()}/menu/OtherGeneratedIncome.xhtml"
+							style="font-size: 12pt">Other mutual coop income </a></li>
+
+					</ul>
+				</div></li>
+			<li class="nav-item"><a class="nav-link" data-toggle="collapse"
+				href="#general-pages3" aria-expanded="false"
+				aria-controls="general-pages3"> <span class="menu-title label"
+					style="font-size: 13pt; font-weight: bold;">Mutual coop
+						profile</span> <i class="glyphicon glyphicon-menu-left"></i> <i
+					class=" glyphicon glyphicon-user menu-icon"></i>
+			</a>
+				<div class="collapse label" id="general-pages3">
+					<ul class="nav flex-column sub-menu label">
+						<li><a class="nav-link" href="pages/samples/blank-page.html"
+							style="font-size: 12pt"> Manage profile</a></li>
+
+					</ul>
+				</div></li>
+			<li class="nav-item sidebar-actions"><span class="nav-link">
+					<div class="mt-4">
+						<div class="border-bottom">
+							<p class="text-secondary label"
+								style="font-weight: bold; font-size: 13pt;">Online Users</p>
+						</div>
+						<ul class="gradient-bullet-list mt-4">
+							<li>Free</li>
+							<li>Pro</li>
+						</ul>
+					</div>
+			</span></li>
+		</ul>
+		</nav>
+		<!-- partial -->
+
 	</ui:composition>
 
 </h:body>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
+<h:body>
+	<ui:composition template="/template/common/MutualRepLayout.xhtml">
+
+		<ui:define name="content">
+			<div class="panel panel-info">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<ui:repeat var="time" value="#">
+						<a
+							href="#{loadUserInformationsController.getContextPath()}/menu/OtherGeneratedIncome.xhtml"
+							class="btn btn-primary glyphicon glyphicon-chevron-left"
+							style="font-size: 11pt"> #{msg['BackButtom']}</a>
+
+
+					</ui:repeat>
+				</div>
+				<div class="panel-body"
+					style="border: 0px solid blue; margin-top: 4px; height: auto; font-family: Poppins, sans-serif; font-size: 15px !important;">
+
+
+
+					<h:form>
+						<h:panelGroup layout="block"
+							rendered="#{not mutualCoopController.valid and not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li class="alert alert-danger label"
+										style="list-style: none; background-color: #FF2400; color: white; font-size: 12pt;">
+										<center>
+											<h:outputText value="#{facesMessage.summary}" escape="false" />
+										</center>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+
+						<h:panelGroup layout="block"
+							rendered="#{mutualCoopController.valid and  not facesContext.validationFailed}">
+							<ul>
+								<ui:repeat value="#{facesContext.messageList}"
+									var="facesMessage">
+									<li
+										style="list-style: none; background-color: #32CD32; color: white; font-size: 12pt"
+										class="alert alert-success label"><h:outputText
+											value="#{facesMessage.summary}" escape="false" /></li>
+								</ui:repeat>
+							</ul>
+						</h:panelGroup>
+						<p:outputPanel rendered="#{mutualCoopController.renderIncomeForm}">
+							<div class="col-md-7 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<p:outputPanel autoUpdate="true">
+											<span style="color: white; font-size: 20pt"> <label
+												class="label text-success" style="font-weight: bold;">Other
+													Mutual Cooperative Generated Income</label>
+											</span>
+										</p:outputPanel>
+										<span class="label text-warning"
+											style="color: black; font-weight: bold; font-size: 13px">#{msg['header.title.fieldmarked']}
+											<span style="color: red">#{msg['header.title.asteriks']}</span>
+											#{msg['header.title.mandatory']}
+										</span>
+										<h:form class="forms-sample">
+											<div class="form-group">
+												<label for="exampleInputUsername1" class="label"
+													style="font-weight: bold; font-size: 13pt; margin-top: 15px;">Income
+													amount <span style="color: red; font-size: 15px">*</span>
+												</label>
+												<h:inputText a:type="number"
+													class="form-control form-control-lg label"
+													value="#{mutualCoopController.incomeAmount}"
+													id="exampleamount1" a:placeholder=" add amount "
+													style=" font-size: 12pt;" required="true"
+													requiredMessage="#{msg['requiered.income.message']}"
+													converterMessage="#{msg['error.enter.invalid.income']}"
+													validatorMessage="#{msg['error.enter.invalid.income']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputText>
+
+												<h:message for="exampleamount1"
+													styleClass="help-block label"></h:message>
+											</div>
+											<div class="form-group">
+												<label for="exampleamount2" class="label"
+													style="font-weight: bold; font-size: 13pt; margin-top: 15px;">Recieved
+													amount <span style="color: red; font-size: 15px">*</span>
+												</label>
+												<h:inputText a:type="number"
+													class="form-control form-control-lg label"
+													value="#{mutualCoopController.receiveAmount}"
+													id="exampleamount2" a:placeholder=" add amount given"
+													style=" font-size: 12pt;" required="true"
+													requiredMessage="#{msg['requiered.income.message']}"
+													converterMessage="#{msg['error.enter.invalid.income']}"
+													validatorMessage="#{msg['error.enter.invalid.income']}">
+													<f:validateRegex
+														pattern="#{regex['regex.validation.message.DIGITS_GRT_ZERO']}"></f:validateRegex>
+													<f:validateLength maximum="100"></f:validateLength>
+												</h:inputText>
+
+												<h:message for="exampleamount2"
+													styleClass="help-block label"></h:message>
+											</div>
+											<div class="form-group">
+												<label for="exampleamount2" class="label"
+													style="font-size: 13pt; font-weight: bold">Source
+													of the income<span style="color: red; font-size: 15px">*</span>
+												</label>
+
+												<h:inputTextarea a:type="text" cols="10" rows="5"
+													value="#{mutualCoopController.sourceOfIncome}"
+													class="form-control form-control-lg label"
+													id="examplesourceincome"
+													a:placeholder=" Add description of income source "
+													style=" font-size: 14px !important;" required="true"
+													requiredMessage="#{msg['required.postdesc.message']}">
+
+												</h:inputTextarea>
+
+												<h:message for="examplesourceincome"
+													styleClass="help-block label"></h:message>
+											</div>
+											<h:commandButton a:type="submit"
+												action="#{mutualCoopController.saveIncome}"
+												class="btn btn-gradient-success mr-2 label"
+												style="font-size: 12pt;" value="Submit"></h:commandButton>
+										</h:form>
+									</div>
+								</div>
+							</div>
+						</p:outputPanel>
+						<p:outputPanel
+							rendered="#{mutualCoopController.renderIncomeTable}">
+							<!--MUTUAL REP LIST TABLE -->
+
+							<div class="col-lg-12 grid-margin stretch-card">
+
+								<div class="card">
+									<div class="card-body">
+										<h4 class="text-info label"
+											style="font-weight: bold; font-size: 14pt; margin-left: 15%;">
+											MUTUAL COOPERATIVE OTHER GENERATED INCOME MANAGEMENT</h4>
+										<div class=" col-lg-12 grid-margin "
+											style="height: 330px; overflow-y: scroll;">
+											<table
+												class="table table-striped table-hover table-bordered tableUpdated"
+												style="margin-top: 20px;">
+
+												<thead>
+													<tr>
+
+														<th colspan="10" style="font-size: 12pt;"><h:commandLink
+																data-toggle="tooltip" data-placement="left"
+																value="New Income"
+																action="#{mutualCoopController.showIncomeForm}"
+																style=" font: italic bold 13px/20px Georgia, serif;"
+																class="btn btn-gradient-info mr-2  label">
+
+															</h:commandLink></th>
+
+													</tr>
+												</thead>
+
+												<thead>
+													<tr class="label">
+														<th style="font-size: 15px; font-weight: bold">No</th>
+														<th style="font-size: 15px; font-weight: bold">Income
+															description</th>
+														<th style="font-size: 15px; font-weight: bold">Income
+															amount</th>
+
+														<th style="font-size: 15px; font-weight: bold">Recorded
+															income amount</th>
+														<th style="font-size: 15px; font-weight: bold">Status</th>
+														<th style="font-size: 15px; font-weight: bold">Action</th>
+													</tr>
+												</thead>
+												<tbody class="label">
+													<ui:repeat value="#{mutualCoopController.allIncomeDto}"
+														var="coop">
+														<tr>
+															<td style="font-size: 12pt;">#{coop.countRecord}</td>
+															<td style="font-size: 12pt;"><h:outputText
+																	value="#{coop.sourceOfIncome}" style="font-size:11pt" /></td>
+
+															<td class="text-info" style="font-size: 12pt;"><h:outputText
+																	value="#{coop.incomeAmount}" style="font-size:11pt" /></td>
+
+															<td class="text-info" style="font-size: 12pt;"><h:outputText
+																	value="#{coop.recordedAmount}" style="font-size:11pt">
+
+																</h:outputText></td>
+
+															<td class="label" style="font-size: 12pt;"><h:outputText  class="badge badge-primary"
+																	value="#{coop.status}" style="font-size:11pt" /></td>
+															<td><h:outputText value="Income already shared to members" class="text-primary" rendered="#{ not coop.accept}"
+																	style="font-size:11pt" /> 
+															
+																<h:commandButton
+																	class="btn btn-gradient-primary mr-2  label"
+																	style=" font-size:12pt;" data-toggle="tooltip"
+																	data-placement="right"
+																	value="Share income"
+																	action="#{mutualCoopController.incomeDistribution(coop)}"
+																	rendered="#{ not coop.approval}">
+																
+																</h:commandButton> 
+																</td>
+														</tr>
+													</ui:repeat>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- TABLE END -->
+						</p:outputPanel>
+					</h:form>
+
+
+				</div>
+			</div>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

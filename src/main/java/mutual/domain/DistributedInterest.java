@@ -26,45 +26,58 @@ import javax.persistence.Transient;
  * @author Emma
  */
 @Entity
-@Table(name = "OtherIncome")
-@NamedQuery(name = "OtherIncome.findAll", query = "SELECT r FROM OtherIncome r order by incomeId desc")
-public class OtherIncome extends CommonDomain implements Serializable {
+@Table(name ="DistributedInterest")
+@NamedQuery(name = "DistributedInterest.findAll", query = "SELECT r FROM DistributedInterest r order by interestId desc")
+public class DistributedInterest extends CommonDomain implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue
-	@Column(name = "incomeId")
-	private int incomeId;
-	@Column(name = "sourceOfIncome")
-	private String sourceOfIncome;
-	@Column(name = "incomeAmount")
-	private Double incomeAmount;
-	@Column(name = "recordedAmount")
-	private Double recordedAmount;
+	@Column(name = "interestId")
+	private int interestId;
+	@Column(name = "amount")
+	private double amount;
+	@Column(name = "givenDate")
+	private Date givenDate;
+	@Column(name = "status")
+	private String status;
+	@ManyToOne
+	@JoinColumn(name = "usermember")
+	private Users usermember;
 	@ManyToOne
 	@JoinColumn(name = "mutualcoop")
 	private MutualCooperative mutualcoop;
 	@Transient
 	private String action;
-	@Column(name = "status")
-	private String status;
-	public int getIncomeId() {
-		return incomeId;
+	public int getInterestId() {
+		return interestId;
 	}
-	public void setIncomeId(int incomeId) {
-		this.incomeId = incomeId;
+	public void setInterestId(int interestId) {
+		this.interestId = interestId;
 	}
-	public String getSourceOfIncome() {
-		return sourceOfIncome;
+	public double getAmount() {
+		return amount;
 	}
-	public void setSourceOfIncome(String sourceOfIncome) {
-		this.sourceOfIncome = sourceOfIncome;
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
-	public Double getIncomeAmount() {
-		return incomeAmount;
+	public Date getGivenDate() {
+		return givenDate;
 	}
-	public void setIncomeAmount(Double incomeAmount) {
-		this.incomeAmount = incomeAmount;
+	public void setGivenDate(Date givenDate) {
+		this.givenDate = givenDate;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public Users getUsermember() {
+		return usermember;
+	}
+	public void setUsermember(Users usermember) {
+		this.usermember = usermember;
 	}
 	public MutualCooperative getMutualcoop() {
 		return mutualcoop;
@@ -78,17 +91,5 @@ public class OtherIncome extends CommonDomain implements Serializable {
 	public void setAction(String action) {
 		this.action = action;
 	}
-	public Double getRecordedAmount() {
-		return recordedAmount;
-	}
-	public void setRecordedAmount(Double recordedAmount) {
-		this.recordedAmount = recordedAmount;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}		
 	
 }

@@ -100,6 +100,5 @@ public class InterestCharges extends CommonDomain implements Serializable {
 	}
 	public void setLoanRequest(LoanRequest loanRequest) {
 		this.loanRequest = loanRequest;
-	}
-	
+	}	
 }

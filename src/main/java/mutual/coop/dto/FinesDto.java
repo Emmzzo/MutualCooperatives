@@ -1,25 +1,18 @@
 package mutual.coop.dto;
-import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
 
 import mutual.domain.MutualCooperative;
 import mutual.domain.Users;
 
-public class LoanDto {
-	private static final long serialVersionUID = 1L;
+public class FinesDto implements Serializable {
+private static final long serialVersionUID = 1L;
 	
-	private int requestId,dayremaining;
+	private int fineId;
 	private Double amount;
-
 	private Double balance;
-	private Date approvedDate,requestDate,returnDate;
-	
+	private Date approvedDate,givenDate,returnDate;
 	private String status,recordedBy,formatAmount,formatBalance,generiStatus;
 	private Users usermember;
 	
@@ -27,12 +20,12 @@ public class LoanDto {
 
 	private boolean editable,editchanges,loanrequest,accept,approval,paidStatus;
 
-	public int getRequestId() {
-		return requestId;
+	public int getFineId() {
+		return fineId;
 	}
 
-	public void setRequestId(int requestId) {
-		this.requestId = requestId;
+	public void setFineId(int fineId) {
+		this.fineId = fineId;
 	}
 
 	public Double getAmount() {
@@ -59,12 +52,20 @@ public class LoanDto {
 		this.approvedDate = approvedDate;
 	}
 
-	public Date getRequestDate() {
-		return requestDate;
+	public Date getGivenDate() {
+		return givenDate;
 	}
 
-	public void setRequestDate(Date requestDate) {
-		this.requestDate = requestDate;
+	public void setGivenDate(Date givenDate) {
+		this.givenDate = givenDate;
+	}
+
+	public Date getReturnDate() {
+		return returnDate;
+	}
+
+	public void setReturnDate(Date returnDate) {
+		this.returnDate = returnDate;
 	}
 
 	public String getStatus() {
@@ -163,14 +164,6 @@ public class LoanDto {
 		this.approval = approval;
 	}
 
-	public Date getReturnDate() {
-		return returnDate;
-	}
-
-	public void setReturnDate(Date returnDate) {
-		this.returnDate = returnDate;
-	}
-
 	public boolean isPaidStatus() {
 		return paidStatus;
 	}
@@ -179,11 +172,4 @@ public class LoanDto {
 		this.paidStatus = paidStatus;
 	}
 
-	public int getDayremaining() {
-		return dayremaining;
-	}
-
-	public void setDayremaining(int dayremaining) {
-		this.dayremaining = dayremaining;
-	}
 }

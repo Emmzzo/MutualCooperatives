@@ -7,7 +7,7 @@
 		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/mutual_db</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.connection.password">root</property>
-	<!-- 	<property name="hbm2ddl.auto">update</property>
+		<!-- <property name="hbm2ddl.auto">update</property>
 		<property name="hibernate.show_sql">true</property> -->
 		<property name="hibernate.current_session_context_class">thread</property>
 		<mapping class="mutual.domain.UserCategory" />
@@ -25,6 +25,7 @@
 		<mapping class="mutual.domain.Fines" />
 		<mapping class="mutual.domain.InterestCharges" />	
 		<mapping class="mutual.domain.OtherIncome" />
+		<mapping class="mutual.domain.DistributedInterest" />
 	</session-factory>
 </hibernate-configuration>
 

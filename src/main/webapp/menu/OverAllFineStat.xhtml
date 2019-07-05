@@ -9,7 +9,7 @@
 	xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:p="http://primefaces.org/ui" xmlns:b="http://bootsfaces.net/ui">
 <h:body>
-	<ui:composition template="/template/common/MemberDashLayout.xhtml">
+	<ui:composition template="/template/common/MutualRepLayout.xhtml">
 
 		<ui:define name="content">
 			<h:body>
@@ -89,17 +89,18 @@
 											<div class="col-lg-9 grid-margin stretch-card">
 												<div class="card">
 													<div class="card-body">
-														<h4 class="card-title label" style="font-size: 14pt;font-weight: bold;">Overall daily contribution by statistics</h4>
-														<canvas id="taskperformance" style="height:300px;margin-top:5%;font-size:12pt"></canvas>
+													<h1 style="font-family: Arial; font-size: 12pt;color: #5983e8">OVERALL FINES STATUS  STATISTICS </h1>
+														<canvas id="fundsformance" style="width: 100%; height: 65vh; border: 1px solid #5983e8; padding-top: 20px; padding-bottom: 10px;"></canvas>
+														
 													</div>
 												</div>
 												
 											</div>
 											<h:form class="form-horizontal">
 												<div class="form-group">
-													<h:inputText class="overallPerformance"
+													<h:inputText class="overAllFines"
 														style="display:none;"
-														value="#{guestController.overallFunds}"></h:inputText>
+														value="#{mutualCoopController.overAllFines}"></h:inputText>
 												</div>
 											</h:form>
 										</div>
@@ -119,8 +120,8 @@
 					<script>
 						$(function Myname() {
 							var taskperform = document.getElementById(
-									'taskperformance').getContext('2d');
-							var replaceTaskData = $(".overallPerformance")
+									'fundsformance').getContext('2d');
+							var replaceTaskData = $(".overAllFines")
 									.val();
 							var taskReq = replaceTaskData.replace("id", "x");
 							taskReq.replace("Rate", "y");
@@ -129,18 +130,18 @@
 							//CONCERN OVERALL TASK PROGRESS 
 							var amount = [];
 
-							var taskname = [];
+							var status = [];
 							function recusiveTask(n, testTaskData, n2) {
 								if (n2 >= n) {
 									amount.push(testTaskData[n].amount);
 									
-									taskname.push(testTaskData[n].contDate);
+									status.push(testTaskData[n].status);
 									recusiveTask(n + 1, testTaskData, n2);
 								}
 							}
 
 							var testTaskData = JSON.parse($(
-									".overallPerformance").val());
+									".overAllFines").val());
 							//console.log("RESULT"+testTaskData[1].contDate);
 							recusiveTask(0, testTaskData,
 									testTaskData.length - 1);
@@ -149,9 +150,9 @@
 							var mytaskChart = new Chart(
 									taskperform,
 									{
-										type : 'bar',
-										data : {
-											labels : taskname,
+										type : 'line',
+										/* data : {
+											labels : status,
 											datasets: [{
 											      label: '# amount',
 											      data: amount,
@@ -174,34 +175,56 @@
 											      borderWidth: 1,
 											      fill: false
 											    }]
+										}, */
+										
+										data : {
+											labels : status,
+											datasets : [ {
+												label: '$ amount',
+												data : amount,
+												backgroundColor : '#007bff',
+												borderColor : 'white',
+												borderWidth : 1,
+												fill : true
+											},
+
+											/* {
+												label : 'Data 2',
+												data : amount,
+												backgroundColor : 'transparent',
+												borderColor : 'rgba(0,255,255)',
+												borderWidth : 1,
+												fill : true
+											} */ ]
 										},
-										options :{
-										    scales: {
-										        yAxes: [{
-										          ticks: {
-										            beginAtZero: true
-										          },
-										          gridLines : {
+										options : {
+											scales : {
+												yAxes : [ {
+													ticks : {
+														beginAtZero : true
+													},
+													gridLines : {
 														display : false
 													},
-										        }],
-										        xAxes : [ {
+												} ],
+												xAxes : [ {
 													gridLines : {
 														display : false
 													},
 												} ]
-										      },
-										      legend: {
-										        display: false
-										      },
-										     
-										      elements: {
-										        point: {
-										          radius: 0
-										        }
-										      }
-
-										    }
+											},
+											tooltips : {
+												mode : 'index'
+											},
+											legend : {
+												display : true,
+												position : 'right',
+												labels : {
+													fontColor : '#007bff',
+													fontSize : 18
+												}
+											}
+										}
 									});
 
 						});
